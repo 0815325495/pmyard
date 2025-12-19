@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PM Yard Dashboard • Firebase Realtime</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; }
+    .card { background: rgba(255,255,255,0.96); backdrop-filter: saturate(120%) blur(4px); box-shadow: 0 12px 28px rgba(0,0,0,0.10); }
+    .tab-active { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
+    .tab-inactive { opacity: 0.95; }
+    .chip { background: #eef2ff; color: #4338ca; }
+    .number-input::-webkit-outer-spin-button, .number-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    .number-input { -moz-appearance: textfield; }
+    .row-hover:hover { background: #f8fafc; }
+    .status-dot { width:10px; height:10px; border-radius:999px; display:inline-block; }
+    html { font-size: clamp(14px, 1.2vw + 10px, 16px); }
+    body { line-height: 1.5; }
+    #dailyView input[type="number"] { width: clamp(5rem, 20vw, 7.5rem); }
+    /* Adjusted CSS to include NYB2, Soi5, 28 Rai, and MHP totals */
+    #dailyView #ry_out_total, #dailyView #ry_fc_total, #dailyView #ry_total,
+    #dailyView #ny_out_total, #dailyView #ny_fc_total, #dailyView #ny_total,
+    #dailyView #s5_out_total, #dailyView #s5_fc_total, #dailyView #s5_total,
+    #dailyView #r28_out_total, #dailyView #r28_fc_total, #dailyView #r28_total,
+    #dailyView #mhp_out_total, #dailyView #mhp_fc_total, #dailyView #mhp_total { width: clamp(6rem, 22vw, 8.5rem); }
+    @media (max-width: 640px) { .card { border-radius: 1rem; } }
+    thead.sticky { z-index: 20; }
+    #mRayongWrap, #mNYB2Wrap, #mSOI5Wrap, #m28RaiWrap, #mMHPWrap { -webkit-overflow-scrolling: touch; }
+    #dailyView label { white-space: nowrap; }
+    /* Login Modal Styles */
+    #loginModal.flex { display: flex; }
+    input:disabled { background-color: #f1f5f9; cursor: not-allowed; }
+    textarea:disabled { background-color: #f1f5f9; cursor: not-allowed; }
+  </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-slate-900">
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+    <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-sm m-4">
+      <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">เข้าสู่ระบบ</h2>
+      <form id="loginForm">
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium text-slate-700">Username</label>
+          <input type="text" id="username" value="admin" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+          <input type="password" id="password" value="admin" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        </div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center">
+            <input id="rememberMe" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+            <label for="rememberMe" class="ml-2 block text-sm text-gray-900">
+              จำฉันไว้ในระบบ
+            </label>
+          </div>
+        </div>
+        <p id="loginError" class="text-red-500 text-sm mb-4 hidden text-center"></p>
+        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="connectionStatus" class="hidden fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full shadow-lg z-50">
+        ไม่สามารถเชื่อมต่อฐานข้อมูลได้
+    </div>
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">PM Yard Dashboard</h1>
+        <p class="text-white/90 mt-1">Rayong • NYB2 • soi5 • 28 ไร่ • MHP 2PS</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="rounded-2xl bg-white/15 border border-white/30 px-4 py-3 flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <label for="monthPicker" class="text-white/95">เลือกเดือน</label>
+          <input id="monthPicker" type="month" class="rounded-xl px-3 py-2 bg-white/95 text-slate-800 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div class="flex items-center gap-2 bg-white/15 border border-white/30 rounded-full px-3 py-1">
+          <span id="fbDot" class="status-dot bg-red-400"></span>
+          <span id="fbText" class="text-white/90 text-sm">ออฟไลน์</span>
+        </div>
+        <div id="userStatus" class="flex items-center gap-2">
+          <!-- Populated by JS -->
+        </div>
+        <div class="glass rounded-full px-3 py-1 text-white/90 text-xs">
+          อัปเดตล่าสุด: <span id="lastSync">-</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="flex flex-wrap items-center gap-2 md:gap-3 mb-6">
+      <button id="viewPM30" class="main-tab tab-active rounded-full px-4 py-2 font-semibold bg-rose-500 text-white hover:bg-rose-600">สรุป PM 1-30 วัน</button>
+      <button id="viewMonthlyPM" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-sky-500/90 text-white hover:bg-sky-500">แผน PM ประจำเดือน</button>
+      <button id="viewSummary" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-emerald-500/90 text-white hover:bg-emerald-500">สรุปรวม + แผนพรุ่งนี้</button>
+      <button id="viewDaily" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-amber-500/90 text-white hover:bg-amber-500">Daily Report</button>
+      <button id="viewPerformance" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-purple-400/90 text-white hover:bg-purple-400">Yard Performance</button>
+      <button id="viewPDI" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-teal-500/90 text-white hover:bg-teal-500">REPORT PDI</button>
+      <button id="viewSkill" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-cyan-500/90 text-white hover:bg-cyan-500">SKILL พนักงาน</button>
+    </nav>
+
+    <!-- App content sections -->
+    <!-- PM 1-30 DAYS -->
+    <section id="pm30View" class="grid grid-cols-1 gap-8">
+      <section class="card rounded-2xl p-5">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุป PM 1-30 วัน (ฐานข้อมูลเดือนนี้)</h2>
+            <p class="text-slate-500 text-sm">แก้ “Estimation/Action” ของเดือนปัจจุบัน แล้วค่าจะไหลไป 12 เดือนถัดไปอัตโนมัติ และซิงก์กับฐานข้อมูลทันที</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/80 font-semibold">
+            เดือนฐาน: <span id="baseBadge" class="px-2 py-1 rounded-full bg-indigo-600 text-white">-</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 gap-8">
+        <div class="card rounded-2xl overflow-hidden">
+          <div class="px-5 py-3 bg-white/80 font-bold">Rayong • รายเดือน</div>
+          <div id="mRayongWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+        </div>
+        <div class="card rounded-2xl overflow-hidden">
+          <div class="px-5 py-3 bg-white/80 font-bold">NYB2 • รายเดือน</div>
+          <div id="mNYB2Wrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+        </div>
+        <div class="card rounded-2xl overflow-hidden">
+          <div class="px-5 py-3 bg-white/80 font-bold">soi5 • รายเดือน</div>
+          <div id="mSOI5Wrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+        </div>
+        <div class="card rounded-2xl overflow-hidden">
+          <div class="px-5 py-3 bg-white/80 font-bold">28 ไร่ • รายเดือน</div>
+          <div id="m28RaiWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+        </div>
+        <!-- MHP 2PS (NEW) -->
+        <div class="card rounded-2xl overflow-hidden">
+          <div class="px-5 py-3 bg-white/80 font-bold">MHP 2PS • รายเดือน</div>
+          <div id="mMHPWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- MONTHLY PLAN PM -->
+    <section id="monthlyPMView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">แผน PM ประจำเดือน</h2>
+            <p class="text-slate-500 text-sm">ดึง Estimation จาก “สรุป PM 1-30 วัน” ตามเดือนที่เลือก (ซิงก์ Realtime)</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full chip font-semibold">
+              เดือน: <span id="mpmMonth" class="px-2 py-1 rounded-full bg-indigo-50 text-indigo-700">-</span>
+            </div>
+            <button id="mpmShareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="mpmEstCard" class="card rounded-2xl overflow-hidden mb-6">
+        <div id="mpmContainer" class="w-full overflow-hidden" style="overflow-x: hidden;">
+          <div id="mpmScaler" class="origin-top-left inline-block">
+            <table class="text-[12px] md:text-[14px] lg:text-[16px]" id="mpmTable">
+              <thead class="bg-white sticky top-0 z-10">
+                <tr id="mpmHeader" class="text-slate-700 text-[11px] md:text-xs uppercase tracking-wider font-extrabold">
+                  <th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>
+                </tr>
+              </thead>
+              <tbody id="mpmBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="px-5 py-3 bg-white/80 text-slate-500 text-sm">หมายเหตุ: ใช้เฉพาะค่าคอลัมน์ Estimation ของแต่ละวัน (1-31) <span id="mpmStamp" class="text-slate-600"></span></div>
+      </section>
+
+      <section id="mpmActCard" class="card rounded-2xl overflow-hidden">
+        <div id="mpmActContainer" class="w-full overflow-hidden" style="overflow-x: hidden;">
+          <div id="mpmActScaler" class="origin-top-left inline-block">
+            <table class="text-[12px] md:text-[14px] lg:text-[16px]" id="mpmActTable">
+              <thead class="bg-white sticky top-0 z-10">
+                <tr id="mpmActHeader" class="text-slate-700 text-[11px] md:text-xs uppercase tracking-wider font-extrabold">
+                  <th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>
+                </tr>
+              </thead>
+              <tbody id="mpmActBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="px-5 py-3 bg-white/80 text-slate-500 text-sm">หมายเหตุ: ใช้เฉพาะค่าคอลัมน์ Actual ของแต่ละวัน (1-31) วันที่ <span id="mpmActStamp" class="text-slate-600"></span></div>
+      </section>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="summaryView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุปรวม + แผนพรุ่งนี้</h2>
+            <p class="text-slate-500 text-sm">แสดงแผนงานวันนี้ด้านบน และรายละเอียดแผนพรุ่งนี้ด้านล่าง</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-emerald-50 text-emerald-700 font-semibold">
+            วันนี้: <span id="todayBadge" class="px-2 py-1 rounded-full bg-emerald-100">-</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card rounded-2xl overflow-hidden mb-4">
+        <div class="px-5 py-4 bg-white/80">
+          <h3 class="text-lg font-bold">แผนงานวันนี้ แยกตาม Yard</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-[16px]">
+            <thead class="bg-white sticky top-0 z-10">
+              <tr class="text-slate-700 text-sm uppercase tracking-wider font-extrabold">
+                <th class="text-left px-5 py-3"></th>
+                <th class="text-right px-5 py-3">Estimation (วันนี้)</th>
+                <th class="text-right px-5 py-3">Actual (วันนี้)</th>
+                <th class="text-right px-5 py-3">รถใหม่ (วันนี้)</th>
+                <th class="text-left px-5 py-3">Action plan (วันนี้)</th>
+              </tr>
+            </thead>
+            <tbody id="todayTable" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card rounded-2xl overflow-hidden">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between">
+          <h3 class="text-lg font-bold">รายละเอียดแผนพรุ่งนี้ แยกตาม Yard</h3>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 font-semibold">
+            พรุ่งนี้: <span id="tmrBadge" class="px-2 py-1 rounded-full bg-indigo-100">-</span>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-[16px]">
+            <thead class="bg-white sticky top-0 z-10">
+              <tr class="text-slate-700 text-sm uppercase tracking-wider font-extrabold">
+                <th class="text-left px-5 py-3">Yard</th>
+                <th class="text-right px-5 py-3">Estimation (พรุ่งนี้)</th>
+                <th class="text-left px-5 py-3">Action plan (พรุ่งนี้)</th>
+              </tr>
+            </thead>
+            <tbody id="tomorrowTable" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <!-- DAILY REPORT -->
+    <section id="dailyView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Daily Report</h2>
+            <p class="text-slate-500 text-sm">บันทึกงานประจำวัน แยกตาม Yard</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 font-semibold">
+              วันที่: <span id="dailyBadge" class="px-2 py-1 rounded-full bg-amber-100">-</span>
+            </div>
+            <input id="dailyDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
+            <button id="captureDaily" class="rounded-full px-4 py-2 bg-amber-500 text-white font-semibold hover:bg-amber-600">บันทึกหน้าจอ</button>
+            <button id="shareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rayong -->
+      <section id="dailyRayongCard" class="card rounded-2xl overflow-hidden mb-6 border border-emerald-200 bg-emerald-50">
+        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">Rayong</h3></div>
+        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-end gap-3">
+              <div>
+                <div class="text-slate-700 font-semibold">IN</div>
+                <div class="text-xs text-slate-500">รายการเข้า</div>
+              </div>
+              <input id="ry_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              <div class="text-slate-500">+</div>
+              <div class="flex flex-col -mb-1">
+                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
+                <input id="ry_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              </div>
+              <div class="ml-auto font-semibold">=</div>
+              <input id="ry_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_att3_pre">ATT3 (PRE)</span></label><input id="ry_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_att3_ext">ATT3 (EXT)</span></label><input id="ry_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_sea6_pre">SEA6 (PRE)</span></label><input id="ry_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_sea6_dym">SEA6 (DYM)</span></label><input id="ry_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_dol_std">DOL (STD)</span></label><input id="ry_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_dol_ext">DOL (EXT)</span></label><input id="ry_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_seal5_pre">SEAL5 (PRE)</span></label><input id="ry_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_other">อื่นๆ</span></label><input id="ry_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="font-semibold text-slate-700">OUT</div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="ry_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="ry_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="ry_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="ry_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="ry_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">Final Check</div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="ry_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="ry_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="ry_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">PM</div>
+                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="ry_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="ry_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="ry_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="ry_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
+              <textarea id="ry_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NYB2 -->
+      <section id="dailyNYB2Card" class="card rounded-2xl overflow-hidden mb-6 border border-yellow-200 bg-yellow-50">
+        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">NYB2</h3></div>
+        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-end gap-3">
+              <div>
+                <div class="text-slate-700 font-semibold">IN</div>
+                <div class="text-xs text-slate-500">รายการเข้า</div>
+              </div>
+              <input id="ny_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              <div class="text-slate-500">+</div>
+              <div class="flex flex-col -mb-1">
+                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
+                <input id="ny_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              </div>
+              <div class="ml-auto font-semibold">=</div>
+              <input id="ny_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_att3_pre">ATT3 (PRE)</span></label><input id="ny_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_att3_ext">ATT3 (EXT)</span></label><input id="ny_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_sea6_pre">SEA6 (PRE)</span></label><input id="ny_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_sea6_dym">SEA6 (DYM)</span></label><input id="ny_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_dol_std">DOL (STD)</span></label><input id="ny_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_dol_ext">DOL (EXT)</span></label><input id="ny_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_seal5_pre">SEAL5 (PRE)</span></label><input id="ny_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_other">อื่นๆ</span></label><input id="ny_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="font-semibold text-slate-700">OUT</div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Rayong</label><input id="ny_out_rayong" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="ny_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="ny_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="ny_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="ny_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">Final Check</div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="ny_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="ny_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="ny_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">PM</div>
+                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="ny_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="ny_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="ny_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="ny_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
+              <textarea id="ny_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Soi 5 -->
+      <section id="dailySoi5Card" class="card rounded-2xl overflow-hidden mb-6 border border-rose-200 bg-rose-50">
+        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">Soi 5</h3></div>
+        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-end gap-3">
+              <div>
+                <div class="text-slate-700 font-semibold">IN</div>
+                <div class="text-xs text-slate-500">รายการเข้า</div>
+              </div>
+              <input id="s5_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              <div class="text-slate-500">+</div>
+              <div class="flex flex-col -mb-1">
+                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
+                <input id="s5_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              </div>
+              <div class="ml-auto font-semibold">=</div>
+              <input id="s5_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_att3_pre">ATT3 (PRE)</span></label><input id="s5_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_att3_ext">ATT3 (EXT)</span></label><input id="s5_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_sea6_pre">SEA6 (PRE)</span></label><input id="s5_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_sea6_dym">SEA6 (DYM)</span></label><input id="s5_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_dol_std">DOL (STD)</span></label><input id="s5_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_dol_ext">DOL (EXT)</span></label><input id="s5_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_seal5_pre">SEAL5 (PRE)</span></label><input id="s5_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_other">อื่นๆ</span></label><input id="s5_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="font-semibold text-slate-700">OUT</div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Rayong</label><input id="s5_out_rayong" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="s5_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="s5_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="s5_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="s5_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">Final Check</div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="s5_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="s5_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="s5_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">PM</div>
+                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="s5_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="s5_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="s5_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="s5_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
+              <textarea id="s5_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 28 Rai (NEW CARD) -->
+      <section id="daily28RaiCard" class="card rounded-2xl overflow-hidden mb-6 border border-cyan-200 bg-cyan-50">
+        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">28 ไร่</h3></div>
+        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-end gap-3">
+              <div>
+                <div class="text-slate-700 font-semibold">IN</div>
+                <div class="text-xs text-slate-500">รายการเข้า</div>
+              </div>
+              <input id="r28_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              <div class="text-slate-500">+</div>
+              <div class="flex flex-col -mb-1">
+                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
+                <input id="r28_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              </div>
+              <div class="ml-auto font-semibold">=</div>
+              <input id="r28_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_att3_pre">ATT3 (PRE)</span></label><input id="r28_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_att3_ext">ATT3 (EXT)</span></label><input id="r28_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_sea6_pre">SEA6 (PRE)</span></label><input id="r28_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_sea6_dym">SEA6 (DYM)</span></label><input id="r28_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_dol_std">DOL (STD)</span></label><input id="r28_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_dol_ext">DOL (EXT)</span></label><input id="r28_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_seal5_pre">SEAL5 (PRE)</span></label><input id="r28_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_other">อื่นๆ</span></label><input id="r28_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="font-semibold text-slate-700">OUT</div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="r28_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="r28_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="r28_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="r28_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="r28_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">Final Check</div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="r28_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="r28_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="r28_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">PM</div>
+                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="r28_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="r28_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="r28_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="r28_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
+              <textarea id="r28_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MHP 2PS (NEW CARD - Orange) -->
+      <section id="dailyMHPCard" class="card rounded-2xl overflow-hidden mb-6 border border-orange-200 bg-orange-50">
+        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">MHP 2PS</h3></div>
+        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-end gap-3">
+              <div>
+                <div class="text-slate-700 font-semibold">IN</div>
+                <div class="text-xs text-slate-500">รายการเข้า</div>
+              </div>
+              <input id="mhp_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              <div class="text-slate-500">+</div>
+              <div class="flex flex-col -mb-1">
+                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
+                <input id="mhp_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
+              </div>
+              <div class="ml-auto font-semibold">=</div>
+              <input id="mhp_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_att3_pre">ATT3 (PRE)</span></label><input id="mhp_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_att3_ext">ATT3 (EXT)</span></label><input id="mhp_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_sea6_pre">SEA6 (PRE)</span></label><input id="mhp_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_sea6_dym">SEA6 (DYM)</span></label><input id="mhp_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_dol_std">DOL (STD)</span></label><input id="mhp_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_dol_ext">DOL (EXT)</span></label><input id="mhp_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_seal5_pre">SEAL5 (PRE)</span></label><input id="mhp_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_other">อื่นๆ</span></label><input id="mhp_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <div class="font-semibold text-slate-700">OUT</div>
+              <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="mhp_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="mhp_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="mhp_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="mhp_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="mhp_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">Final Check</div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="mhp_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="mhp_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="mhp_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+              <div class="space-y-2">
+                <div class="font-semibold text-slate-700">PM</div>
+                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="mhp_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="mhp_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="mhp_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
+                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="mhp_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
+              <textarea id="mhp_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- YARD PERFORMANCE -->
+    <section id="performanceView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Yard Performance Dashboard</h2>
+            <p class="text-slate-500 text-sm">เปรียบเทียบแผนกับผลงานจริงของแต่ละ Yard ในเดือนที่เลือก</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-purple-50 text-purple-700 font-semibold">
+            เดือน: <span id="perfMonth" class="px-2 py-1 rounded-full bg-purple-100">-</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Rayong Performance -->
+        <div class="card rounded-2xl overflow-hidden border border-emerald-200">
+          <div class="px-5 py-4 bg-emerald-50 border-b border-emerald-200">
+            <h3 class="text-xl font-bold text-emerald-800">Rayong</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-blue-600" id="rayong-est">0</div>
+                <div class="text-sm text-blue-700 font-semibold">Estimation Plan</div>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-green-600" id="rayong-act">0</div>
+                <div class="text-sm text-green-700 font-semibold">Actual Plan</div>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold" id="rayong-diff">0</div>
+                <div class="text-sm text-slate-700 font-semibold">Diff.</div>
+              </div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold text-slate-600">Performance</span>
+                <span class="text-sm font-bold" id="rayong-perf">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-emerald-400 to-emerald-600 h-3 rounded-full transition-all duration-500" id="rayong-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NYB2 Performance -->
+        <div class="card rounded-2xl overflow-hidden border border-yellow-200">
+          <div class="px-5 py-4 bg-yellow-50 border-b border-yellow-200">
+            <h3 class="text-xl font-bold text-yellow-800">NYB2</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-blue-600" id="nyb2-est">0</div>
+                <div class="text-sm text-blue-700 font-semibold">Estimation Plan</div>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-green-600" id="nyb2-act">0</div>
+                <div class="text-sm text-green-700 font-semibold">Actual Plan</div>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold" id="nyb2-diff">0</div>
+                <div class="text-sm text-slate-700 font-semibold">Diff.</div>
+              </div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold text-slate-600">Performance</span>
+                <span class="text-sm font-bold" id="nyb2-perf">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-3 rounded-full transition-all duration-500" id="nyb2-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- soi5 Performance -->
+        <div class="card rounded-2xl overflow-hidden border border-rose-200">
+          <div class="px-5 py-4 bg-rose-50 border-b border-rose-200">
+            <h3 class="text-xl font-bold text-rose-800">soi5</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-blue-600" id="soi5-est">0</div>
+                <div class="text-sm text-blue-700 font-semibold">Estimation Plan</div>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-green-600" id="soi5-act">0</div>
+                <div class="text-sm text-green-700 font-semibold">Actual Plan</div>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold" id="soi5-diff">0</div>
+                <div class="text-sm text-slate-700 font-semibold">Diff.</div>
+              </div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold text-slate-600">Performance</span>
+                <span class="text-sm font-bold" id="soi5-perf">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-rose-400 to-rose-600 h-3 rounded-full transition-all duration-500" id="soi5-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MHP 2PS Performance -->
+        <div class="card rounded-2xl overflow-hidden border border-orange-200">
+          <div class="px-5 py-4 bg-orange-50 border-b border-orange-200">
+            <h3 class="text-xl font-bold text-orange-800">MHP 2PS</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-blue-600" id="mhp-est">0</div>
+                <div class="text-sm text-blue-700 font-semibold">Estimation Plan</div>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-green-600" id="mhp-act">0</div>
+                <div class="text-sm text-green-700 font-semibold">Actual Plan</div>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold" id="mhp-diff">0</div>
+                <div class="text-sm text-slate-700 font-semibold">Diff.</div>
+              </div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold text-slate-600">Performance</span>
+                <span class="text-sm font-bold" id="mhp-perf">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-orange-400 to-orange-600 h-3 rounded-full transition-all duration-500" id="mhp-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Performance -->
+        <div class="card rounded-2xl overflow-hidden border border-purple-200">
+          <div class="px-5 py-4 bg-purple-50 border-b border-purple-200">
+            <h3 class="text-xl font-bold text-purple-800">รวมทั้ง 4 Yard</h3>
+          </div>
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-blue-600" id="total-est">0</div>
+                <div class="text-sm text-blue-700 font-semibold">Estimation Plan</div>
+              </div>
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold text-green-600" id="total-act">0</div>
+                <div class="text-sm text-green-700 font-semibold">Actual Plan</div>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <div class="text-2xl font-extrabold" id="total-diff">0</div>
+                <div class="text-sm text-slate-700 font-semibold">Diff.</div>
+              </div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-semibold text-slate-600">Overall Performance</span>
+                <span class="text-sm font-bold" id="total-perf">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-3 rounded-full transition-all duration-500" id="total-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- REPORT PDI -->
+    <section id="pdiView" class="hidden -mx-4 sm:-mx-6 lg:-mx-8">
+      <div class="rounded-2xl overflow-hidden">
+        <iframe src="https://0815325495.github.io/REPORTPDI/" class="w-full h-[80vh] border-0" title="รายงาน PDI"></iframe>
+      </div>
+    </section>
+
+    <!-- SKILL VIEW -->
+    <section id="skillView" class="hidden -mx-4 sm:-mx-6 lg:-mx-8">
+        <div class="rounded-2xl overflow-hidden">
+            <iframe src="https://0815325495.github.io/SKILLEMPLOYEE/" class="w-full h-[80vh] border-0" title="SKILL พนักงาน"></iframe>
+        </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // -------- Caching DOM Elements for performance --------
+    const elements = {
+        monthPicker: document.getElementById('monthPicker'),
+        fbDot: document.getElementById('fbDot'),
+        fbText: document.getElementById('fbText'),
+        lastSyncEl: document.getElementById('lastSync'),
+        pm30View: document.getElementById('pm30View'),
+        monthlyPMView: document.getElementById('monthlyPMView'),
+        summaryView: document.getElementById('summaryView'),
+        dailyView: document.getElementById('dailyView'),
+        performanceView: document.getElementById('performanceView'),
+        pdiView: document.getElementById('pdiView'),
+        skillView: document.getElementById('skillView'),
+        viewPM30: document.getElementById('viewPM30'),
+        viewMonthlyPM: document.getElementById('viewMonthlyPM'),
+        viewSummary: document.getElementById('viewSummary'),
+        viewDaily: document.getElementById('viewDaily'),
+        viewPerformance: document.getElementById('viewPerformance'),
+        viewPDI: document.getElementById('viewPDI'),
+        viewSkill: document.getElementById('viewSkill'),
+        dailyDate: document.getElementById('dailyDate'),
+        // Auth elements
+        loginModal: document.getElementById('loginModal'),
+        loginForm: document.getElementById('loginForm'),
+        loginError: document.getElementById('loginError'),
+        userStatus: document.getElementById('userStatus'),
+        connectionStatus: document.getElementById('connectionStatus'),
+    };
+
+    // -------- Long-press capture (mobile friendly) --------
+    const longPressSetup = () => {
+      const targets = [
+        { id: 'mpmEstCard', filePrefix: 'PM-Monthly-Estimation' },
+        { id: 'mpmActCard', filePrefix: 'PM-Monthly-Actual' }
+      ];
+      const attach = (el, filePrefix) => {
+        if (!el) return;
+        let pressTimer = null; let startX = 0, startY = 0, moved = false;
+        const touchStart = (e) => {
+          moved = false; const t = e.touches?.[0]; if (t) { startX = t.clientX; startY = t.clientY; }
+          pressTimer = setTimeout(() => doCapture(el, filePrefix), 650);
+        };
+        const touchMove = (e) => {
+          const t = e.touches?.[0]; if (!t) return; const dx = Math.abs(t.clientX - startX); const dy = Math.abs(t.clientY - startY);
+          if (dx > 10 || dy > 10) { moved = true; clearTimeout(pressTimer); }
+        };
+        const touchEnd = () => { if (!moved) clearTimeout(pressTimer); };
+        el.addEventListener('touchstart', touchStart, { passive: true }); el.addEventListener('touchmove', touchMove, { passive: true });
+        el.addEventListener('touchend', touchEnd); el.addEventListener('touchcancel', touchEnd);
+        let mouseTimer; el.addEventListener('mousedown', () => { mouseTimer = setTimeout(() => doCapture(el, filePrefix), 800); });
+        ['mouseup','mouseleave'].forEach(evt=> el.addEventListener(evt, ()=>clearTimeout(mouseTimer)));
+      };
+      const doCapture = async (el, filePrefix) => {
+        try {
+          const canvas = await html2canvas(el, { backgroundColor: '#ffffff' }); const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+          if (navigator.canShare && navigator.canShare({ files: [] })) {
+            const res = await fetch(dataUrl); const blob = await res.blob();
+            const file = new File([blob], `${filePrefix}-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.jpg`, { type: 'image/jpeg' });
+            try { await navigator.share({ files: [file], title: filePrefix, text: 'แชร์รายงาน PM ประจำเดือน' }); return; } catch (err) {}
+          }
+          const a = document.createElement('a'); a.href = dataUrl;
+          a.download = `${filePrefix}-${new Date().toISOString().slice(0,10)}.jpg`;
+          document.body.appendChild(a); a.click(); a.remove();
+        } catch (e) {}
+      };
+      targets.forEach(t => attach(document.getElementById(t.id), t.filePrefix));
+    };
+
+    const toast = (msg) => {
+      let t = document.getElementById('ccToast');
+      if (!t) {
+        t = document.createElement('div'); t.id = 'ccToast';
+        t.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 z-[9999] bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg opacity-0 transition-opacity';
+        t.textContent = msg; document.body.appendChild(t);
+        requestAnimationFrame(()=>{ t.classList.remove('opacity-0'); });
+        setTimeout(()=>{ t.classList.add('opacity-0'); setTimeout(()=>t.remove(), 400); }, 1600);
+      }
+    };
+
+    // -------- State, Config & Firebase --------
+    // Added "MHP 2PS" to the yards array
+    const yards = ["Rayong", "NYB2", "soi5", "28 Rai", "MHP 2PS"];
+    let appState = { pmData: {}, dailyLabels: {} };
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBgbiGChC75KF9h344C63cixbBS2v0iJmU",
+      authDomain: "pm-yardv2.firebaseapp.com",
+      databaseURL: "https://pm-yardv2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "pm-yardv2",
+      storageBucket: "pm-yardv2.appspot.com",
+      messagingSenderId: "420538750138",
+      appId: "1:420538750138:web:b6f238475c0a1284b2de83",
+      measurementId: "G-DMT7Q3SXLT"
+    };
+
+    let fbDb = null;
+    let fbConnected = false;
+    let authReady = false;
+    let isLoggedIn = false;
+    let editingPM30 = false;
+    let pm30NeedsRender = false;
+
+    const updateFbUI = () => {
+      elements.fbDot.className = 'status-dot ' + (fbConnected ? 'bg-emerald-500' : 'bg-red-400');
+      elements.fbText.textContent = fbConnected ? 'ออนไลน์' : 'ออฟไลน์';
+    };
+    const markLastSync = () => { elements.lastSyncEl.textContent = new Date().toLocaleString(); };
+    
+    // -------- AUTHENTICATION with Realtime DB --------
+    const disableEditing = () => {
+        document.querySelectorAll('#pm30View input, #pm30View textarea, #dailyView input, #dailyView textarea, .editable-label').forEach(el => {
+            el.setAttribute('disabled', 'true');
+            if (el.classList.contains('editable-label')) {
+                el.setAttribute('contenteditable', 'false');
+            }
+        });
+    };
+
+    const enableEditing = () => {
+        document.querySelectorAll('#pm30View input, #pm30View textarea, #dailyView input, #dailyView textarea, .editable-label').forEach(el => {
+            el.removeAttribute('disabled');
+             if (el.classList.contains('editable-label')) {
+                el.setAttribute('contenteditable', 'true');
+            }
+        });
+    };
+
+    const updateAuthUI = () => {
+        if (isLoggedIn) {
+            elements.userStatus.innerHTML = `
+                <span class="text-white/90 text-sm font-semibold">สวัสดี, admin</span>
+                <button id="logoutButton" class="rounded-full px-3 py-1 bg-rose-500 text-white text-xs font-semibold hover:bg-rose-600">ออกจากระบบ</button>
+            `;
+            document.getElementById('logoutButton').addEventListener('click', handleLogout);
+            elements.loginModal.classList.add('hidden');
+            elements.loginModal.classList.remove('flex');
+        } else {
+            elements.userStatus.innerHTML = `
+                <button id="loginButton" class="rounded-full px-4 py-2 bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600">เข้าสู่ระบบ</button>
+            `;
+            document.getElementById('loginButton').addEventListener('click', () => {
+                elements.loginModal.classList.remove('hidden');
+                elements.loginModal.classList.add('flex');
+            });
+        }
+    };
+
+    const handleLogout = () => {
+        isLoggedIn = false;
+        localStorage.removeItem('pmyard_username');
+        localStorage.removeItem('pmyard_password');
+        updateAuthUI();
+        disableEditing();
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const usernameInput = document.getElementById('username').value.trim();
+        const passwordInput = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        elements.loginError.classList.add('hidden');
+
+        if (!fbDb || !authReady) {
+             elements.loginError.textContent = 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้';
+             elements.loginError.classList.remove('hidden');
+             return;
+        }
+
+        try {
+            const userRef = fbDb.ref(`users/${usernameInput}`);
+            const snapshot = await userRef.get();
+
+            if (snapshot.exists() && snapshot.val().password === passwordInput) {
+                isLoggedIn = true;
+                if (rememberMe) {
+                    localStorage.setItem('pmyard_username', usernameInput);
+                    localStorage.setItem('pmyard_password', passwordInput);
+                } else {
+                    localStorage.removeItem('pmyard_username');
+                    localStorage.removeItem('pmyard_password');
+                }
+                updateAuthUI();
+                enableEditing();
+                elements.loginModal.classList.add('hidden');
+                elements.loginModal.classList.remove('flex');
+            } else {
+                elements.loginError.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+                elements.loginError.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Login database error:", error);
+            elements.loginError.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+            elements.loginError.classList.remove('hidden');
+        }
+    };
+
+    const initializeFirebase = async () => {
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            fbDb = firebase.database();
+            
+            fbDb.ref('.info/connected').on('value', snap => {
+                fbConnected = !!snap.val();
+                updateFbUI();
+            });
+
+            // Seed initial user if it doesn't exist
+            const adminUserRef = fbDb.ref('users/admin');
+            adminUserRef.get().then((snapshot) => {
+                if (!snapshot.exists()) {
+                    adminUserRef.set({ password: 'admin' })
+                      .catch(err => console.error("Could not seed admin user:", err));
+                }
+            });
+
+            authReady = true;
+
+        } catch(e) {
+            console.error("Firebase initialization failed:", e);
+            fbConnected = false;
+            authReady = false;
+            updateFbUI();
+        }
+    };
+
+    // -------- Local helpers --------
+    const toMonthKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+    const daysInMonth = (yyyyMM) => { const [y, m] = yyyyMM.split('-').map(Number); return new Date(y, m, 0).getDate(); };
+    const addMonths = (yyyyMM, offset) => { const [y, m] = yyyyMM.split('-').map(Number); const d = new Date(y, m - 1 + offset, 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+
+    // Daily helpers
+    let selectedDate = new Date();
+    const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const todayKey = () => dateKey(new Date());
+    const tomorrowKey = () => { const t = new Date(); t.setDate(t.getDate()+1); return dateKey(t); };
+
+    const dailyPath = () => `/daily/${dateKey(selectedDate)}`;
+    const setDaily = (payload) => {
+      if (!fbDb || !fbConnected || !authReady || !isLoggedIn) return;
+      fbDb.ref(dailyPath()).set(payload, markLastSync);
+    };
+    const getDailyOnce = async () => {
+      if (!fbDb || !authReady) return null;
+      try {
+        const snap = await fbDb.ref(dailyPath()).get(); return snap.val();
+      } catch (error) { console.error("Error getting daily data:", error); return null; }
+    };
+
+    // -------- Data model & propagation --------
+    const ensureMonthYardData = (yyyyMM, yard) => {
+      const d = appState.pmData; d[yyyyMM] = d[yyyyMM] || {};
+      const totalDays = daysInMonth(yyyyMM); const baseKey = toMonthKey(new Date());
+      d[baseKey] = d[baseKey] || {};
+      if (!d[baseKey][yard]) { d[baseKey][yard] = Array.from({length: daysInMonth(baseKey)}, (_,i)=>({day:i+1, est:'', act:'', newCars:'', action:''})); }
+      if (!d[yyyyMM][yard]) {
+        const base = d[baseKey][yard] || []; const isFuture = Number(yyyyMM.replace('-','')) > Number(baseKey.replace('-',''));
+        d[yyyyMM][yard] = Array.from({length: totalDays}, (_,i)=>({ day: i+1, est: isFuture ? String(base[i]?.est ?? '') : '', act: isFuture ? '' : '', newCars: isFuture ? '' : '', action: isFuture ? String(base[i]?.action ?? '') : '' }));
+      } else if (d[yyyyMM][yard].length !== totalDays) {
+        const exist = d[yyyyMM][yard];
+        d[yyyyMM][yard] = Array.from({length: totalDays}, (_,i)=> exist[i] ? {...exist[i]} : ({day:i+1, est:'', act:'', newCars:'', action:''}));
+      }
+      return d;
+    };
+
+    const pushMonthToDB = (yyyyMM, monthData) => {
+      if (!fbDb || !fbConnected || !authReady || !isLoggedIn) return;
+      fbDb.ref(`/pmYard/${yyyyMM}`).set(monthData, markLastSync);
+    };
+
+    const subscribeMonth = (yyyyMM) => {
+      if (!fbDb || !authReady) return; const ref = fbDb.ref(`/pmYard/${yyyyMM}`); ref.off();
+      ref.on('value', (snap) => {
+        const remote = snap.val();
+        if (remote) {
+          appState.pmData[yyyyMM] = remote;
+          const active = document.querySelector('.main-tab.tab-active')?.id;
+          if (active === 'viewPM30') { if (!editingPM30) renderPM30(); else pm30NeedsRender = true; }
+          if (active === 'viewMonthlyPM') renderMonthlyPM();
+          if (active === 'viewSummary') renderSummary();
+          markLastSync();
+        } else {
+          const seed = {}; yards.forEach(y => { seed[y] = Array.from({length: daysInMonth(yyyyMM)}, (_,i)=>({day:i+1, est:'', act:'', newCars:'', action:''})); });
+          pushMonthToDB(yyyyMM, seed);
+        }
+      }, (err)=>{ console.warn('Realtime subscribe error', err?.message || err); });
+    };
+
+    const propagateFutureFrom = (baseKey, monthsAhead = 12) => {
+      const data = appState.pmData; yards.forEach(y => ensureMonthYardData(baseKey, y));
+      const baseRows = (yard) => (data[baseKey] && data[baseKey][yard]) ? data[baseKey][yard] : [];
+      for (let o=1; o<=monthsAhead; o++) {
+        const targetKey = addMonths(baseKey, o); data[targetKey] = data[targetKey] || {};
+        const totalDaysTarget = daysInMonth(targetKey);
+        yards.forEach(yard => {
+          const base = baseRows(yard);
+          if (!data[targetKey][yard] || data[targetKey][yard].length !== totalDaysTarget) { data[targetKey][yard] = Array.from({length: totalDaysTarget}, (_,i)=> data[targetKey][yard]?.[i] || ({day:i+1, est:'', act:'', newCars:'', action:''})); }
+          const len = Math.min(base.length, totalDaysTarget);
+          for (let i=0; i<len; i++) {
+            const t = data[targetKey][yard][i];
+            t.est = String(base[i]?.est ?? t.est ?? '');
+            t.action = String(base[i]?.action ?? t.action ?? '');
+          }
+        });
+        pushMonthToDB(targetKey, data[targetKey]);
+      }
+    };
+
+    const saveData = ({ propagate = false } = {}) => {
+      const baseKey = toMonthKey(new Date()); const currentKey = elements.monthPicker.value || baseKey;
+      if (appState.pmData[currentKey]) pushMonthToDB(currentKey, appState.pmData[currentKey]);
+      if (appState.pmData[baseKey]) pushMonthToDB(baseKey, appState.pmData[baseKey]);
+      if (propagate) propagateFutureFrom(baseKey, 12);
+    };
+
+    // -------- PM 1-30 UI --------
+    const buildMonthlyCard = (yyyyMM, yard, wrapId) => {
+      const wrap = document.getElementById(wrapId); if (!wrap) return; wrap.innerHTML = '';
+      const data = ensureMonthYardData(yyyyMM, yard); const rows = (data[yyyyMM] || {})[yard] || [];
+      const totalDays = daysInMonth(yyyyMM); const firstDate = new Date(yyyyMM + '-01T00:00:00');
+      const dayColorClass = (dNum) => {
+        const d = new Date(firstDate); d.setDate(dNum); const w = d.getDay();
+        switch (w) {
+          case 1: return 'bg-yellow-100 text-yellow-900'; case 2: return 'bg-pink-100 text-pink-900';
+          case 3: return 'bg-emerald-100 text-emerald-900'; case 4: return 'bg-orange-100 text-orange-900';
+          case 5: return 'bg-sky-100 text-sky-900'; case 6: return 'bg-violet-100 text-violet-900';
+          case 0: return 'bg-rose-200 text-rose-900 border-2 border-rose-400 font-bold';
+          default: return '';
+        }
+      };
+      const tbl = document.createElement('table'); tbl.className = 'min-w-full';
+      const thead = document.createElement('thead'); const hr = document.createElement('tr');
+      const firstTh = document.createElement('th');
+      firstTh.className = 'text-left px-5 py-3 bg-white sticky left-0 z-20'; firstTh.textContent = 'รายการ';
+      hr.appendChild(firstTh);
+      let todayIndex = -1;
+      for (let dNum=1; dNum<=totalDays; dNum++) {
+        const isToday = (new Date().toDateString() === new Date(`${yyyyMM}-${String(dNum).padStart(2,'0')}T00:00:00`).toDateString());
+        if (isToday) todayIndex = dNum;
+        const th = document.createElement('th');
+        th.className = `text-center px-2 py-1 align-top relative ${dayColorClass(dNum)} ${isToday?'ring-2 ring-red-400 bg-red-50':''}`;
+        th.innerHTML = `<div class="text-sm font-extrabold ${isToday?'text-red-700':''}">${dNum}</div> ${isToday?'<span class="absolute inset-x-0 -top-1 h-1 bg-red-600 rounded-full"></span>':''}`;
+        hr.appendChild(th);
+      }
+      thead.appendChild(hr); tbl.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      const lines = [ { key:'est', label:'Estimation' }, { key:'act', label:'Actual' }, { key:'newCars', label:'รถใหม่' } ];
+      lines.forEach(line => {
+        const tr = document.createElement('tr');
+        const nameTd = document.createElement('td');
+        nameTd.className = 'px-5 py-2 bg-white sticky left-0 z-10 font-semibold text-slate-600';
+        nameTd.textContent = line.label; tr.appendChild(nameTd);
+        for (let dNum=1; dNum<=totalDays; dNum++) {
+          const isToday = (new Date().toDateString() === new Date(`${yyyyMM}-${String(dNum).padStart(2,'0')}T00:00:00`).toDateString());
+          const td = document.createElement('td');
+          td.className = `px-2 py-1 relative ${dayColorClass(dNum)} ${isToday?'ring-2 ring-red-400 bg-red-50':''}`;
+          const input = document.createElement('input'); input.type = 'number'; input.min = '0';
+          input.className = 'number-input w-20 text-right rounded-lg border border-slate-200 px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-400';
+          input.value = String(rows[dNum-1]?.[line.key] ?? ''); input.placeholder = '0';
+          input.dataset.day = String(dNum-1); input.dataset.field = line.key; input.dataset.yard = yard;
+          const saveInstant = (el) => {
+            const idx = Number(el.dataset.day); const field = el.dataset.field; ensureMonthYardData(yyyyMM, yard);
+            appState.pmData[yyyyMM][yard][idx][field] = (el.value===''?'' : String(Math.max(0, Number(el.value)||0)));
+            saveData({ propagate: false });
+          };
+          input.addEventListener('focus', () => { editingPM30 = true; });
+          input.addEventListener('input', (e)=> { editingPM30 = true; saveInstant(e.target); });
+          input.addEventListener('change', (e)=> { editingPM30 = true; saveInstant(e.target); });
+          input.addEventListener('blur', () => {
+            editingPM30 = false; saveData({ propagate: true });
+            if (pm30NeedsRender){ pm30NeedsRender=false; renderPM30(); }
+          });
+          td.appendChild(input); tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+      tbl.appendChild(tbody); wrap.appendChild(tbl);
+      if (todayIndex > 0) {
+        setTimeout(() => {
+          const ths = thead.querySelectorAll('th'); const target = ths[todayIndex];
+          if (target) {
+            const left = target.offsetLeft - wrap.clientWidth/2 + target.clientWidth/2;
+            wrap.scrollTo({ left: Math.max(left, 0), behavior: 'smooth' });
+          }
+        }, 0);
+      }
+    };
+
+    const renderPM30 = () => {
+      const keySel = elements.monthPicker.value || toMonthKey(new Date());
+      const baseKey = toMonthKey(new Date());
+      document.getElementById('baseBadge').textContent = baseKey;
+      yards.forEach(y => ensureMonthYardData(keySel, y));
+      if (!renderPM30._subscribedKeys) renderPM30._subscribedKeys = new Set();
+      [keySel, baseKey].forEach(k => { if (!renderPM30._subscribedKeys.has(k)){ subscribeMonth(k); renderPM30._subscribedKeys.add(k); } });
+      buildMonthlyCard(keySel, 'Rayong', 'mRayongWrap');
+      buildMonthlyCard(keySel, 'NYB2', 'mNYB2Wrap');
+      buildMonthlyCard(keySel, 'soi5', 'mSOI5Wrap');
+      buildMonthlyCard(keySel, '28 Rai', 'm28RaiWrap');
+      buildMonthlyCard(keySel, 'MHP 2PS', 'mMHPWrap');
+      
+      if (!isLoggedIn) {
+        disableEditing();
+      }
+    };
+
+    const renderMonthlyPM=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("mpmMonth").textContent=key;const now=new Date,dd=String(now.getDate()).padStart(2,"0"),mm=String(now.getMonth()+1).padStart(2,"0"),yyyy=now.getFullYear(),hh=String(now.getHours()).padStart(2,"0"),mi=String(now.getMinutes()).padStart(2,"0"),ss=String(now.getSeconds()).padStart(2,"0"),mpmStamp=document.getElementById("mpmStamp");mpmStamp&&(mpmStamp.textContent=` วันที่ ${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);const mpmActStamp=document.getElementById("mpmActStamp");mpmActStamp&&(mpmActStamp.textContent=`${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);yards.forEach(y=>ensureMonthYardData(key,y));subscribeMonth(key);const body=document.getElementById("mpmBody"),headerRow=document.getElementById("mpmHeader"),totalDays=daysInMonth(key);headerRow.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const[yy,mmN]=key.split("-").map(Number);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDays&&th.classList.add("text-slate-300"),headerRow.appendChild(th)}const sumTh=document.createElement("th");sumTh.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumTh.textContent="Sum",headerRow.appendChild(sumTh),body.innerHTML="";const perDayTotals=Array.from({length:31},()=>0),addRow=(label,yardKey)=>{const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.est||0),rowSum+=val,perDayTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),body.appendChild(tr)};addRow("Rayong","Rayong"),addRow("NYB2","NYB2"),addRow("soi5","soi5"),addRow("28 ไร่","28 Rai"),addRow("MHP 2PS","MHP 2PS");const totalTr=document.createElement("tr"),totalFirst=document.createElement("td");totalFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalFirst.textContent="Total",totalTr.appendChild(totalFirst);let grandTotal=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-500 bg-emerald-50":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayTotals[d-1]||0,grandTotal+=val,td.textContent=val?val.toLocaleString():"0"),totalTr.appendChild(td)}var val;const grandTd=document.createElement("td");grandTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold",grandTd.textContent=grandTotal.toLocaleString(),totalTr.appendChild(grandTd),body.appendChild(totalTr);const actBody=document.getElementById("mpmActBody"),actHeader=document.getElementById("mpmActHeader");if(actHeader&&actBody){actHeader.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const totalDaysAct=daysInMonth(key);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDaysAct&&th.classList.add("text-slate-300"),actHeader.appendChild(th)}const sumThAct=document.createElement("th");sumThAct.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumThAct.textContent="Sum",actHeader.appendChild(sumThAct),actBody.innerHTML="";const perDayActTotals=Array.from({length:31},()=>0),addActRow=(label,yardKey)=>{const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.act||0),rowSum+=val,perDayActTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),actBody.appendChild(tr)};addActRow("Rayong","Rayong"),addActRow("NYB2","NYB2"),addActRow("soi5","soi5"),addActRow("28 ไร่","28 Rai"),addActRow("MHP 2PS","MHP 2PS");const totalActTr=document.createElement("tr"),totalActFirst=document.createElement("td");totalActFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalActFirst.textContent="Total",totalActTr.appendChild(totalActFirst);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-600 bg-emerald-50":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayActTotals[d-1]||0,td.textContent=val?val.toLocaleString():"0"),totalActTr.appendChild(td)}var val;const sumActTd=document.createElement("td");sumActTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold";const grandActTotal=perDayActTotals.reduce((a,b)=>a+b,0);sumActTd.textContent=grandActTotal.toLocaleString(),totalActTr.appendChild(sumActTd),actBody.appendChild(totalActTr)}},todayBreakdown=()=>{const today=new Date,keyToday=toMonthKey(today);yards.forEach(y=>ensureMonthYardData(keyToday,y));const perYard=yards.map(y=>{const rows=(appState.pmData[keyToday]||{})[y]||[],r=rows[today.getDate()-1]||{est:"",act:"",newCars:"",action:""};return{yard:y,est:Number(r.est||0),act:Number(r.act||0),newCars:Number(r.newCars||0),action:r.action||""}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyToday}-${String(today.getDate()).padStart(2,"0")}`}},tomorrowBreakdown=()=>{const today=new Date,tmr=new Date(today);tmr.setDate(tmr.getDate()+1);const keyTmr=toMonthKey(tmr);yards.forEach(y=>{ensureMonthYardData(keyTmr,y)});const perYard=yards.map(y=>{const rowsT=(appState.pmData[keyTmr]||{})[y]||[],rT=rowsT[tmr.getDate()-1]||{est:"",action:""},est=Number(rT.est||0),action=rT.action||"";return{yard:y,est,action}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyTmr}-${String(tmr.getDate()).padStart(2,"0")}`}},renderPerformance=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("perfMonth").textContent=key,yards.forEach(y=>ensureMonthYardData(key,y)),subscribeMonth(key);const monthData=appState.pmData[key]||{},calculateYardTotals=yardName=>{const yardData=monthData[yardName]||[];let estTotal=0,actTotal=0;yardData.forEach(day=>{estTotal+=Number(day.est||0),actTotal+=Number(day.act||0)});const diff=actTotal-estTotal,performance=estTotal>0?Math.round(actTotal/estTotal*100):0;return{estTotal,actTotal,diff,performance}},rayongData=calculateYardTotals("Rayong"),nyb2Data=calculateYardTotals("NYB2"),soi5Data=calculateYardTotals("soi5"),mhpData=calculateYardTotals("MHP 2PS");
+    
+    document.getElementById("rayong-est").textContent=rayongData.estTotal.toLocaleString(),document.getElementById("rayong-act").textContent=rayongData.actTotal.toLocaleString(),document.getElementById("rayong-diff").textContent=rayongData.diff>=0?`+${rayongData.diff.toLocaleString()}`:rayongData.diff.toLocaleString(),document.getElementById("rayong-perf").textContent=`${rayongData.performance}%`,document.getElementById("rayong-bar").style.width=`${Math.min(rayongData.performance,100)}%`,document.getElementById("rayong-diff").className=`text-2xl font-extrabold ${rayongData.diff>=0?"text-green-600":"text-red-600"}`,
+    document.getElementById("nyb2-est").textContent=nyb2Data.estTotal.toLocaleString(),document.getElementById("nyb2-act").textContent=nyb2Data.actTotal.toLocaleString(),document.getElementById("nyb2-diff").textContent=nyb2Data.diff>=0?`+${nyb2Data.diff.toLocaleString()}`:nyb2Data.diff.toLocaleString(),document.getElementById("nyb2-perf").textContent=`${nyb2Data.performance}%`,document.getElementById("nyb2-bar").style.width=`${Math.min(nyb2Data.performance,100)}%`,document.getElementById("nyb2-diff").className=`text-2xl font-extrabold ${nyb2Data.diff>=0?"text-green-600":"text-red-600"}`,
+    document.getElementById("soi5-est").textContent=soi5Data.estTotal.toLocaleString(),document.getElementById("soi5-act").textContent=soi5Data.actTotal.toLocaleString(),document.getElementById("soi5-diff").textContent=soi5Data.diff>=0?`+${soi5Data.diff.toLocaleString()}`:soi5Data.diff.toLocaleString(),document.getElementById("soi5-perf").textContent=`${soi5Data.performance}%`,document.getElementById("soi5-bar").style.width=`${Math.min(soi5Data.performance,100)}%`,document.getElementById("soi5-diff").className=`text-2xl font-extrabold ${soi5Data.diff>=0?"text-green-600":"text-red-600"}`,
+    document.getElementById("mhp-est").textContent=mhpData.estTotal.toLocaleString(),document.getElementById("mhp-act").textContent=mhpData.actTotal.toLocaleString(),document.getElementById("mhp-diff").textContent=mhpData.diff>=0?`+${mhpData.diff.toLocaleString()}`:mhpData.diff.toLocaleString(),document.getElementById("mhp-perf").textContent=`${mhpData.performance}%`,document.getElementById("mhp-bar").style.width=`${Math.min(mhpData.performance,100)}%`,document.getElementById("mhp-diff").className=`text-2xl font-extrabold ${mhpData.diff>=0?"text-green-600":"text-red-600"}`;
+    
+    const totalEst=rayongData.estTotal+nyb2Data.estTotal+soi5Data.estTotal+mhpData.estTotal,totalAct=rayongData.actTotal+nyb2Data.actTotal+soi5Data.actTotal+mhpData.actTotal,totalDiff=totalAct-totalEst,totalPerformance=totalEst>0?Math.round(totalAct/totalEst*100):0;document.getElementById("total-est").textContent=totalEst.toLocaleString(),document.getElementById("total-act").textContent=totalAct.toLocaleString(),document.getElementById("total-diff").textContent=totalDiff>=0?`+${totalDiff.toLocaleString()}`:totalDiff.toLocaleString(),document.getElementById("total-perf").textContent=`${totalPerformance}%`,document.getElementById("total-bar").style.width=`${Math.min(totalPerformance,100)}%`,document.getElementById("total-diff").className=`text-2xl font-extrabold ${totalDiff>=0?"text-green-600":"text-red-600"}`},renderSummary=()=>{const today=todayBreakdown(),todayBadge=document.getElementById("todayBadge");todayBadge&&(todayBadge.textContent=today.label);const todayBody=document.getElementById("todayTable");if(todayBody){todayBody.innerHTML="",today.perYard.forEach(item=>{const tr=document.createElement("tr");tr.innerHTML=`
+            <td class="px-5 py-3 font-semibold">${item.yard}</td>
+            <td class="px-5 py-3 text-right">${(item.est||0).toLocaleString()}</td>
+            <td class="px-5 py-3 text-right">${(item.act||0).toLocaleString()}</td>
+            <td class="px-5 py-3 text-right">${(item.newCars||0).toLocaleString()}</td>
+            <td class="px-5 py-3 text-slate-600">${(item.action||"-").toString()}</td>
+          `,todayBody.appendChild(tr)})}const tmr=tomorrowBreakdown(),tmrBadge=document.getElementById("tmrBadge");tmrBadge&&(tmrBadge.textContent=tmr.label);const tbody=document.getElementById("tomorrowTable");if(!tbody)return;tbody.innerHTML="",tmr.perYard.forEach(item=>{const tr=document.createElement("tr");tr.innerHTML=`
+          <td class="px-5 py-3 font-semibold">${item.yard}</td>
+          <td class="px-5 py-3 text-right">${(item.est||0).toLocaleString()}</td>
+          <td class="px-5 py-3 text-slate-600">${(item.action||"-").toString()}</td>
+        `,tbody.appendChild(tr)})};const setActive=(btn,active)=>{btn.classList.toggle("tab-active",active),btn.classList.toggle("tab-inactive",!active)},showView=id=>{elements.pm30View.classList.add("hidden"),elements.monthlyPMView.classList.add("hidden"),elements.summaryView.classList.add("hidden"),elements.dailyView.classList.add("hidden"),elements.performanceView.classList.add("hidden"),elements.pdiView&&elements.pdiView.classList.add("hidden"),elements.skillView&&elements.skillView.classList.add("hidden"),document.getElementById(id).classList.remove("hidden")};function fitMonthlyTables(){const fit=(containerId,scalerId)=>{const cont=document.getElementById(containerId),scaler=document.getElementById(scalerId);if(!cont||!scaler)return;scaler.style.transform="scale(1)",requestAnimationFrame(()=>{const cw=cont.clientWidth-12,sw=scaler.scrollWidth;if(!sw||!cw)return;const scale=Math.min(1,cw/sw);scaler.style.transformOrigin="top left",scaler.style.transform=`scale(${scale})`})};fit("mpmContainer","mpmScaler"),fit("mpmActContainer","mpmActScaler")}window.addEventListener("resize",()=>{const monthlyVisible=!elements.monthlyPMView?.classList.contains("hidden");monthlyVisible&&setTimeout(fitMonthlyTables,0)});const setupTabs=()=>{window.addUnitSuffixesDaily=()=>{if(!elements.dailyView)return;elements.dailyView.querySelectorAll(".unit-u").forEach(x=>x.remove());const ids=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_wait_group","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total",
+"ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_wait_group","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total",
+"s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_wait_group","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total",
+"r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_wait_group","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total",
+"mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_wait_group","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)})};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0)),view==="summary"&&(showView("summaryView"),renderSummary()),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance()),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+"ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
+"s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
+"r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
+"mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_wait_group","mhp_out_total","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total","mhp_note"];clearIds.forEach(id=>{const el=document.getElementById(id);el&&(el.value="")});const data=await getDailyOnce(),setVal=(id,v)=>{const el=document.getElementById(id);el&&(el.value=v??"")};if(data){setVal("ry_in",data.ry_in),setVal("ry_hold",data.ry_hold),setVal("ry_total",data.ry_total),setVal("ry_att3_pre",data.ry_att3_pre),setVal("ry_att3_ext",data.ry_att3_ext),setVal("ry_sea6_pre",data.ry_sea6_pre),setVal("ry_sea6_dym",data.ry_sea6_dym),setVal("ry_dol_std",data.ry_dol_std),setVal("ry_dol_ext",data.ry_dol_ext),setVal("ry_seal5_pre",data.ry_seal5_pre),setVal("ry_other",data.ry_other),setVal("ry_out_nyb2",data.ry_out_nyb2),setVal("ry_out_soi5",data.ry_out_soi5),setVal("ry_out_dealer",data.ry_out_dealer),setVal("ry_wait_group",data.ry_wait_group),setVal("ry_out_total",data.ry_out_total),setVal("ry_fc_hold",data.ry_fc_hold),setVal("ry_fc_in",data.ry_fc_in),setVal("ry_fc_total",data.ry_fc_total),setVal("ry_pm",data.ry_pm),setVal("ry_pm_early",data.ry_pm_early),setVal("ry_pm_hold",data.ry_pm_hold),setVal("ry_pm_total",data.ry_pm_total),setVal("ry_note",data.ry_note),
+setVal("ny_in",data.ny_in),setVal("ny_hold",data.ny_hold),setVal("ny_total",data.ny_total),setVal("ny_att3_pre",data.ny_att3_pre),setVal("ny_att3_ext",data.ny_att3_ext),setVal("ny_sea6_pre",data.ny_sea6_pre),setVal("ny_sea6_dym",data.ny_sea6_dym),setVal("ny_dol_std",data.ny_dol_std),setVal("ny_dol_ext",data.ny_dol_ext),setVal("ny_seal5_pre",data.ny_seal5_pre),setVal("ny_other",data.ny_other),setVal("ny_out_rayong",data.ny_out_rayong),setVal("ny_out_soi5",data.ny_out_soi5),setVal("ny_out_dealer",data.ny_out_dealer),setVal("ny_wait_group",data.ny_wait_group),setVal("ny_out_total",data.ny_out_total),setVal("ny_fc_hold",data.ny_fc_hold),setVal("ny_fc_in",data.ny_fc_in),setVal("ny_fc_total",data.ny_fc_total),setVal("ny_pm",data.ny_pm),setVal("ny_pm_early",data.ny_pm_early),setVal("ny_pm_hold",data.ny_pm_hold),setVal("ny_pm_total",data.ny_pm_total),setVal("ny_note",data.ny_note),
+setVal("s5_in",data.s5_in),setVal("s5_hold",data.s5_hold),setVal("s5_total",data.s5_total),setVal("s5_att3_pre",data.s5_att3_pre),setVal("s5_att3_ext",data.s5_att3_ext),setVal("s5_sea6_pre",data.s5_sea6_pre),setVal("s5_sea6_dym",data.s5_sea6_dym),setVal("s5_dol_std",data.s5_dol_std),setVal("s5_dol_ext",data.s5_dol_ext),setVal("s5_seal5_pre",data.s5_seal5_pre),setVal("s5_other",data.s5_other),setVal("s5_out_rayong",data.s5_out_rayong),setVal("s5_out_nyb2",data.s5_out_nyb2),setVal("s5_out_dealer",data.s5_out_dealer),setVal("s5_wait_group",data.s5_wait_group),setVal("s5_out_total",data.s5_out_total),setVal("s5_fc_hold",data.s5_fc_hold),setVal("s5_fc_in",data.s5_fc_in),setVal("s5_fc_total",data.s5_fc_total),setVal("s5_pm",data.s5_pm),setVal("s5_pm_early",data.s5_pm_early),setVal("s5_pm_hold",data.s5_pm_hold),setVal("s5_pm_total",data.s5_pm_total),setVal("s5_note",data.s5_note),
+setVal("r28_in",data.r28_in),setVal("r28_hold",data.r28_hold),setVal("r28_total",data.r28_total),setVal("r28_att3_pre",data.r28_att3_pre),setVal("r28_att3_ext",data.r28_att3_ext),setVal("r28_sea6_pre",data.r28_sea6_pre),setVal("r28_sea6_dym",data.r28_sea6_dym),setVal("r28_dol_std",data.r28_dol_std),setVal("r28_dol_ext",data.r28_dol_ext),setVal("r28_seal5_pre",data.r28_seal5_pre),setVal("r28_other",data.r28_other),setVal("r28_out_nyb2",data.r28_out_nyb2),setVal("r28_out_soi5",data.r28_out_soi5),setVal("r28_out_dealer",data.r28_out_dealer),setVal("r28_wait_group",data.r28_wait_group),setVal("r28_out_total",data.r28_out_total),setVal("r28_fc_hold",data.r28_fc_hold),setVal("r28_fc_in",data.r28_fc_in),setVal("r28_fc_total",data.r28_fc_total),setVal("r28_pm",data.r28_pm),setVal("r28_pm_early",data.r28_pm_early),setVal("r28_pm_hold",data.r28_pm_hold),setVal("r28_pm_total",data.r28_pm_total),setVal("r28_note",data.r28_note),
+setVal("mhp_in",data.mhp_in),setVal("mhp_hold",data.mhp_hold),setVal("mhp_total",data.mhp_total),setVal("mhp_att3_pre",data.mhp_att3_pre),setVal("mhp_att3_ext",data.mhp_att3_ext),setVal("mhp_sea6_pre",data.mhp_sea6_pre),setVal("mhp_sea6_dym",data.mhp_sea6_dym),setVal("mhp_dol_std",data.mhp_dol_std),setVal("mhp_dol_ext",data.mhp_dol_ext),setVal("mhp_seal5_pre",data.mhp_seal5_pre),setVal("mhp_other",data.mhp_other),setVal("mhp_out_nyb2",data.mhp_out_nyb2),setVal("mhp_out_soi5",data.mhp_out_soi5),setVal("mhp_out_dealer",data.mhp_out_dealer),setVal("mhp_wait_group",data.mhp_wait_group),setVal("mhp_out_total",data.mhp_out_total),setVal("mhp_fc_hold",data.mhp_fc_hold),setVal("mhp_fc_in",data.mhp_fc_in),setVal("mhp_fc_total",data.mhp_fc_total),setVal("mhp_pm",data.mhp_pm),setVal("mhp_pm_early",data.mhp_pm_early),setVal("mhp_pm_hold",data.mhp_pm_hold),setVal("mhp_pm_total",data.mhp_pm_total),setVal("mhp_note",data.mhp_note)}const dailyBadge=document.getElementById("dailyBadge");dailyBadge&&(dailyBadge.textContent=dateKey(selectedDate)),setTimeout(()=>{computeRayongInFromParts(),computeRayongSums(),computeRayongOutTotal(),computeRayongPMTotal(),computeNYB2InFromParts(),computeNYB2Sums(),computeNYB2OutTotal(),computeNYB2PMTotal(),computeS5InFromParts(),computeS5Sums(),computeS5OutTotal(),computeS5PMTotal(),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal(),compute28RaiPMTotal(),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal(),computeMHPPMTotal()},0),addUnitSuffixesDaily();
+        if (!isLoggedIn) {
+            disableEditing();
+        }
+      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){setDaily(collectDaily());const ids=["dailyRayongCard","dailyNYB2Card","dailySoi5Card","daily28RaiCard","dailyMHPCard"],canvases=[];for(const id of ids){const el=document.getElementById(id);if(!el)continue;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio});canvases.push(c)}if(0===canvases.length)return;const gap=24,width=Math.max(...canvases.map(c=>c.width)),height=canvases.reduce((h,c,i)=>h+c.height+(i>0?gap:0),0),combo=document.createElement("canvas");combo.width=width,combo.height=height;const ctx=combo.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height);let y=0;canvases.forEach((c,i)=>{const x=Math.floor((width-c.width)/2);ctx.drawImage(c,x,y),y+=c.height+(i<canvases.length-1?gap:0)});const dataUrl=combo.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูปเดียวรวม 5 การ์ดเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปเดียวรวม 5 การ์ดแล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.viewPDI.onclick=()=>activate("pdi"),elements.viewSkill.onclick=()=>activate("skill"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDaily()}),activate("pm30"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+    "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
+    "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
+    "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
+    "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_wait_group","mhp_out_total","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total","mhp_note"];dailyInputs.forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeRayongInFromParts(),computeRayongSums(),computeRayongOutTotal(),computeRayongPMTotal(),computeNYB2InFromParts(),computeNYB2Sums(),computeNYB2OutTotal(),computeNYB2PMTotal(),computeS5InFromParts(),computeS5Sums(),computeS5OutTotal(),computeS5PMTotal(),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal(),compute28RaiPMTotal(),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal(),computeMHPPMTotal(),setDaily(collectDaily())})})};const initEditableLabels=()=>{document.querySelectorAll(".editable-label").forEach(el=>{const key=el.getAttribute("data-key");key&&appState.dailyLabels[key]&&(el.textContent=appState.dailyLabels[key]),el.addEventListener("blur",()=>{appState.dailyLabels[key]=el.textContent.trim()}),el.addEventListener("keydown",ev=>{"Enter"===ev.key&&(ev.preventDefault(),el.blur())})})},getNum=id=>{const el=document.getElementById(id);if(!el)return 0;const raw=(el.value||"").toString().replace(/,/g,""),n=Number(raw);return Number.isFinite(n)&&n>=0?n:0},setValSafe=(id,val)=>{const el=document.getElementById(id);el&&(el.value=""===val||null===val||void 0===val?"":String(val))},computeRayongInFromParts=()=>{const sum=["ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other"].reduce((a,id)=>a+getNum(id),0),anyFilled=["ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value});setValSafe("ry_in",anyFilled?sum:"")},computeRayongSums=()=>{const inEl=document.getElementById("ry_in"),holdEl=document.getElementById("ry_hold"),fcHoldEl=document.getElementById("ry_fc_hold"),fcInEl=document.getElementById("ry_fc_in");inEl&&inEl.value||!holdEl||!holdEl.value?setValSafe("ry_total",getNum("ry_in")+getNum("ry_hold")):setValSafe("ry_total",""),setValSafe("ry_fc_total",getNum("ry_fc_hold")+getNum("ry_fc_in"))},computeRayongOutTotal=()=>{const anyFilled=["ry_out_nyb2","ry_out_soi5","ry_out_dealer"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value}),sum=getNum("ry_out_nyb2")+getNum("ry_out_soi5")+getNum("ry_out_dealer");setValSafe("ry_out_total",anyFilled?sum:"")},
+    
+    computeNYB2InFromParts=()=>{const sum=["ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other"].reduce((a,id)=>a+getNum(id),0),anyFilled=["ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value});setValSafe("ny_in",anyFilled?sum:"")},computeNYB2Sums=()=>{const inEl=document.getElementById("ny_in"),holdEl=document.getElementById("ny_hold"),fcHoldEl=document.getElementById("ny_fc_hold"),fcInEl=document.getElementById("ny_fc_in");inEl&&inEl.value||!holdEl||!holdEl.value?setValSafe("ny_total",getNum("ny_in")+getNum("ny_hold")):setValSafe("ny_total",""),setValSafe("ny_fc_total",getNum("ny_fc_hold")+getNum("ny_fc_in"))},computeNYB2OutTotal=()=>{const anyFilled=["ny_out_rayong","ny_out_soi5","ny_out_dealer"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value}),sum=getNum("ny_out_rayong")+getNum("ny_out_soi5")+getNum("ny_out_dealer");setValSafe("ny_out_total",anyFilled?sum:"")},
+    
+    computeS5InFromParts=()=>{const sum=["s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other"].reduce((a,id)=>a+getNum(id),0),anyFilled=["s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value});setValSafe("s5_in",anyFilled?sum:"")},computeS5Sums=()=>{const inEl=document.getElementById("s5_in"),holdEl=document.getElementById("s5_hold"),fcHoldEl=document.getElementById("s5_fc_hold"),fcInEl=document.getElementById("s5_fc_in");inEl&&inEl.value||!holdEl||!holdEl.value?setValSafe("s5_total",getNum("s5_in")+getNum("s5_hold")):setValSafe("s5_total",""),setValSafe("s5_fc_total",getNum("s5_fc_hold")+getNum("s5_fc_in"))},computeS5OutTotal=()=>{const anyFilled=["s5_out_rayong","s5_out_nyb2","s5_out_dealer"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value}),sum=getNum("s5_out_rayong")+getNum("s5_out_nyb2")+getNum("s5_out_dealer");setValSafe("s5_out_total",anyFilled?sum:"")},
+    
+    compute28RaiInFromParts=()=>{const sum=["r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other"].reduce((a,id)=>a+getNum(id),0),anyFilled=["r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value});setValSafe("r28_in",anyFilled?sum:"")},compute28RaiSums=()=>{const inEl=document.getElementById("r28_in"),holdEl=document.getElementById("r28_hold"),fcHoldEl=document.getElementById("r28_fc_hold"),fcInEl=document.getElementById("r28_fc_in");inEl&&inEl.value||!holdEl||!holdEl.value?setValSafe("r28_total",getNum("r28_in")+getNum("r28_hold")):setValSafe("r28_total",""),setValSafe("r28_fc_total",getNum("r28_fc_hold")+getNum("r28_fc_in"))},compute28RaiOutTotal=()=>{const anyFilled=["r28_out_nyb2","r28_out_soi5","r28_out_dealer"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value}),sum=getNum("r28_out_nyb2")+getNum("r28_out_soi5")+getNum("r28_out_dealer");setValSafe("r28_out_total",anyFilled?sum:"")},
+    
+    computeMHPInFromParts=()=>{const sum=["mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other"].reduce((a,id)=>a+getNum(id),0),anyFilled=["mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value});setValSafe("mhp_in",anyFilled?sum:"")},computeMHPSums=()=>{const inEl=document.getElementById("mhp_in"),holdEl=document.getElementById("mhp_hold"),fcHoldEl=document.getElementById("mhp_fc_hold"),fcInEl=document.getElementById("mhp_fc_in");inEl&&inEl.value||!holdEl||!holdEl.value?setValSafe("mhp_total",getNum("mhp_in")+getNum("mhp_hold")):setValSafe("mhp_total",""),setValSafe("mhp_fc_total",getNum("mhp_fc_hold")+getNum("mhp_fc_in"))},computeMHPOutTotal=()=>{const anyFilled=["mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer"].some(id=>{const el=document.getElementById(id);return el&&""!==el.value}),sum=getNum("mhp_out_nyb2")+getNum("mhp_out_soi5")+getNum("mhp_out_dealer");setValSafe("mhp_out_total",anyFilled?sum:"")},
+    
+    computeNYB2PMTotal=()=>{const pmEl=document.getElementById("ny_pm"),earlyEl=document.getElementById("ny_pm_early"),holdEl=document.getElementById("ny_pm_hold");!pmEl||!pmEl.value||!earlyEl||!earlyEl.value||!holdEl||!holdEl.value?setValSafe("ny_pm_total",getNum("ny_pm")+getNum("ny_pm_early")+getNum("ny_pm_hold")):setValSafe("ny_pm_total",""),updatePM30FromDaily()},computeS5PMTotal=()=>{const pmEl=document.getElementById("s5_pm"),earlyEl=document.getElementById("s5_pm_early"),holdEl=document.getElementById("s5_pm_hold");!pmEl||!pmEl.value||!earlyEl||!earlyEl.value||!holdEl||!holdEl.value?setValSafe("s5_pm_total",getNum("s5_pm")+getNum("s5_pm_early")+getNum("s5_pm_hold")):setValSafe("s5_pm_total",""),updatePM30FromDaily()},computeRayongPMTotal=()=>{const pmEl=document.getElementById("ry_pm"),earlyEl=document.getElementById("ry_pm_early"),holdEl=document.getElementById("ry_pm_hold");!pmEl||!pmEl.value||!earlyEl||!earlyEl.value||!holdEl||!holdEl.value?setValSafe("ry_pm_total",getNum("ry_pm")+getNum("ry_pm_early")+getNum("ry_pm_hold")):setValSafe("ry_pm_total",""),updatePM30FromDaily()},compute28RaiPMTotal=()=>{const pmEl=document.getElementById("r28_pm"),earlyEl=document.getElementById("r28_pm_early"),holdEl=document.getElementById("r28_pm_hold");!pmEl||!pmEl.value||!earlyEl||!earlyEl.value||!holdEl||!holdEl.value?setValSafe("r28_pm_total",getNum("r28_pm")+getNum("r28_pm_early")+getNum("r28_pm_hold")):setValSafe("r28_pm_total",""),updatePM30FromDaily()},computeMHPPMTotal=()=>{const pmEl=document.getElementById("mhp_pm"),earlyEl=document.getElementById("mhp_pm_early"),holdEl=document.getElementById("mhp_pm_hold");!pmEl||!pmEl.value||!earlyEl||!earlyEl.value||!holdEl||!holdEl.value?setValSafe("mhp_pm_total",getNum("mhp_pm")+getNum("mhp_pm_early")+getNum("mhp_pm_hold")):setValSafe("mhp_pm_total",""),updatePM30FromDaily()},
+    
+    setupRayongAutoSum=()=>{["ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeRayongInFromParts(),computeRayongSums()})}),["ry_in","ry_hold","ry_fc_hold","ry_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeRayongSums()})}),["ry_out_nyb2","ry_out_soi5","ry_out_dealer"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeRayongOutTotal()})}),computeRayongInFromParts(),computeRayongSums(),computeRayongOutTotal()},
+    setupNYB2AutoSum=()=>{["ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeNYB2InFromParts(),computeNYB2Sums()})}),["ny_in","ny_hold","ny_fc_hold","ny_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeNYB2Sums()})}),["ny_out_rayong","ny_out_soi5","ny_out_dealer"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeNYB2OutTotal()})}),computeNYB2InFromParts(),computeNYB2Sums(),computeNYB2OutTotal()},
+    setupS5AutoSum=()=>{["s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeS5InFromParts(),computeS5Sums()})}),["s5_in","s5_hold","s5_fc_hold","s5_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeS5Sums()})}),["s5_out_rayong","s5_out_nyb2","s5_out_dealer"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeS5OutTotal()})}),computeS5InFromParts(),computeS5Sums(),computeS5OutTotal()},
+    setup28RaiAutoSum=()=>{["r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiInFromParts(),compute28RaiSums()})}),["r28_in","r28_hold","r28_fc_hold","r28_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiSums()})}),["r28_out_nyb2","r28_out_soi5","r28_out_dealer"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiOutTotal()})}),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal()},
+    setupMHPAutoSum=()=>{["mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPInFromParts(),computeMHPSums()})}),["mhp_in","mhp_hold","mhp_fc_hold","mhp_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPSums()})}),["mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPOutTotal()})}),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal()},
+    setupMonthPicker=()=>{elements.monthPicker.value=toMonthKey(new Date),elements.monthPicker.addEventListener("change",()=>{const active=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===active&&renderPM30(),"viewMonthlyPM"===active&&renderMonthlyPM(),"viewSummary"===active&&renderSummary(),"viewPerformance"===active&&renderPerformance(),subscribeMonth(elements.monthPicker.value)})},updatePM30FromDaily=()=>{const currentDate=selectedDate,monthKey=toMonthKey(currentDate),dayIndex=currentDate.getDate()-1,ryPMTotal=getNum("ry_pm_total"),nyPMTotal=getNum("ny_pm_total"),s5PMTotal=getNum("s5_pm_total"),r28PMTotal=getNum("r28_pm_total"),mhpPMTotal=getNum("mhp_pm_total");ensureMonthYardData(monthKey,"Rayong"),ensureMonthYardData(monthKey,"NYB2"),ensureMonthYardData(monthKey,"soi5"),ensureMonthYardData(monthKey,"28 Rai"),ensureMonthYardData(monthKey,"MHP 2PS"),appState.pmData[monthKey]&&appState.pmData[monthKey].Rayong&&appState.pmData[monthKey].Rayong[dayIndex]&&(appState.pmData[monthKey].Rayong[dayIndex].act=ryPMTotal>0?String(ryPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].NYB2&&appState.pmData[monthKey].NYB2[dayIndex]&&(appState.pmData[monthKey].NYB2[dayIndex].act=nyPMTotal>0?String(nyPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].soi5&&appState.pmData[monthKey].soi5[dayIndex]&&(appState.pmData[monthKey].soi5[dayIndex].act=s5PMTotal>0?String(s5PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["28 Rai"]&&appState.pmData[monthKey]["28 Rai"][dayIndex]&&(appState.pmData[monthKey]["28 Rai"][dayIndex].act=r28PMTotal>0?String(r28PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["MHP 2PS"]&&appState.pmData[monthKey]["MHP 2PS"][dayIndex]&&(appState.pmData[monthKey]["MHP 2PS"][dayIndex].act=mhpPMTotal>0?String(mhpPMTotal):""),updateTomorrowPendingPM().catch(err=>{console.error("Failed to update tomorrow's pending PM data:",err)}),saveData({propagate:!1});const activeTab=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===activeTab&&!editingPM30&&renderPM30()},updateTomorrowPendingPM=async()=>{const today=new Date,tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);const tomorrowKeyStr=dateKey(tomorrow),todayMonthKey=toMonthKey(today),tomorrowMonthKey=toMonthKey(tomorrow);ensureMonthYardData(todayMonthKey,"Rayong"),ensureMonthYardData(todayMonthKey,"NYB2"),ensureMonthYardData(todayMonthKey,"soi5"),ensureMonthYardData(todayMonthKey,"28 Rai"),ensureMonthYardData(todayMonthKey,"MHP 2PS"),ensureMonthYardData(tomorrowMonthKey,"Rayong"),ensureMonthYardData(tomorrowMonthKey,"NYB2"),ensureMonthYardData(tomorrowMonthKey,"soi5"),ensureMonthYardData(tomorrowMonthKey,"28 Rai"),ensureMonthYardData(tomorrowMonthKey,"MHP 2PS");const todayDayIndex=today.getDate()-1,yardConfigs=[{name:"Rayong",holdField:"ry_pm_hold"},{name:"NYB2",holdField:"ny_pm_hold"},{name:"soi5",holdField:"s5_pm_hold"},{name:"28 Rai",holdField:"r28_pm_hold"},{name:"MHP 2PS",holdField:"mhp_pm_hold"}];let tomorrowDailyData={};try{if(fbDb&&fbConnected){const snap=await fbDb.ref(`/daily/${tomorrowKeyStr}`).get();tomorrowDailyData=snap.val()||{}}}catch(err){console.warn("Could not fetch tomorrow's daily data, starting fresh.",err),tomorrowDailyData={}}yardConfigs.forEach(yard=>{const todayData=appState.pmData[todayMonthKey]?.[yard.name]?.[todayDayIndex];if(!todayData)return;const todayEstimation=Number(todayData.est||0),todayActual=Number(todayData.act||0),pendingPM=Math.max(0,todayEstimation-todayActual);pendingPM>0?tomorrowDailyData[yard.holdField]=String(pendingPM):tomorrowDailyData[yard.holdField]=""});const calculatePMTotal=(pmField,holdField)=>{const pm=Number(tomorrowDailyData[pmField]||0),hold=Number(tomorrowDailyData[holdField]||0);return pm>0||hold>0?String(pm+hold):""};if(tomorrowDailyData.ry_pm_total=calculatePMTotal("ry_pm","ry_pm_hold"),tomorrowDailyData.ny_pm_total=calculatePMTotal("ny_pm","ny_pm_hold"),tomorrowDailyData.s5_pm_total=calculatePMTotal("s5_pm","s5_pm_hold"),tomorrowDailyData.r28_pm_total=calculatePMTotal("r28_pm","r28_pm_hold"),tomorrowDailyData.mhp_pm_total=calculatePMTotal("mhp_pm","mhp_pm_hold"),fbDb&&fbConnected)try{await fbDb.ref(`/daily/${tomorrowKeyStr}`).set(tomorrowDailyData),markLastSync()}catch(err){console.warn("Failed to update tomorrow pending PM:",err)}},collectDaily=()=>{const gv=id=>{const el=document.getElementById(id);return el?el.value:""};return{ry_in:gv("ry_in"),ry_hold:gv("ry_hold"),ry_total:gv("ry_total"),ry_att3_pre:gv("ry_att3_pre"),ry_att3_ext:gv("ry_att3_ext"),ry_sea6_pre:gv("ry_sea6_pre"),ry_sea6_dym:gv("ry_sea6_dym"),ry_dol_std:gv("ry_dol_std"),ry_dol_ext:gv("ry_dol_ext"),ry_seal5_pre:gv("ry_seal5_pre"),ry_other:gv("ry_other"),ry_out_nyb2:gv("ry_out_nyb2"),ry_out_soi5:gv("ry_out_soi5"),ry_out_dealer:gv("ry_out_dealer"),ry_wait_group:gv("ry_wait_group"),ry_out_total:gv("ry_out_total"),ry_fc_hold:gv("ry_fc_hold"),ry_fc_in:gv("ry_fc_in"),ry_fc_total:gv("ry_fc_total"),ry_pm:gv("ry_pm"),ry_pm_early:gv("ry_pm_early"),ry_pm_hold:gv("ry_pm_hold"),ry_pm_total:gv("ry_pm_total"),ry_note:gv("ry_note"),
+    ny_in:gv("ny_in"),ny_hold:gv("ny_hold"),ny_total:gv("ny_total"),ny_att3_pre:gv("ny_att3_pre"),ny_att3_ext:gv("ny_att3_ext"),ny_sea6_pre:gv("ny_sea6_pre"),ny_sea6_dym:gv("ny_sea6_dym"),ny_dol_std:gv("ny_dol_std"),ny_dol_ext:gv("ny_dol_ext"),ny_seal5_pre:gv("ny_seal5_pre"),ny_other:gv("ny_other"),ny_out_rayong:gv("ny_out_rayong"),ny_out_soi5:gv("ny_out_soi5"),ny_out_dealer:gv("ny_out_dealer"),ny_wait_group:gv("ny_wait_group"),ny_out_total:gv("ny_out_total"),ny_fc_hold:gv("ny_fc_hold"),ny_fc_in:gv("ny_fc_in"),ny_fc_total:gv("ny_fc_total"),ny_pm:gv("ny_pm"),ny_pm_early:gv("ny_pm_early"),ny_pm_hold:gv("ny_pm_hold"),ny_pm_total:gv("ny_pm_total"),ny_note:gv("ny_note"),
+    s5_in:gv("s5_in"),s5_hold:gv("s5_hold"),s5_total:gv("s5_total"),s5_att3_pre:gv("s5_att3_pre"),s5_att3_ext:gv("s5_att3_ext"),s5_sea6_pre:gv("s5_sea6_pre"),s5_sea6_dym:gv("s5_sea6_dym"),s5_dol_std:gv("s5_dol_std"),s5_dol_ext:gv("s5_dol_ext"),s5_seal5_pre:gv("s5_seal5_pre"),s5_other:gv("s5_other"),s5_out_rayong:gv("s5_out_rayong"),s5_out_nyb2:gv("s5_out_nyb2"),s5_out_dealer:gv("s5_out_dealer"),s5_wait_group:gv("s5_wait_group"),s5_out_total:gv("s5_out_total"),s5_fc_hold:gv("s5_fc_hold"),s5_fc_in:gv("s5_fc_in"),s5_fc_total:gv("s5_fc_total"),s5_pm:gv("s5_pm"),s5_pm_early:gv("s5_pm_early"),s5_pm_hold:gv("s5_pm_hold"),s5_pm_total:gv("s5_pm_total"),s5_note:gv("s5_note"),
+    r28_in:gv("r28_in"),r28_hold:gv("r28_hold"),r28_total:gv("r28_total"),r28_att3_pre:gv("r28_att3_pre"),r28_att3_ext:gv("r28_att3_ext"),r28_sea6_pre:gv("r28_sea6_pre"),r28_sea6_dym:gv("r28_sea6_dym"),r28_dol_std:gv("r28_dol_std"),r28_dol_ext:gv("r28_dol_ext"),r28_seal5_pre:gv("r28_seal5_pre"),r28_other:gv("r28_other"),r28_out_nyb2:gv("r28_out_nyb2"),r28_out_soi5:gv("r28_out_soi5"),r28_out_dealer:gv("r28_out_dealer"),r28_wait_group:gv("r28_wait_group"),r28_out_total:gv("r28_out_total"),r28_fc_hold:gv("r28_fc_hold"),r28_fc_in:gv("r28_fc_in"),r28_fc_total:gv("r28_fc_total"),r28_pm:gv("r28_pm"),r28_pm_early:gv("r28_pm_early"),r28_pm_hold:gv("r28_pm_hold"),r28_pm_total:gv("r28_pm_total"),r28_note:gv("r28_note"),
+    mhp_in:gv("mhp_in"),mhp_hold:gv("mhp_hold"),mhp_total:gv("mhp_total"),mhp_att3_pre:gv("mhp_att3_pre"),mhp_att3_ext:gv("mhp_att3_ext"),mhp_sea6_pre:gv("mhp_sea6_pre"),mhp_sea6_dym:gv("mhp_sea6_dym"),mhp_dol_std:gv("mhp_dol_std"),mhp_dol_ext:gv("mhp_dol_ext"),mhp_seal5_pre:gv("mhp_seal5_pre"),mhp_other:gv("mhp_other"),mhp_out_nyb2:gv("mhp_out_nyb2"),mhp_out_soi5:gv("mhp_out_soi5"),mhp_out_dealer:gv("mhp_out_dealer"),mhp_wait_group:gv("mhp_wait_group"),mhp_out_total:gv("mhp_out_total"),mhp_fc_hold:gv("mhp_fc_hold"),mhp_fc_in:gv("mhp_fc_in"),mhp_fc_total:gv("mhp_fc_total"),mhp_pm:gv("mhp_pm"),mhp_pm_early:gv("mhp_pm_early"),mhp_pm_hold:gv("mhp_pm_hold"),mhp_pm_total:gv("mhp_pm_total"),mhp_note:gv("mhp_note")}};
+
+    const boot = async () => {
+      await initializeFirebase();
+      if (!authReady) {
+        elements.connectionStatus.classList.remove('hidden');
+        return;
+      }
+
+      // --- Try Auto-Login ---
+      const savedUser = localStorage.getItem('pmyard_username');
+      const savedPass = localStorage.getItem('pmyard_password');
+
+      if (savedUser && savedPass) {
+        try {
+            const userRef = fbDb.ref(`users/${savedUser}`);
+            const snapshot = await userRef.get();
+            if (snapshot.exists() && snapshot.val().password === savedPass) {
+                isLoggedIn = true;
+            } else {
+                localStorage.removeItem('pmyard_username');
+                localStorage.removeItem('pmyard_password');
+            }
+        } catch (error) {
+            console.error("Auto-login failed:", error);
+            localStorage.removeItem('pmyard_username');
+            localStorage.removeItem('pmyard_password');
+        }
+      }
+      
+      updateAuthUI();
+      if (isLoggedIn) {
+        enableEditing();
+      } else {
+        disableEditing();
+      }
+
+      const baseKey = toMonthKey(new Date());
+      yards.forEach(y => ensureMonthYardData(baseKey, y));
+      setupMonthPicker();
+      setupTabs();
+      subscribeMonth(baseKey);
+      updateFbUI();
+      const dailyBadge = document.getElementById('dailyBadge');
+      if (dailyBadge) dailyBadge.textContent = dateKey(selectedDate);
+      initEditableLabels();
+      
+      elements.loginForm.addEventListener('submit', handleLogin);
+      elements.loginModal.addEventListener('click', (e) => {
+          if (e.target === elements.loginModal) {
+              elements.loginModal.classList.add('hidden');
+              elements.loginModal.classList.remove('flex');
+          }
+      });
+    };
+
+    boot();
+
+    window.addEventListener('online', () => { fbConnected = true; updateFbUI(); subscribeMonth(elements.monthPicker.value || toMonthKey(new Date())); });
+    window.addEventListener('offline', () => { fbConnected = false; updateFbUI(); });
+
+  });
+  </script>
+</body>
+</html>
