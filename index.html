@@ -5,69 +5,557 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PM Yard Dashboard • Firebase Realtime</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; }
-    .card { background: rgba(255,255,255,0.96); backdrop-filter: saturate(120%) blur(4px); box-shadow: 0 12px 28px rgba(0,0,0,0.10); }
-    .tab-active { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65); }
-    .tab-inactive { opacity: 0.95; }
-    .chip { background: #eef2ff; color: #4338ca; }
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface2: #f5f5f7;
+      --surface3: #e8e8ed;
+      --border: rgba(0,0,0,0.08);
+      --border-strong: rgba(0,0,0,0.14);
+      --accent: #1d1d1f;
+      --accent-blue: #0071e3;
+      --accent-blue-hover: #0077ed;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #aeaeb2;
+      --success: #34c759;
+      --warning: #ff9f0a;
+      --danger: #ff3b30;
+
+      /* Aluminum texture gradient */
+      --aluminum: linear-gradient(180deg,
+        #fafafa 0%,
+        #f2f2f2 30%,
+        #ebebeb 60%,
+        #e5e5e5 100%
+      );
+      --aluminum-header: linear-gradient(180deg,
+        #ffffff 0%,
+        #f8f8f8 40%,
+        #f0f0f0 100%
+      );
+      --aluminum-card: linear-gradient(160deg,
+        #ffffff 0%,
+        #fafafa 50%,
+        #f6f6f6 100%
+      );
+      --engraved-line: rgba(0,0,0,0.06);
+      --highlight-line: rgba(255,255,255,0.9);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: clamp(13px, 1.1vw + 9px, 15px); -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: -apple-system, 'Inter', 'SF Pro Display', BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(0,0,0,0.012) 2px,
+          rgba(0,0,0,0.012) 4px
+        );
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Top aluminum bar header area */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg,
+        #c8c8cc 0%, #e5e5ea 20%, #f5f5f7 40%,
+        #e5e5ea 60%, #c8c8cc 80%, #a8a8ad 100%
+      );
+      z-index: 100;
+    }
+
+    #app-container { position: relative; z-index: 1; padding-top: 4px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--aluminum-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 18px;
+      box-shadow:
+        0 1px 0 var(--highlight-line) inset,
+        0 -1px 0 rgba(0,0,0,0.05) inset,
+        0 2px 8px rgba(0,0,0,0.06),
+        0 8px 24px rgba(0,0,0,0.04);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Brushed aluminum sheen on cards */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.9) 30%,
+        rgba(255,255,255,0.6) 70%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--aluminum-header);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      box-shadow:
+        0 1px 0 var(--highlight-line) inset,
+        0 2px 12px rgba(0,0,0,0.06),
+        0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 1.25rem !important;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Diagonal brushed metal lines on header */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.012) 3px,
+        rgba(0,0,0,0.012) 4px
+      );
+      pointer-events: none;
+    }
+
+    header h1 {
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      background: linear-gradient(180deg, #1d1d1f 0%, #3a3a3c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    header p { color: var(--text-secondary); font-size: 0.8rem; font-weight: 400; }
+
+    /* ── NAV TABS ── */
+    nav {
+      background: var(--aluminum-header);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 0.35rem;
+      box-shadow:
+        0 1px 0 var(--highlight-line) inset,
+        0 2px 8px rgba(0,0,0,0.06);
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 1.25rem !important;
+    }
+
+    .main-tab {
+      font-family: -apple-system, 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: -0.01em;
+      border-radius: 9px;
+      padding: 0.45rem 0.9rem;
+      transition: all 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border: 1px solid transparent;
+      color: var(--text-secondary) !important;
+      background: transparent !important;
+      cursor: pointer;
+    }
+
+    .tab-active {
+      background: var(--surface) !important;
+      color: var(--text) !important;
+      border-color: var(--border-strong) !important;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.8) inset,
+        0 1px 4px rgba(0,0,0,0.12),
+        0 2px 8px rgba(0,0,0,0.06) !important;
+      font-weight: 600;
+      opacity: 1 !important;
+    }
+
+    .tab-inactive {
+      background: transparent !important;
+      color: var(--text-secondary) !important;
+      border-color: transparent !important;
+      opacity: 1 !important;
+    }
+
+    .tab-inactive:hover {
+      background: rgba(0,0,0,0.04) !important;
+      color: var(--text) !important;
+    }
+
+    /* ── INPUTS ── */
+    input[type="number"], input[type="text"], input[type="password"],
+    input[type="date"], input[type="month"], textarea, select {
+      background: var(--surface) !important;
+      color: #000000 !important;
+      border: 1px solid var(--border-strong) !important;
+      border-radius: 8px;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05) inset;
+      font-weight: 600 !important;
+      -webkit-text-fill-color: #000000 !important;
+    }
+
+    input[type="number"]:focus, input[type="text"]:focus, input[type="password"]:focus,
+    input[type="date"]:focus, input[type="month"]:focus, textarea:focus {
+      outline: none !important;
+      border-color: var(--accent-blue) !important;
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.18), 0 1px 2px rgba(0,0,0,0.05) inset !important;
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--text-tertiary) !important; }
+
+    input:disabled, textarea:disabled {
+      background: var(--surface2) !important;
+      cursor: default;
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
+      font-weight: 600 !important;
+      border-color: var(--border) !important;
+      opacity: 1 !important;
+    }
+
+    /* ── COLORED TABS ── */
+    #viewPM30.tab-active   { background: #ff3b30 !important; color: #fff !important; border-color: #d70015 !important; }
+    #viewMonthlyPM.tab-active { background: #007aff !important; color: #fff !important; border-color: #005fd4 !important; }
+    #viewSummary.tab-active   { background: #30d158 !important; color: #fff !important; border-color: #1fa83f !important; }
+    #viewDaily.tab-active     { background: #ff9f0a !important; color: #fff !important; border-color: #cc7d00 !important; }
+    #viewPerformance.tab-active { background: #bf5af2 !important; color: #fff !important; border-color: #9b3fd4 !important; }
+    #viewPDI.tab-active       { background: #32ade6 !important; color: #fff !important; border-color: #1e8bbf !important; }
+    #viewSkill.tab-active     { background: #00c7be !important; color: #fff !important; border-color: #009e96 !important; }
+
+    #viewPM30.tab-inactive:hover   { background: rgba(255,59,48,0.1) !important; color: #ff3b30 !important; }
+    #viewMonthlyPM.tab-inactive:hover { background: rgba(0,122,255,0.1) !important; color: #007aff !important; }
+    #viewSummary.tab-inactive:hover   { background: rgba(48,209,88,0.1) !important; color: #1fa83f !important; }
+    #viewDaily.tab-inactive:hover     { background: rgba(255,159,10,0.1) !important; color: #cc7d00 !important; }
+    #viewPerformance.tab-inactive:hover { background: rgba(191,90,242,0.1) !important; color: #bf5af2 !important; }
+    #viewPDI.tab-inactive:hover       { background: rgba(50,173,230,0.1) !important; color: #32ade6 !important; }
+    #viewSkill.tab-inactive:hover     { background: rgba(0,199,190,0.1) !important; color: #00c7be !important; }
+
+    #monthPicker, #dailyDate { color-scheme: light; }
+
+    /* ── TABLES ── */
+    table { color: var(--text); }
+
+    thead th {
+      background: var(--surface2) !important;
+      color: var(--text-secondary) !important;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-strong) !important;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+    .row-hover:hover { background: rgba(0,0,0,0.025) !important; }
+    tbody tr:hover { background: rgba(0,0,0,0.02); }
+
+    /* ── SCROLLBARS ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+    /* ── NUMBER INPUT ── */
     .number-input::-webkit-outer-spin-button, .number-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
     .number-input { -moz-appearance: textfield; }
-    .row-hover:hover { background: #f8fafc; }
-    .status-dot { width:10px; height:10px; border-radius:999px; display:inline-block; }
-    html { font-size: clamp(14px, 1.2vw + 10px, 16px); }
-    body { line-height: 1.5; }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    input[type="number"] { -moz-appearance: textfield; }
+
+    /* ── EDITABLE LABEL ── */
+    .editable-label {
+      border-bottom: 1px dashed var(--border-strong);
+      cursor: text;
+      padding-bottom: 1px;
+      color: var(--text-secondary);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .editable-label:focus {
+      outline: none;
+      border-bottom: 1.5px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    /* ── BUTTONS ── */
+    button { transition: all 0.16s cubic-bezier(0.25,0.46,0.45,0.94); }
+    button:active { transform: scale(0.97); }
+
+    /* Action buttons — Apple-style pill */
+    .rounded-full[class*="bg-green"],
+    .rounded-full[class*="bg-amber"],
+    .rounded-full[class*="bg-emerald"] {
+      background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0) 100%) !important;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.3) inset, 0 1px 4px rgba(0,0,0,0.15) !important;
+    }
+
+    /* ── CARD SECTION HEADERS ── */
+    .bg-white\/80,
+    .px-5.py-3.bg-white\/80.font-bold,
+    .px-5.py-4.bg-white\/80 {
+      background: linear-gradient(180deg, #f8f8f8 0%, #f2f2f2 100%) !important;
+      color: var(--text-secondary) !important;
+      border-bottom: 1px solid var(--border-strong) !important;
+      font-size: 0.72rem !important;
+      letter-spacing: 0.05em !important;
+      text-transform: uppercase !important;
+      font-weight: 600 !important;
+    }
+
+    /* ── CHIP / BADGE ── */
+    .chip {
+      background: linear-gradient(180deg, #f5f5f7, #ebebed) !important;
+      color: var(--text-secondary) !important;
+      border: 1px solid var(--border-strong) !important;
+    }
+
+    /* ── COLOR OVERRIDES ── */
+    .text-slate-900, .text-slate-800 { color: var(--text) !important; }
+    .text-slate-700 { color: #3a3a3c !important; }
+    .text-slate-600 { color: var(--text-secondary) !important; }
+    .text-slate-500 { color: #8e8e93 !important; }
+    .text-slate-400 { color: var(--text-tertiary) !important; }
+
+    .border-slate-200, .border-slate-100 { border-color: var(--border-strong) !important; }
+    .divide-slate-100 > * + *, .divide-y > * + * { border-color: var(--border) !important; }
+
+    .bg-slate-50 { background: var(--surface2) !important; }
+    .bg-white { background: var(--surface) !important; color: var(--text) !important; }
+    .bg-white\/95 { background: rgba(255,255,255,0.95) !important; color: var(--text) !important; }
+    .bg-white\/80 { background: rgba(248,248,248,0.95) !important; color: var(--text) !important; }
+
+    /* ── TOTALS / EMPHASIS ── */
+    .text-red-600, #dailyView .text-red-600 { color: #ff3b30 !important; }
+    .bg-red-50 { background: rgba(255,59,48,0.05) !important; }
+    .border-red-300 { border-color: rgba(255,59,48,0.25) !important; }
+    .text-red-700 { color: #d70015 !important; }
+
+    /* ── YARD SECTION TINTS ── */
+    .border-emerald-200 { border-color: rgba(52,199,89,0.3) !important; }
+    .bg-emerald-50 { background: rgba(52,199,89,0.05) !important; }
+    .border-yellow-200 { border-color: rgba(255,159,10,0.3) !important; }
+    .bg-yellow-50 { background: rgba(255,159,10,0.05) !important; }
+    .border-sky-200 { border-color: rgba(0,113,227,0.25) !important; }
+    .bg-sky-50 { background: rgba(0,113,227,0.04) !important; }
+    .border-violet-200 { border-color: rgba(88,86,214,0.25) !important; }
+    .bg-violet-50 { background: rgba(88,86,214,0.04) !important; }
+    .border-pink-200 { border-color: rgba(255,45,85,0.25) !important; }
+    .bg-pink-50 { background: rgba(255,45,85,0.04) !important; }
+    .border-orange-200 { border-color: rgba(255,149,0,0.25) !important; }
+    .bg-orange-50 { background: rgba(255,149,0,0.04) !important; }
+    .border-rose-200 { border-color: rgba(255,59,48,0.25) !important; }
+
+    /* Performance bars bg */
+    .bg-slate-200 { background: rgba(0,0,0,0.08) !important; }
+    .bg-blue-50 { background: rgba(0,113,227,0.06) !important; }
+    .text-blue-600 { color: #0071e3 !important; }
+    .text-blue-700 { color: #0064cc !important; }
+    .bg-green-50 { background: rgba(52,199,89,0.06) !important; }
+    .text-green-600 { color: #30d158 !important; }
+    .text-green-700 { color: #248a3d !important; }
+
+    /* ── INDIGO / ACCENT ── */
+    .bg-indigo-600 { background: #1d1d1f !important; }
+    .bg-indigo-50 { background: rgba(0,0,0,0.04) !important; }
+    .text-indigo-700, .text-indigo-600 { color: var(--accent-blue) !important; }
+    .bg-indigo-100 { background: rgba(0,113,227,0.08) !important; }
+
+    /* ── STATUS ── */
+    .bg-emerald-50.text-emerald-700 { background: rgba(52,199,89,0.08) !important; }
+    .text-emerald-700 { color: #248a3d !important; }
+    .bg-emerald-100 { background: rgba(52,199,89,0.12) !important; }
+    .text-amber-700 { color: #995700 !important; }
+    .bg-amber-50 { background: rgba(255,159,10,0.08) !important; }
+    .bg-amber-100 { background: rgba(255,159,10,0.12) !important; }
+    .text-rose-800 { color: #9a0007 !important; }
+
+    /* ── STATUS DOT ── */
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .bg-green-400 { animation: pulse-dot 2s ease-in-out infinite; }
+
+    /* ── HEADER CONTROLS ── */
+    .bg-white\/15 { background: rgba(0,0,0,0.04) !important; }
+    .bg-white\/10 { background: rgba(0,0,0,0.03) !important; }
+    .border-white\/30 { border-color: var(--border-strong) !important; }
+
+    .text-white\/90, .text-white\/95 { color: var(--text) !important; }
+    .text-white\/50 { color: var(--text-secondary) !important; }
+    .text-white { color: var(--text) !important; }
+
+    /* ── CONNECTION STATUS ── */
+    #connectionStatus { background: var(--danger) !important; color: #fff !important; }
+
+    /* ── INLINE BADGES ── */
+    .inline-flex.items-center.gap-2.px-3.py-2.rounded-full,
+    .inline-flex.items-center.gap-2.px-3.py-2 {
+      background: linear-gradient(180deg, #f8f8f8, #f0f0f0) !important;
+      border: 1px solid var(--border-strong) !important;
+      color: var(--text-secondary) !important;
+      font-size: 0.78rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    span.px-2.py-1.rounded-full { font-size: 0.75rem; font-weight: 600; }
+
+    /* ── CARD FADE-IN ── */
+    .card { animation: fadeUp 0.35s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RADIUS ── */
+    .rounded-xl, .rounded-2xl { border-radius: 14px !important; }
+    .rounded-lg { border-radius: 10px !important; }
+    .rounded-full { border-radius: 9999px !important; }
+    .rounded-md { border-radius: 8px !important; }
+
+    /* ── DAILY VIEW ── */
     #dailyView input[type="number"] { width: clamp(5rem, 20vw, 7.5rem); }
-    /* Adjusted CSS to include NYB2, Soi5, 28 Rai, MHP, and Auto Transport totals */
     #dailyView #ry_out_total, #dailyView #ry_fc_total, #dailyView #ry_total,
     #dailyView #ny_out_total, #dailyView #ny_fc_total, #dailyView #ny_total,
     #dailyView #s5_out_total, #dailyView #s5_fc_total, #dailyView #s5_total,
     #dailyView #r28_out_total, #dailyView #r28_fc_total, #dailyView #r28_total,
     #dailyView #mhp_out_total, #dailyView #mhp_fc_total, #dailyView #mhp_total,
     #dailyView #at_out_total, #dailyView #at_fc_total, #dailyView #at_total { width: clamp(6rem, 22vw, 8.5rem); }
-    @media (max-width: 640px) { .card { border-radius: 1rem; } }
+    #dailyView label { white-space: nowrap; }
+
     thead.sticky { z-index: 20; }
     #mRayongWrap, #mNYB2Wrap, #mSOI5Wrap, #m28RaiWrap, #mMHPWrap, #mAutoTransportWrap { -webkit-overflow-scrolling: touch; }
-    #dailyView label { white-space: nowrap; }
-    /* Login Modal Styles */
+
+    @media (max-width: 640px) { .card { border-radius: 12px !important; } }
+
+    /* ── LOGIN MODAL ── */
     #loginModal.flex { display: flex; }
-    input:disabled { background-color: #f1f5f9; cursor: not-allowed; }
-    textarea:disabled { background-color: #f1f5f9; cursor: not-allowed; }
-    .editable-label { border-bottom: 1px dashed #cbd5e1; cursor: text; padding-bottom: 1px; }
-    .editable-label:focus { outline: none; border-bottom: 1px solid #6366f1; color: #4f46e5; }
+
+    /* ── CARD MANAGEMENT ── */
+    #addCardModal.flex { display: flex; }
+
+    .daily-card-disabled {
+      opacity: 0.42;
+      filter: grayscale(0.85);
+      position: relative;
+    }
+    .daily-card-disabled .card-body-wrap { pointer-events: none; }
+    .disabled-overlay {
+      display: none;
+      position: absolute; inset: 0; z-index: 10;
+      align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
+      color: #3a3a3c;
+      background: rgba(210,210,215,0.55);
+      backdrop-filter: blur(4px);
+      border-radius: 14px;
+      pointer-events: none;
+    }
+    .daily-card-disabled .disabled-overlay { display: flex; }
+
+    .daily-manage-mode .card-manage-btns { display: flex !important; }
+    .daily-manage-mode .daily-card-item {
+      outline: 2px solid rgba(0,113,227,0.5);
+      outline-offset: 2px;
+      cursor: grab;
+    }
+    .daily-manage-mode .daily-card-disabled { pointer-events: all; cursor: grab; }
+
+    .daily-card-item.dragging { opacity: 0.4; transform: scale(0.98); transition: all 0.15s; }
+    .daily-card-item.drag-over {
+      outline: 2px dashed #30d158 !important;
+      outline-offset: 3px;
+    }
+
+    .color-opt { transition: transform 0.15s; cursor: pointer; }
+    .color-opt.selected { border-color: #1d1d1f !important; transform: scale(1.2) !important; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1d1d1f; }
+
+    #dailyManageBtn.active { background: #0071e3 !important; color: #fff !important; border-color: #005ab5 !important; }
+    .daily-card-disabled {
+      opacity: 0.45; filter: grayscale(1); position: relative;
+    }
+    .daily-card-disabled .card-body-wrap { pointer-events: none; }
+    .daily-card-disabled .disabled-overlay {
+      display: flex !important;
+    }
+    .disabled-overlay {
+      display: none;
+      position: absolute; inset: 0; z-index: 10;
+      align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.06em;
+      color: #3a3a3c;
+      background: rgba(200,200,200,0.5);
+      backdrop-filter: blur(3px);
+      border-radius: 14px;
+      pointer-events: none;
+    }
+    .daily-manage-mode .card-manage-btns { display: flex !important; }
+    .daily-manage-mode .daily-card-item {
+      outline: 2px solid #0071e3;
+      outline-offset: 2px;
+    }
+    .daily-manage-mode .daily-card-disabled { pointer-events: all; }
+    .card-toggle-btn.btn-enable { background: #30d158 !important; }
+    .color-opt.selected { border-color: #1d1d1f !important; transform: scale(1.18); }
+    .daily-card-item.dragging { opacity: 0.45; transform: scale(0.98); }
+    .daily-card-item.drag-over { outline: 2px dashed #30d158 !important; }
+    #dailyManageBtn.active { background: #0071e3 !important; color: #fff !important; border-color: #0064cc !important; }
+    .card-color-emerald { border-color: rgba(52,199,89,0.35) !important; background: rgba(52,199,89,0.05) !important; }
+    .card-color-yellow  { border-color: rgba(255,214,10,0.45) !important; background: rgba(255,214,10,0.06) !important; }
+    .card-color-rose    { border-color: rgba(255,55,95,0.35) !important;  background: rgba(255,55,95,0.04) !important; }
+    .card-color-cyan    { border-color: rgba(50,173,230,0.35) !important; background: rgba(50,173,230,0.05) !important; }
+    .card-color-orange  { border-color: rgba(255,159,10,0.35) !important; background: rgba(255,159,10,0.05) !important; }
+    .card-color-violet  { border-color: rgba(191,90,242,0.35) !important; background: rgba(191,90,242,0.04) !important; }
+    .card-color-slate   { border-color: rgba(142,142,147,0.3) !important; background: rgba(142,142,147,0.04) !important; }
   </style>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-slate-900">
+<body class="min-h-screen text-slate-900">
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
-    <div class="bg-white rounded-2xl p-8 shadow-xl w-full max-w-sm m-4">
-      <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">เข้าสู่ระบบ</h2>
+  <div id="loginModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(0,0,0,0.4);backdrop-filter:blur(12px)">
+    <div class="rounded-2xl p-8 shadow-2xl w-full max-w-sm m-4" style="background:linear-gradient(160deg,#fff 0%,#f5f5f7 100%);border:1px solid rgba(0,0,0,0.12);box-shadow:0 1px 0 rgba(255,255,255,0.8) inset,0 20px 60px rgba(0,0,0,0.2)">
+      <h2 class="text-xl font-semibold mb-1 text-center" style="color:#1d1d1f;letter-spacing:-0.02em">เข้าสู่ระบบ</h2>
+      <p class="text-center text-xs mb-6" style="color:#6e6e73">PM Yard Dashboard</p>
       <form id="loginForm">
-        <div class="mb-4">
-          <label for="username" class="block text-sm font-medium text-slate-700">Username</label>
-          <input type="text" id="username" value="admin" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        <div class="mb-3">
+          <label for="username" class="block text-xs font-medium mb-1" style="color:#6e6e73;letter-spacing:0.02em;text-transform:uppercase">Username</label>
+          <input type="text" id="username" value="admin" class="block w-full px-3 py-2 text-sm rounded-lg" style="border:1px solid rgba(0,0,0,0.15);background:#fff;">
         </div>
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-          <input type="password" id="password" value="admin" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+        <div class="mb-3">
+          <label for="password" class="block text-xs font-medium mb-1" style="color:#6e6e73;letter-spacing:0.02em;text-transform:uppercase">Password</label>
+          <input type="password" id="password" value="admin" class="block w-full px-3 py-2 text-sm rounded-lg" style="border:1px solid rgba(0,0,0,0.15);background:#fff;">
         </div>
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center">
-            <input id="rememberMe" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-            <label for="rememberMe" class="ml-2 block text-sm text-gray-900">
-              จำฉันไว้ในระบบ
-            </label>
-          </div>
+        <div class="flex items-center mb-5 mt-1">
+          <input id="rememberMe" type="checkbox" class="h-4 w-4 rounded" style="accent-color:#0071e3">
+          <label for="rememberMe" class="ml-2 text-sm" style="color:#6e6e73">จำฉันไว้ในระบบ</label>
         </div>
-        <p id="loginError" class="text-red-500 text-sm mb-4 hidden text-center"></p>
-        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          Login
+        <p id="loginError" class="text-red-500 text-xs mb-3 hidden text-center"></p>
+        <button type="submit" class="w-full font-semibold py-2 px-4 rounded-lg text-sm text-white" style="background:linear-gradient(180deg,#1976d2,#0071e3);box-shadow:0 1px 0 rgba(255,255,255,0.2) inset,0 2px 8px rgba(0,113,227,0.35)">
+          เข้าสู่ระบบ
         </button>
       </form>
     </div>
@@ -77,40 +565,38 @@
     <div id="connectionStatus" class="hidden fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full shadow-lg z-50">
         ไม่สามารถเชื่อมต่อฐานข้อมูลได้
     </div>
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">PM Yard Dashboard</h1>
-        <p class="text-white/90 mt-1">Rayong • NYB2 • soi5 • 28 ไร่ • MHP 2PS • AUTO TRANSPORT</p>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight" style="letter-spacing:-0.03em">PM Yard Dashboard</h1>
+        <p class="mt-1 text-sm" style="color:#6e6e73">Rayong • NYB2 • soi5 • 28 ไร่ • MHP 2PS • AUTO TRANSPORT</p>
       </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="rounded-2xl bg-white/15 border border-white/30 px-4 py-3 flex items-center gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="rounded-xl px-3 py-2 flex items-center gap-2" style="background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.1)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="color:#6e6e73" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <label for="monthPicker" class="text-white/95">เลือกเดือน</label>
-          <input id="monthPicker" type="month" class="rounded-xl px-3 py-2 bg-white/95 text-slate-800 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+          <label for="monthPicker" class="text-xs font-medium" style="color:#6e6e73">เดือน</label>
+          <input id="monthPicker" type="month" class="rounded-lg px-2 py-1 text-sm" style="border:1px solid rgba(0,0,0,0.12);background:#fff;color:#1d1d1f" />
         </div>
-        <div class="flex items-center gap-2 bg-white/15 border border-white/30 rounded-full px-3 py-1">
+        <div class="flex items-center gap-2 rounded-full px-3 py-1" style="background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.1)">
           <span id="fbDot" class="status-dot bg-red-400"></span>
-          <span id="fbText" class="text-white/90 text-sm">ออฟไลน์</span>
+          <span id="fbText" class="text-xs font-medium" style="color:#6e6e73">ออฟไลน์</span>
         </div>
-        <div id="userStatus" class="flex items-center gap-2">
-          <!-- Populated by JS -->
-        </div>
-        <div class="glass rounded-full px-3 py-1 text-white/90 text-xs">
-          อัปเดตล่าสุด: <span id="lastSync">-</span>
+        <div id="userStatus" class="flex items-center gap-2"></div>
+        <div class="rounded-full px-3 py-1 text-xs" style="background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.1);color:#6e6e73">
+          อัปเดต: <span id="lastSync">-</span>
         </div>
       </div>
     </header>
 
-    <nav class="flex flex-wrap items-center gap-2 md:gap-3 mb-6">
-      <button id="viewPM30" class="main-tab tab-active rounded-full px-4 py-2 font-semibold bg-rose-500 text-white hover:bg-rose-600">สรุป PM 1-30 วัน</button>
-      <button id="viewMonthlyPM" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-sky-500/90 text-white hover:bg-sky-500">แผน PM ประจำเดือน</button>
-      <button id="viewSummary" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-emerald-500/90 text-white hover:bg-emerald-500">สรุปรวม + แผนพรุ่งนี้</button>
-      <button id="viewDaily" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-amber-500/90 text-white hover:bg-amber-500">Daily Report</button>
-      <button id="viewPerformance" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-purple-400/90 text-white hover:bg-purple-400">Yard Performance</button>
-      <button id="viewPDI" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-teal-500/90 text-white hover:bg-teal-500">REPORT PDI</button>
-      <button id="viewSkill" class="main-tab tab-inactive rounded-full px-4 py-2 font-semibold bg-cyan-500/90 text-white hover:bg-cyan-500">SKILL พนักงาน</button>
+    <nav class="flex flex-wrap items-center gap-1 mb-6">
+      <button id="viewPM30" class="main-tab tab-active rounded-lg px-4 py-2 font-medium">สรุป PM 1-30 วัน</button>
+      <button id="viewMonthlyPM" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">แผน PM ประจำเดือน</button>
+      <button id="viewSummary" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุปรวม + แผนพรุ่งนี้</button>
+      <button id="viewDaily" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Daily Report</button>
+      <button id="viewPerformance" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Yard Performance</button>
+      <button id="viewPDI" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">REPORT PDI</button>
+      <button id="viewSkill" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">SKILL พนักงาน</button>
     </nav>
 
     <!-- App content sections -->
@@ -130,30 +616,30 @@
 
       <section class="grid grid-cols-1 gap-8">
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">Rayong • รายเดือน</div>
-          <div id="mRayongWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="Rayong">Rayong • รายเดือน</div>
+          <div id="mRayongWrap" data-yard-wrap="Rayong" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">NYB2 • รายเดือน</div>
-          <div id="mNYB2Wrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="NYB2">NYB2 • รายเดือน</div>
+          <div id="mNYB2Wrap" data-yard-wrap="NYB2" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">soi5 • รายเดือน</div>
-          <div id="mSOI5Wrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="soi5">soi5 • รายเดือน</div>
+          <div id="mSOI5Wrap" data-yard-wrap="soi5" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">28 ไร่ • รายเดือน</div>
-          <div id="m28RaiWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="28 ไร่">28 ไร่ • รายเดือน</div>
+          <div id="m28RaiWrap" data-yard-wrap="28 ไร่" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
         <!-- MHP 2PS -->
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">MHP 2PS • รายเดือน</div>
-          <div id="mMHPWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="MHP 2PS">MHP 2PS • รายเดือน</div>
+          <div id="mMHPWrap" data-yard-wrap="MHP 2PS" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
         <!-- AUTO TRANSPORT (NEW) -->
         <div class="card rounded-2xl overflow-hidden">
-          <div class="px-5 py-3 bg-white/80 font-bold">AUTO TRANSPORT • รายเดือน</div>
-          <div id="mAutoTransportWrap" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
+          <div class="px-5 py-3 bg-white/80 font-bold" data-yard-section="Auto Transport">AUTO TRANSPORT • รายเดือน</div>
+          <div id="mAutoTransportWrap" data-yard-wrap="Auto Transport" class="overflow-x-auto overflow-y-auto w-full" style="max-height: 70vh;"></div>
         </div>
       </section>
     </section>
@@ -267,25 +753,70 @@
     <!-- DAILY REPORT -->
     <section id="dailyView" class="hidden">
       <section class="card rounded-2xl p-5 mb-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl font-extrabold text-slate-900">Daily Report</h2>
-            <p class="text-slate-500 text-sm">บันทึกงานประจำวัน แยกตาม Yard</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 font-semibold">
-              วันที่: <span id="dailyBadge" class="px-2 py-1 rounded-full bg-amber-100">-</span>
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-2xl font-extrabold text-slate-900">Daily Report</h2>
+              <p class="text-slate-500 text-sm">บันทึกงานประจำวัน แยกตาม Yard</p>
             </div>
-            <input id="dailyDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
-            <button id="captureDaily" class="rounded-full px-4 py-2 bg-amber-500 text-white font-semibold hover:bg-amber-600">บันทึกหน้าจอ</button>
-            <button id="shareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 font-semibold">
+                วันที่: <span id="dailyBadge" class="px-2 py-1 rounded-full bg-amber-100">-</span>
+              </div>
+              <input id="dailyDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
+              <button id="captureDaily" class="rounded-full px-4 py-2 bg-amber-500 text-white font-semibold hover:bg-amber-600">บันทึกหน้าจอ</button>
+              <button id="shareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
+            </div>
+          </div>
+          <!-- Card Management Toolbar -->
+          <div id="dailyCardToolbar" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-1">จัดการการ์ด</span>
+            <button id="dailyAddCardBtn" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white" style="background:#30d158">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              เพิ่มการ์ด
+            </button>
+            <button id="dailyManageBtn" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold" style="background:#f0f0f0;color:#3a3a3c;border:1px solid rgba(0,0,0,0.1)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="5.25" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="8.5" width="10" height="1.5" rx="0.75" fill="currentColor"/></svg>
+              จัดการ
+            </button>
+            <span id="dailyCardCount" class="text-xs text-slate-400 ml-1"></span>
           </div>
         </div>
       </section>
 
+      <!-- Add Card Modal -->
+      <div id="addCardModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(0,0,0,0.4);backdrop-filter:blur(10px)">
+        <div class="rounded-2xl p-6 w-full max-w-sm m-4" style="background:linear-gradient(160deg,#fff 0%,#f5f5f7 100%);border:1px solid rgba(0,0,0,0.12);box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+          <h3 class="text-lg font-semibold mb-4" style="color:#1d1d1f">เพิ่มการ์ด Yard ใหม่</h3>
+          <div class="mb-3">
+            <label class="block text-xs font-medium mb-1" style="color:#6e6e73;text-transform:uppercase;letter-spacing:0.04em">ชื่อ Yard</label>
+            <input id="newCardName" type="text" placeholder="เช่น Yard 7" class="w-full px-3 py-2 rounded-lg text-sm" style="border:1px solid rgba(0,0,0,0.15);background:#fff">
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-medium mb-1" style="color:#6e6e73;text-transform:uppercase;letter-spacing:0.04em">สีขอบการ์ด</label>
+            <div id="colorPicker" class="flex gap-2 flex-wrap">
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="emerald" style="background:#30d158"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="yellow" style="background:#ffd60a"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="rose" style="background:#ff375f"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="cyan" style="background:#32ade6"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="orange" style="background:#ff9f0a"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="violet" style="background:#bf5af2"></button>
+              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="slate" style="background:#8e8e93"></button>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button id="addCardConfirm" class="flex-1 py-2 rounded-lg text-sm font-semibold text-white" style="background:#0071e3">เพิ่ม</button>
+            <button id="addCardCancel" class="flex-1 py-2 rounded-lg text-sm font-semibold" style="background:#f0f0f0;color:#3a3a3c">ยกเลิก</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Cards Container -->
+      <div id="dailyCardsContainer">
+
       <!-- Rayong -->
-      <section id="dailyRayongCard" class="card rounded-2xl overflow-hidden mb-6 border border-emerald-200 bg-emerald-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">Rayong</h3></div>
+      <section id="dailyRayongCard" draggable="true" data-card-name="Rayong" data-card-color="emerald" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-emerald-200 bg-emerald-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">Rayong</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -353,8 +884,8 @@
       </section>
 
       <!-- NYB2 -->
-      <section id="dailyNYB2Card" class="card rounded-2xl overflow-hidden mb-6 border border-yellow-200 bg-yellow-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">NYB2</h3></div>
+      <section id="dailyNYB2Card" draggable="true" data-card-name="NYB2" data-card-color="yellow" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-yellow-200 bg-yellow-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">NYB2</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -422,8 +953,8 @@
       </section>
 
       <!-- Soi 5 -->
-      <section id="dailySoi5Card" class="card rounded-2xl overflow-hidden mb-6 border border-rose-200 bg-rose-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">Soi 5</h3></div>
+      <section id="dailySoi5Card" draggable="true" data-card-name="soi5" data-card-color="rose" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-rose-200 bg-rose-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">Soi 5</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -491,8 +1022,8 @@
       </section>
 
       <!-- 28 Rai (NEW CARD) -->
-      <section id="daily28RaiCard" class="card rounded-2xl overflow-hidden mb-6 border border-cyan-200 bg-cyan-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">28 ไร่</h3></div>
+      <section id="daily28RaiCard" draggable="true" data-card-name="28 ไร่" data-card-color="cyan" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-cyan-200 bg-cyan-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">28 ไร่</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -560,8 +1091,8 @@
       </section>
 
       <!-- MHP 2PS (NEW CARD - Orange) -->
-      <section id="dailyMHPCard" class="card rounded-2xl overflow-hidden mb-6 border border-orange-200 bg-orange-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">MHP 2PS</h3></div>
+      <section id="dailyMHPCard" draggable="true" data-card-name="MHP 2PS" data-card-color="orange" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-orange-200 bg-orange-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">MHP 2PS</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -629,8 +1160,8 @@
       </section>
 
       <!-- AUTO TRANSPORT (NEW CARD - Violet) -->
-      <section id="dailyAutoTransportCard" class="card rounded-2xl overflow-hidden mb-6 border border-violet-200 bg-violet-50">
-        <div class="px-5 py-4 bg-white/80"><h3 class="text-lg font-bold">AUTO TRANSPORT</h3></div>
+      <section id="dailyAutoTransportCard" draggable="true" data-card-name="AUTO TRANSPORT" data-card-color="violet" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-violet-200 bg-violet-50 daily-card-item">
+        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">AUTO TRANSPORT</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
         <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="space-y-4">
             <div class="flex items-end gap-3">
@@ -696,6 +1227,7 @@
         </div>
       </section>
 
+    </div><!-- end dailyCardsContainer -->
     </section>
 
     <!-- YARD PERFORMANCE -->
@@ -714,7 +1246,7 @@
 
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Rayong Performance -->
-        <div class="card rounded-2xl overflow-hidden border border-emerald-200">
+        <div class="card rounded-2xl overflow-hidden border border-emerald-200" data-yard-perf="Rayong">
           <div class="px-5 py-4 bg-emerald-50 border-b border-emerald-200">
             <h3 class="text-xl font-bold text-emerald-800">Rayong</h3>
           </div>
@@ -746,7 +1278,7 @@
         </div>
 
         <!-- NYB2 Performance -->
-        <div class="card rounded-2xl overflow-hidden border border-yellow-200">
+        <div class="card rounded-2xl overflow-hidden border border-yellow-200" data-yard-perf="NYB2">
           <div class="px-5 py-4 bg-yellow-50 border-b border-yellow-200">
             <h3 class="text-xl font-bold text-yellow-800">NYB2</h3>
           </div>
@@ -778,7 +1310,7 @@
         </div>
 
         <!-- soi5 Performance -->
-        <div class="card rounded-2xl overflow-hidden border border-rose-200">
+        <div class="card rounded-2xl overflow-hidden border border-rose-200" data-yard-perf="soi5">
           <div class="px-5 py-4 bg-rose-50 border-b border-rose-200">
             <h3 class="text-xl font-bold text-rose-800">soi5</h3>
           </div>
@@ -810,7 +1342,7 @@
         </div>
 
         <!-- MHP 2PS Performance -->
-        <div class="card rounded-2xl overflow-hidden border border-orange-200">
+        <div class="card rounded-2xl overflow-hidden border border-orange-200" data-yard-perf="MHP 2PS">
           <div class="px-5 py-4 bg-orange-50 border-b border-orange-200">
             <h3 class="text-xl font-bold text-orange-800">MHP 2PS</h3>
           </div>
@@ -842,7 +1374,7 @@
         </div>
 
         <!-- AUTO TRANSPORT Performance -->
-        <div class="card rounded-2xl overflow-hidden border border-violet-200">
+        <div class="card rounded-2xl overflow-hidden border border-violet-200" data-yard-perf="Auto Transport">
           <div class="px-5 py-4 bg-violet-50 border-b border-violet-200">
             <h3 class="text-xl font-bold text-violet-800">AUTO TRANSPORT</h3>
           </div>
@@ -1023,6 +1555,9 @@
     let fbDb = null;
     let fbConnected = false;
     let authReady = false;
+    // Expose to Card Manager script
+    window.fbDb = null;
+    window.fbConnected = false;
     let isLoggedIn = false;
     let editingPM30 = false;
     let pm30NeedsRender = false;
@@ -1125,9 +1660,11 @@
         try {
             const app = firebase.initializeApp(firebaseConfig);
             fbDb = firebase.database();
+            window.fbDb = fbDb;
             
             fbDb.ref('.info/connected').on('value', snap => {
                 fbConnected = !!snap.val();
+                window.fbConnected = fbConnected;
                 updateFbUI();
             });
 
@@ -1331,7 +1868,7 @@
       }
     };
 
-    const renderMonthlyPM=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("mpmMonth").textContent=key;const now=new Date,dd=String(now.getDate()).padStart(2,"0"),mm=String(now.getMonth()+1).padStart(2,"0"),yyyy=now.getFullYear(),hh=String(now.getHours()).padStart(2,"0"),mi=String(now.getMinutes()).padStart(2,"0"),ss=String(now.getSeconds()).padStart(2,"0"),mpmStamp=document.getElementById("mpmStamp");mpmStamp&&(mpmStamp.textContent=` วันที่ ${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);const mpmActStamp=document.getElementById("mpmActStamp");mpmActStamp&&(mpmActStamp.textContent=`${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);yards.forEach(y=>ensureMonthYardData(key,y));subscribeMonth(key);const body=document.getElementById("mpmBody"),headerRow=document.getElementById("mpmHeader"),totalDays=daysInMonth(key);headerRow.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const[yy,mmN]=key.split("-").map(Number);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDays&&th.classList.add("text-slate-300"),headerRow.appendChild(th)}const sumTh=document.createElement("th");sumTh.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumTh.textContent="Sum",headerRow.appendChild(sumTh),body.innerHTML="";const perDayTotals=Array.from({length:31},()=>0),addRow=(label,yardKey)=>{const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.est||0),rowSum+=val,perDayTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),body.appendChild(tr)};addRow("Rayong","Rayong"),addRow("NYB2","NYB2"),addRow("soi5","soi5"),addRow("28 ไร่","28 Rai"),addRow("MHP 2PS","MHP 2PS"),addRow("Auto Transport","Auto Transport");const totalTr=document.createElement("tr"),totalFirst=document.createElement("td");totalFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalFirst.textContent="Total",totalTr.appendChild(totalFirst);let grandTotal=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-500 bg-emerald-50":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayTotals[d-1]||0,grandTotal+=val,td.textContent=val?val.toLocaleString():"0"),totalTr.appendChild(td)}var val;const grandTd=document.createElement("td");grandTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold",grandTd.textContent=grandTotal.toLocaleString(),totalTr.appendChild(grandTd),body.appendChild(totalTr);const actBody=document.getElementById("mpmActBody"),actHeader=document.getElementById("mpmActHeader");if(actHeader&&actBody){actHeader.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const totalDaysAct=daysInMonth(key);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDaysAct&&th.classList.add("text-slate-300"),actHeader.appendChild(th)}const sumThAct=document.createElement("th");sumThAct.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumThAct.textContent="Sum",actHeader.appendChild(sumThAct),actBody.innerHTML="";const perDayActTotals=Array.from({length:31},()=>0),addActRow=(label,yardKey)=>{const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.act||0),rowSum+=val,perDayActTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),actBody.appendChild(tr)};addActRow("Rayong","Rayong"),addActRow("NYB2","NYB2"),addActRow("soi5","soi5"),addActRow("28 ไร่","28 Rai"),addActRow("MHP 2PS","MHP 2PS"),addActRow("Auto Transport","Auto Transport");const totalActTr=document.createElement("tr"),totalActFirst=document.createElement("td");totalActFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalActFirst.textContent="Total",totalActTr.appendChild(totalActFirst);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-600 bg-emerald-50":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayActTotals[d-1]||0,td.textContent=val?val.toLocaleString():"0"),totalActTr.appendChild(td)}var val;const sumActTd=document.createElement("td");sumActTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold";const grandActTotal=perDayActTotals.reduce((a,b)=>a+b,0);sumActTd.textContent=grandActTotal.toLocaleString(),totalActTr.appendChild(sumActTd),actBody.appendChild(totalActTr)}},todayBreakdown=()=>{const today=new Date,keyToday=toMonthKey(today);yards.forEach(y=>ensureMonthYardData(keyToday,y));const perYard=yards.map(y=>{const rows=(appState.pmData[keyToday]||{})[y]||[],r=rows[today.getDate()-1]||{est:"",act:"",newCars:"",action:""};return{yard:y,est:Number(r.est||0),act:Number(r.act||0),newCars:Number(r.newCars||0),action:r.action||""}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyToday}-${String(today.getDate()).padStart(2,"0")}`}},tomorrowBreakdown=()=>{const today=new Date,tmr=new Date(today);tmr.setDate(tmr.getDate()+1);const keyTmr=toMonthKey(tmr);yards.forEach(y=>{ensureMonthYardData(keyTmr,y)});const perYard=yards.map(y=>{const rowsT=(appState.pmData[keyTmr]||{})[y]||[],rT=rowsT[tmr.getDate()-1]||{est:"",action:""},est=Number(rT.est||0),action=rT.action||"";return{yard:y,est,action}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyTmr}-${String(tmr.getDate()).padStart(2,"0")}`}},renderPerformance=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("perfMonth").textContent=key,yards.forEach(y=>ensureMonthYardData(key,y)),subscribeMonth(key);const monthData=appState.pmData[key]||{},calculateYardTotals=yardName=>{const yardData=monthData[yardName]||[];let estTotal=0,actTotal=0;yardData.forEach(day=>{estTotal+=Number(day.est||0),actTotal+=Number(day.act||0)});const diff=actTotal-estTotal,performance=estTotal>0?Math.round(actTotal/estTotal*100):0;return{estTotal,actTotal,diff,performance}},rayongData=calculateYardTotals("Rayong"),nyb2Data=calculateYardTotals("NYB2"),soi5Data=calculateYardTotals("soi5"),mhpData=calculateYardTotals("MHP 2PS"),atData=calculateYardTotals("Auto Transport");
+    const renderMonthlyPM=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("mpmMonth").textContent=key;const now=new Date,dd=String(now.getDate()).padStart(2,"0"),mm=String(now.getMonth()+1).padStart(2,"0"),yyyy=now.getFullYear(),hh=String(now.getHours()).padStart(2,"0"),mi=String(now.getMinutes()).padStart(2,"0"),ss=String(now.getSeconds()).padStart(2,"0"),mpmStamp=document.getElementById("mpmStamp");mpmStamp&&(mpmStamp.textContent=` วันที่ ${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);const mpmActStamp=document.getElementById("mpmActStamp");mpmActStamp&&(mpmActStamp.textContent=`${dd}/${mm}/${yyyy} ${hh}.${mi}.${ss}`);yards.forEach(y=>ensureMonthYardData(key,y));subscribeMonth(key);const body=document.getElementById("mpmBody"),headerRow=document.getElementById("mpmHeader"),totalDays=daysInMonth(key);headerRow.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const[yy,mmN]=key.split("-").map(Number);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDays&&th.classList.add("text-slate-300"),headerRow.appendChild(th)}const sumTh=document.createElement("th");sumTh.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumTh.textContent="Sum",headerRow.appendChild(sumTh),body.innerHTML="";const perDayTotals=Array.from({length:31},()=>0),_disabledMPMLabels=()=>{const s=new Set();document.querySelectorAll(".daily-card-item").forEach(c=>{if(c.dataset.cardActive==="false"){const n=c.dataset.cardName||"";if(n==="Rayong")s.add("Rayong");else if(n==="NYB2")s.add("NYB2");else if(n==="soi5"||n==="Soi 5")s.add("soi5");else if(n==="28 ไร่")s.add("28 ไร่");else if(n==="MHP 2PS")s.add("MHP 2PS");else if(n==="AUTO TRANSPORT"||n==="Auto Transport")s.add("Auto Transport");}});return s;},addRow=(label,yardKey)=>{if(_disabledMPMLabels().has(label))return;const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.est||0),rowSum+=val,perDayTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),body.appendChild(tr)};addRow("Rayong","Rayong"),addRow("NYB2","NYB2"),addRow("soi5","soi5"),addRow("28 ไร่","28 Rai"),addRow("MHP 2PS","MHP 2PS"),addRow("Auto Transport","Auto Transport");const totalTr=document.createElement("tr"),totalFirst=document.createElement("td");totalFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalFirst.textContent="Total",totalTr.appendChild(totalFirst);let grandTotal=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-500 bg-emerald-50":""}`,d>totalDays?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayTotals[d-1]||0,grandTotal+=val,td.textContent=val?val.toLocaleString():"0"),totalTr.appendChild(td)}var val;const grandTd=document.createElement("td");grandTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold",grandTd.textContent=grandTotal.toLocaleString(),totalTr.appendChild(grandTd),body.appendChild(totalTr);const actBody=document.getElementById("mpmActBody"),actHeader=document.getElementById("mpmActHeader");if(actHeader&&actBody){actHeader.innerHTML='<th class="text-left px-3 md:px-4 py-2 md:py-3 w-40 md:w-52 lg:w-56 bg-white">Yard</th>';const totalDaysAct=daysInMonth(key);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),th=document.createElement("th");th.className=`text-center px-2 md:px-3 py-2 ${w===0?"bg-red-200 text-red-700":""}`,th.textContent=d,d>totalDaysAct&&th.classList.add("text-slate-300"),actHeader.appendChild(th)}const sumThAct=document.createElement("th");sumThAct.className="text-center px-2 md:px-3 py-2 bg-indigo-50 text-indigo-700",sumThAct.textContent="Sum",actHeader.appendChild(sumThAct),actBody.innerHTML="";const perDayActTotals=Array.from({length:31},()=>0),addActRow=(label,yardKey)=>{if(_disabledMPMLabels().has(label))return;const tr=document.createElement("tr"),first=document.createElement("td");first.className="px-3 md:px-4 py-2 bg-white font-semibold sticky left-0 z-10",first.textContent=label,tr.appendChild(first);const dset=(appState.pmData[key]||{})[yardKey]||[];let rowSum=0;for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right ${w===0?"bg-red-50 text-red-700":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=Number(dset[d-1]?.act||0),rowSum+=val,perDayActTotals[d-1]+=val,td.textContent=val?val.toLocaleString():"0"),tr.appendChild(td)}var val;const sumCell=document.createElement("td");sumCell.className="px-2 md:px-3 py-2 text-right bg-indigo-50 font-bold text-indigo-700",sumCell.textContent=rowSum.toLocaleString(),tr.appendChild(sumCell),actBody.appendChild(tr)};addActRow("Rayong","Rayong"),addActRow("NYB2","NYB2"),addActRow("soi5","soi5"),addActRow("28 ไร่","28 Rai"),addActRow("MHP 2PS","MHP 2PS"),addActRow("Auto Transport","Auto Transport");const totalActTr=document.createElement("tr"),totalActFirst=document.createElement("td");totalActFirst.className="px-3 md:px-4 py-2 bg-white font-extrabold sticky left-0 z-10",totalActFirst.textContent="Total",totalActTr.appendChild(totalActFirst);for(let d=1;d<=31;d++){const dateObj=new Date(yy,mmN-1,d),w=dateObj.getDay(),isToday=(new Date).toDateString()===dateObj.toDateString(),td=document.createElement("td");td.className=`px-2 md:px-3 py-2 text-right font-bold ${w===0?"bg-red-100 text-red-700":""} ${isToday?"ring-2 ring-emerald-600 bg-emerald-50":""}`,d>totalDaysAct?(td.classList.add("text-slate-300"),td.textContent="-"):(val=perDayActTotals[d-1]||0,td.textContent=val?val.toLocaleString():"0"),totalActTr.appendChild(td)}var val;const sumActTd=document.createElement("td");sumActTd.className="px-2 md:px-3 py-2 text-right bg-indigo-600 text-white font-extrabold";const grandActTotal=perDayActTotals.reduce((a,b)=>a+b,0);sumActTd.textContent=grandActTotal.toLocaleString(),totalActTr.appendChild(sumActTd),actBody.appendChild(totalActTr)}},todayBreakdown=()=>{const today=new Date,keyToday=toMonthKey(today);yards.forEach(y=>ensureMonthYardData(keyToday,y));const perYard=yards.map(y=>{const rows=(appState.pmData[keyToday]||{})[y]||[],r=rows[today.getDate()-1]||{est:"",act:"",newCars:"",action:""};return{yard:y,est:Number(r.est||0),act:Number(r.act||0),newCars:Number(r.newCars||0),action:r.action||""}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyToday}-${String(today.getDate()).padStart(2,"0")}`}},tomorrowBreakdown=()=>{const today=new Date,tmr=new Date(today);tmr.setDate(tmr.getDate()+1);const keyTmr=toMonthKey(tmr);yards.forEach(y=>{ensureMonthYardData(keyTmr,y)});const perYard=yards.map(y=>{const rowsT=(appState.pmData[keyTmr]||{})[y]||[],rT=rowsT[tmr.getDate()-1]||{est:"",action:""},est=Number(rT.est||0),action=rT.action||"";return{yard:y,est,action}}),total=perYard.reduce((a,r)=>a+(Number.isFinite(r.est)?r.est:0),0);return{perYard,total,label:`${keyTmr}-${String(tmr.getDate()).padStart(2,"0")}`}},renderPerformance=()=>{const key=elements.monthPicker.value||toMonthKey(new Date());document.getElementById("perfMonth").textContent=key,yards.forEach(y=>ensureMonthYardData(key,y)),subscribeMonth(key);const monthData=appState.pmData[key]||{},calculateYardTotals=yardName=>{const yardData=monthData[yardName]||[];let estTotal=0,actTotal=0;yardData.forEach(day=>{estTotal+=Number(day.est||0),actTotal+=Number(day.act||0)});const diff=actTotal-estTotal,performance=estTotal>0?Math.round(actTotal/estTotal*100):0;return{estTotal,actTotal,diff,performance}},rayongData=calculateYardTotals("Rayong"),nyb2Data=calculateYardTotals("NYB2"),soi5Data=calculateYardTotals("soi5"),mhpData=calculateYardTotals("MHP 2PS"),atData=calculateYardTotals("Auto Transport");
     
     document.getElementById("rayong-est").textContent=rayongData.estTotal.toLocaleString(),document.getElementById("rayong-act").textContent=rayongData.actTotal.toLocaleString(),document.getElementById("rayong-diff").textContent=rayongData.diff>=0?`+${rayongData.diff.toLocaleString()}`:rayongData.diff.toLocaleString(),document.getElementById("rayong-perf").textContent=`${rayongData.performance}%`,document.getElementById("rayong-bar").style.width=`${Math.min(rayongData.performance,100)}%`,document.getElementById("rayong-diff").className=`text-2xl font-extrabold ${rayongData.diff>=0?"text-green-600":"text-red-600"}`,
     document.getElementById("nyb2-est").textContent=nyb2Data.estTotal.toLocaleString(),document.getElementById("nyb2-act").textContent=nyb2Data.actTotal.toLocaleString(),document.getElementById("nyb2-diff").textContent=nyb2Data.diff>=0?`+${nyb2Data.diff.toLocaleString()}`:nyb2Data.diff.toLocaleString(),document.getElementById("nyb2-perf").textContent=`${nyb2Data.performance}%`,document.getElementById("nyb2-bar").style.width=`${Math.min(nyb2Data.performance,100)}%`,document.getElementById("nyb2-diff").className=`text-2xl font-extrabold ${nyb2Data.diff>=0?"text-green-600":"text-red-600"}`,
@@ -1354,7 +1891,7 @@
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total",
 "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom","mhp_wait_group","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total",
-"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)})};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0)),view==="summary"&&(showView("summaryView"),renderSummary()),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance()),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)})};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
@@ -1456,10 +1993,410 @@ setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data
 
     boot();
 
-    window.addEventListener('online', () => { fbConnected = true; updateFbUI(); subscribeMonth(elements.monthPicker.value || toMonthKey(new Date())); });
-    window.addEventListener('offline', () => { fbConnected = false; updateFbUI(); });
+    window.addEventListener('online', () => { fbConnected = true; window.fbConnected = true; updateFbUI(); subscribeMonth(elements.monthPicker.value || toMonthKey(new Date())); if(typeof saveCardStates !== 'undefined') setTimeout(saveCardStates, 500); });
+    window.addEventListener('offline', () => { fbConnected = false; window.fbConnected = false; updateFbUI(); });
 
   });
+  </script>
+
+  <!-- Daily Card Manager -->
+  <script>
+  (function() {
+    const COLOR_MAP = {
+      emerald:{ border:'rgba(52,199,89,0.35)',  bg:'rgba(52,199,89,0.05)'  },
+      yellow: { border:'rgba(255,214,10,0.45)', bg:'rgba(255,214,10,0.06)' },
+      rose:   { border:'rgba(255,55,95,0.35)',  bg:'rgba(255,55,95,0.04)'  },
+      cyan:   { border:'rgba(50,173,230,0.35)', bg:'rgba(50,173,230,0.05)' },
+      orange: { border:'rgba(255,159,10,0.35)', bg:'rgba(255,159,10,0.05)' },
+      violet: { border:'rgba(191,90,242,0.35)', bg:'rgba(191,90,242,0.04)' },
+      slate:  { border:'rgba(142,142,147,0.3)', bg:'rgba(142,142,147,0.04)'},
+    };
+    let isManageMode = false;
+    let selectedColor = 'emerald';
+    let dragSrcEl = null;
+
+    function getContainer(){ return document.getElementById('dailyCardsContainer'); }
+
+    const STORAGE_KEY = 'pmyard_card_states';
+
+    // ── Save to localStorage (instant) + Firebase (when online) ──
+    function saveCardStates() {
+      const states = {};
+      document.querySelectorAll('.daily-card-item').forEach(card => {
+        const name = card.dataset.cardName;
+        if(name) states[name] = card.dataset.cardActive !== 'false';
+      });
+      // Always save locally first
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(states)); } catch(e){}
+      // Push to Firebase if available
+      try {
+        if(window.fbDb && window.fbConnected) {
+          window.fbDb.ref('/cardStates').set(states);
+        }
+      } catch(e){}
+    }
+
+    function loadCardStates() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch(e) { return {}; }
+    }
+
+    // ── Subscribe to Firebase cardStates (realtime sync across devices) ──
+    function subscribeCardStates() {
+      try {
+        if(!window.fbDb) return;
+        window.fbDb.ref('/cardStates').on('value', snap => {
+          const remote = snap.val();
+          if(!remote) return;
+          // Update localStorage
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(remote)); } catch(e){}
+          // Apply to cards
+          document.querySelectorAll('.daily-card-item').forEach(card => {
+            const name = card.dataset.cardName;
+            if(name && name in remote) {
+              const shouldBeActive = !!remote[name];
+              const isActive = card.dataset.cardActive !== 'false';
+              if(shouldBeActive !== isActive) {
+                card.dataset.cardActive = shouldBeActive ? 'true' : 'false';
+                applyCardState(card);
+              }
+            }
+          });
+          reorderCards();
+          updateCardCount();
+          setTimeout(() => window.syncAllDisabledYards && window.syncAllDisabledYards(), 100);
+        });
+      } catch(e) { console.warn('cardStates subscribe failed:', e); }
+    }
+
+    function initCards(){
+      const saved = loadCardStates();
+      document.querySelectorAll('.daily-card-item').forEach(card => {
+        if(!card.querySelector('.disabled-overlay')){
+          const ov = document.createElement('div');
+          ov.className = 'disabled-overlay';
+          ov.textContent = 'ปิดใช้งาน';
+          card.style.position = 'relative';
+          card.appendChild(ov);
+        }
+        const colorKey = card.dataset.cardColor || 'slate';
+        const c = COLOR_MAP[colorKey];
+        if(c){ card.style.borderColor = c.border; card.style.background = c.bg; }
+        // Restore saved state
+        const name = card.dataset.cardName;
+        if(name && name in saved) {
+          card.dataset.cardActive = saved[name] ? 'true' : 'false';
+        }
+        applyCardState(card);
+        addDragListeners(card);
+        addCardButtonListeners(card);
+      });
+      // Move disabled to bottom
+      reorderCards();
+      updateCardCount();
+    }
+
+    // Mapping: data-card-name -> { pm30Section, perfCard, mpmLabel }
+    // pm30Section = data-yard-section value on the wrap header
+    // perfCard = data-yard-perf value
+    // mpmLabel = label used in renderMonthlyPM addRow / addActRow
+    const YARD_MAP = {
+      'Rayong':         { pm30: 'Rayong',       perf: 'Rayong',         mpm: 'Rayong' },
+      'NYB2':           { pm30: 'NYB2',          perf: 'NYB2',           mpm: 'NYB2' },
+      'Soi 5':          { pm30: 'soi5',          perf: 'soi5',           mpm: 'soi5' },
+      'soi5':           { pm30: 'soi5',          perf: 'soi5',           mpm: 'soi5' },
+      '28 ไร่':         { pm30: '28 ไร่',        perf: null,             mpm: '28 ไร่' },
+      'MHP 2PS':        { pm30: 'MHP 2PS',       perf: 'MHP 2PS',        mpm: 'MHP 2PS' },
+      'AUTO TRANSPORT': { pm30: 'Auto Transport', perf: 'Auto Transport', mpm: 'Auto Transport' },
+    };
+
+    function syncYardVisibility(cardName, show) {
+      const map = YARD_MAP[cardName];
+      if(!map) return;
+
+      // ── PM30 view: hide/show the whole card div wrapping that yard ──
+      document.querySelectorAll('[data-yard-section]').forEach(el => {
+        if(el.dataset.yardSection === map.pm30) {
+          const card = el.closest('.card');
+          if(card) card.style.display = show ? '' : 'none';
+        }
+      });
+
+      // ── Monthly PM view: hide/show rows by Yard label (tr with first td matching) ──
+      // We use a MutationObserver approach: store hidden yards and patch addRow/addActRow
+      // Actually simplest: hide matching rows in the rendered tbody
+      ['mpmBody','mpmActBody'].forEach(tbodyId => {
+        const tbody = document.getElementById(tbodyId);
+        if(!tbody) return;
+        tbody.querySelectorAll('tr').forEach(tr => {
+          const firstTd = tr.querySelector('td:first-child');
+          if(firstTd && firstTd.textContent.trim() === map.mpm) {
+            tr.style.display = show ? '' : 'none';
+          }
+        });
+      });
+
+      // ── Performance view: hide/show the perf card ──
+      if(map.perf) {
+        document.querySelectorAll('[data-yard-perf]').forEach(el => {
+          if(el.dataset.yardPerf === map.perf) {
+            el.style.display = show ? '' : 'none';
+          }
+        });
+      }
+
+      // ── Summary view: hide/show rows in todayTable and tomorrowTable ──
+      ['todayTable','tomorrowTable'].forEach(tbId => {
+        const tb = document.getElementById(tbId);
+        if(!tb) return;
+        tb.querySelectorAll('tr').forEach(tr => {
+          const firstTd = tr.querySelector('td:first-child');
+          if(firstTd && firstTd.textContent.trim() === cardName) {
+            tr.style.display = show ? '' : 'none';
+          }
+        });
+      });
+
+      // Store state globally so re-renders respect it
+      window._disabledYards = window._disabledYards || new Set();
+      if(show) window._disabledYards.delete(cardName);
+      else window._disabledYards.add(cardName);
+    }
+
+    function applyCardState(card){
+      const active = card.dataset.cardActive !== 'false';
+      card.classList.toggle('daily-card-disabled', !active);
+      const btn = card.querySelector('.card-toggle-btn');
+      if(btn){
+        btn.textContent = active ? 'ปิดใช้งาน' : 'เปิดใช้งาน';
+        btn.style.background = active ? '#ff9f0a' : '#30d158';
+      }
+      // Sync other views
+      const name = card.dataset.cardName;
+      if(name) syncYardVisibility(name, active);
+    }
+
+    function updateCardCount(){
+      const total = document.querySelectorAll('.daily-card-item').length;
+      const active = document.querySelectorAll('.daily-card-item:not(.daily-card-disabled)').length;
+      const el = document.getElementById('dailyCardCount');
+      if(el) el.textContent = active + ' ใช้งาน / ' + total + ' การ์ด';
+    }
+
+    function setManageMode(on){
+      isManageMode = on;
+      const container = getContainer();
+      if(container) container.classList.toggle('daily-manage-mode', on);
+      const btn = document.getElementById('dailyManageBtn');
+      if(btn){
+        btn.classList.toggle('active', on);
+        if(on){
+          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M2 2l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> เสร็จสิ้น';
+        } else {
+          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="5.25" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="8.5" width="10" height="1.5" rx="0.75" fill="currentColor"/></svg> จัดการ';
+        }
+      }
+    }
+
+    function reorderCards(){
+      const container = getContainer();
+      if(!container) return;
+      const cards = Array.from(container.querySelectorAll(':scope > .daily-card-item'));
+      const active = cards.filter(c => c.dataset.cardActive !== 'false');
+      const inactive = cards.filter(c => c.dataset.cardActive === 'false');
+      [...active, ...inactive].forEach(c => container.appendChild(c));
+    }
+
+    function addCardButtonListeners(card){
+      const toggleBtn = card.querySelector('.card-toggle-btn');
+      const deleteBtn = card.querySelector('.card-delete-btn');
+      if(toggleBtn && !toggleBtn._bound){
+        toggleBtn._bound = true;
+        toggleBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          const isActive = card.dataset.cardActive !== 'false';
+          card.dataset.cardActive = isActive ? 'false' : 'true';
+          applyCardState(card);
+          reorderCards();
+          updateCardCount();
+          saveCardStates();
+        });
+      }
+      if(deleteBtn && !deleteBtn._bound){
+        deleteBtn._bound = true;
+        deleteBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          const name = card.dataset.cardName || 'การ์ดนี้';
+          if(confirm('ลบการ์ด "' + name + '" ออกจาก Daily Report?')){
+            card.style.transition = 'all 0.25s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => { card.remove(); updateCardCount(); saveCardStates(); }, 260);
+          }
+        });
+      }
+    }
+
+    function addDragListeners(card){
+      if(card._dragBound) return;
+      card._dragBound = true;
+      card.addEventListener('dragstart', e => {
+        if(!isManageMode){ e.preventDefault(); return; }
+        dragSrcEl = card;
+        setTimeout(() => card.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging','drag-over');
+        document.querySelectorAll('.daily-card-item').forEach(c => c.classList.remove('drag-over'));
+        dragSrcEl = null;
+      });
+      card.addEventListener('dragover', e => {
+        if(!isManageMode || !dragSrcEl || dragSrcEl === card) return;
+        e.preventDefault();
+        document.querySelectorAll('.daily-card-item').forEach(c => c.classList.remove('drag-over'));
+        card.classList.add('drag-over');
+      });
+      card.addEventListener('drop', e => {
+        if(!isManageMode || !dragSrcEl || dragSrcEl === card) return;
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const container = getContainer();
+        const cards = Array.from(container.querySelectorAll(':scope > .daily-card-item'));
+        const srcIdx = cards.indexOf(dragSrcEl);
+        const tgtIdx = cards.indexOf(card);
+        if(srcIdx < tgtIdx) container.insertBefore(dragSrcEl, card.nextSibling);
+        else container.insertBefore(dragSrcEl, card);
+        dragSrcEl = null;
+      });
+    }
+
+    function createNewCard(name, colorKey){
+      const container = getContainer();
+      const id = 'dailyCustomCard_' + Date.now();
+      const c = COLOR_MAP[colorKey] || COLOR_MAP.slate;
+      const section = document.createElement('section');
+      section.id = id;
+      section.draggable = true;
+      section.dataset.cardName = name;
+      section.dataset.cardColor = colorKey;
+      section.dataset.cardActive = 'true';
+      section.className = 'card rounded-2xl overflow-hidden mb-6 daily-card-item';
+      section.style.cssText = 'border:1px solid ' + c.border + ';background:' + c.bg + ';position:relative';
+      section.innerHTML =
+        '<div class="px-5 py-4 flex items-center justify-between" style="background:rgba(248,248,248,0.95);border-bottom:1px solid rgba(0,0,0,0.08)">' +
+        '<h3 class="text-lg font-bold card-title">' + name + '</h3>' +
+        '<div class="card-manage-btns hidden flex items-center gap-2">' +
+        '<button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button>' +
+        '<button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button>' +
+        '</div></div>' +
+        '<div class="card-body-wrap p-8 text-center" style="color:#aeaeb2">' +
+        '<div style="font-size:2.5rem;margin-bottom:0.75rem">📋</div>' +
+        '<div style="font-size:0.9rem;font-weight:600;color:#6e6e73">' + name + '</div>' +
+        '<div style="font-size:0.75rem;margin-top:0.25rem">การ์ดว่าง · เพิ่มเนื้อหาได้ในอนาคต</div>' +
+        '</div>' +
+        '<div class="disabled-overlay">ปิดใช้งาน</div>';
+      container.appendChild(section);
+      applyCardState(section);
+      addDragListeners(section);
+      addCardButtonListeners(section);
+      reorderCards();
+      updateCardCount();
+      saveCardStates();
+    }
+
+    function wireToolbar(){
+      const addBtn    = document.getElementById('dailyAddCardBtn');
+      const manageBtn = document.getElementById('dailyManageBtn');
+      const modal     = document.getElementById('addCardModal');
+      const confirmBtn= document.getElementById('addCardConfirm');
+      const cancelBtn = document.getElementById('addCardCancel');
+      const nameInput = document.getElementById('newCardName');
+      const colorOpts = document.querySelectorAll('.color-opt');
+
+      function openModal(){
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => nameInput && nameInput.focus(), 50);
+      }
+      function closeModal(){
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      if(addBtn) addBtn.addEventListener('click', openModal);
+      if(manageBtn) manageBtn.addEventListener('click', () => setManageMode(!isManageMode));
+      if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+      if(modal) modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+
+      colorOpts.forEach(btn => {
+        btn.addEventListener('click', () => {
+          colorOpts.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedColor = btn.dataset.color;
+        });
+      });
+      if(colorOpts.length){ colorOpts[0].classList.add('selected'); selectedColor = colorOpts[0].dataset.color; }
+
+      if(confirmBtn) confirmBtn.addEventListener('click', () => {
+        const name = (nameInput ? nameInput.value : '').trim();
+        if(!name){
+          if(nameInput) nameInput.style.borderColor = '#ff3b30';
+          nameInput && nameInput.focus();
+          return;
+        }
+        createNewCard(name, selectedColor);
+        closeModal();
+        if(nameInput){ nameInput.value = ''; nameInput.style.borderColor = ''; }
+        colorOpts.forEach(b => b.classList.remove('selected'));
+        if(colorOpts.length){ colorOpts[0].classList.add('selected'); selectedColor = colorOpts[0].dataset.color; }
+        if(isManageMode) setManageMode(false);
+      });
+
+      if(nameInput){
+        nameInput.addEventListener('keydown', e => {
+          if(e.key === 'Enter') confirmBtn && confirmBtn.click();
+          if(e.key === 'Escape') closeModal();
+        });
+      }
+    }
+
+    // Re-apply all disabled yard visibility after any re-render
+    window.syncAllDisabledYards = function() {
+      document.querySelectorAll('.daily-card-item').forEach(card => {
+        const active = card.dataset.cardActive !== 'false';
+        if(!active) {
+          const name = card.dataset.cardName;
+          if(name) syncYardVisibility(name, false);
+        }
+      });
+    };
+
+    function init(){
+      initCards();
+      wireToolbar();
+      // Initial sync on page load
+      setTimeout(window.syncAllDisabledYards, 600);
+      // Subscribe Firebase realtime sync — retry until fbDb is ready
+      let retries = 0;
+      const trySubscribe = () => {
+        if(window.fbDb) {
+          subscribeCardStates();
+        } else if(retries++ < 20) {
+          setTimeout(trySubscribe, 500);
+        }
+      };
+      setTimeout(trySubscribe, 800);
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      setTimeout(init, 400);
+    }
+  })();
   </script>
 </body>
 </html>
