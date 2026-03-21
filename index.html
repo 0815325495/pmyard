@@ -464,15 +464,20 @@
     .disabled-overlay {
       display: none;
       position: absolute; inset: 0; z-index: 10;
-      align-items: center; justify-content: center;
-      font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em;
-      color: #3a3a3c;
+      align-items: flex-start; justify-content: center;
+      padding-top: 1rem;
+      font-size: 1.35rem; font-weight: 900; letter-spacing: 0.04em;
+      color: #cc0000;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.18);
       background: rgba(210,210,215,0.55);
       backdrop-filter: blur(4px);
       border-radius: 14px;
       pointer-events: none;
     }
     .daily-card-disabled .disabled-overlay { display: flex; }
+
+    .add-car-btn { display: none !important; }
+    .daily-manage-mode .add-car-btn { display: inline-flex !important; }
 
     .daily-manage-mode .card-manage-btns { display: flex !important; }
     .daily-manage-mode .daily-card-item {
@@ -502,9 +507,11 @@
     .disabled-overlay {
       display: none;
       position: absolute; inset: 0; z-index: 10;
-      align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; letter-spacing: 0.06em;
-      color: #3a3a3c;
+      align-items: flex-start; justify-content: center;
+      padding-top: 1rem;
+      font-size: 1.35rem; font-weight: 900; letter-spacing: 0.04em;
+      color: #cc0000;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.18);
       background: rgba(200,200,200,0.5);
       backdrop-filter: blur(3px);
       border-radius: 14px;
@@ -843,6 +850,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_seal5_pre">SEAL5 (PRE)</span></label><input id="ry_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_other">อื่นๆ</span></label><input id="ry_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for ry -->
+            <div id="ry_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('ry')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -912,6 +922,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_seal5_pre">SEAL5 (PRE)</span></label><input id="ny_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_other">อื่นๆ</span></label><input id="ny_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for ny -->
+            <div id="ny_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('ny')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -981,6 +994,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_seal5_pre">SEAL5 (PRE)</span></label><input id="s5_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_other">อื่นๆ</span></label><input id="s5_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for s5 -->
+            <div id="s5_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('s5')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -1050,6 +1066,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_seal5_pre">SEAL5 (PRE)</span></label><input id="r28_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_other">อื่นๆ</span></label><input id="r28_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for r28 -->
+            <div id="r28_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('r28')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -1119,6 +1138,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_seal5_pre">SEAL5 (PRE)</span></label><input id="mhp_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_other">อื่นๆ</span></label><input id="mhp_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for mhp -->
+            <div id="mhp_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('mhp')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -1188,6 +1210,9 @@
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_seal5_pre">SEAL5 (PRE)</span></label><input id="at_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
               <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_other">อื่นๆ</span></label><input id="at_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
             </div>
+            <!-- Dynamic extra car rows for at -->
+            <div id="at_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
+            <button onclick="openAddCarModal('at')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
           </div>
           <div class="space-y-4">
             <div class="space-y-2">
@@ -2077,7 +2102,7 @@ setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data
         if(!card.querySelector('.disabled-overlay')){
           const ov = document.createElement('div');
           ov.className = 'disabled-overlay';
-          ov.textContent = 'ปิดใช้งาน';
+          ov.textContent = 'ไม่มีรถสินค้าจอดในพื้นที่';
           card.style.position = 'relative';
           card.appendChild(ov);
         }
@@ -2297,7 +2322,7 @@ setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data
         '<div style="font-size:0.9rem;font-weight:600;color:#6e6e73">' + name + '</div>' +
         '<div style="font-size:0.75rem;margin-top:0.25rem">การ์ดว่าง · เพิ่มเนื้อหาได้ในอนาคต</div>' +
         '</div>' +
-        '<div class="disabled-overlay">ปิดใช้งาน</div>';
+        '<div class="disabled-overlay">ไม่มีรถสินค้าจอดในพื้นที่</div>';
       container.appendChild(section);
       applyCardState(section);
       addDragListeners(section);
@@ -2396,6 +2421,366 @@ setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data
     } else {
       setTimeout(init, 400);
     }
+  })();
+  </script>
+
+  <!-- ADD CAR MODAL -->
+  <div id="addCarModalOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:22px;padding:1.75rem 2rem;width:min(94vw,480px);box-shadow:0 20px 60px rgba(0,0,0,0.25);position:relative;animation:slideUpModal 0.22s cubic-bezier(0.34,1.56,0.64,1)">
+      <button onclick="closeAddCarModal()" style="position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,0.07);border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6e6e73">&#x2715;</button>
+      <h3 style="font-size:1.15rem;font-weight:800;margin:0 0 0.3rem;color:#1d1d1f">+ เพิ่มรุ่นรถ (ทุก Yard)</h3>
+      <p style="font-size:0.78rem;color:#8e8e93;margin:0 0 1.2rem">รุ่นที่เพิ่มจะปรากฏในทุกการ์ดพร้อมกัน — ใส่จำนวนแยกกันได้ในแต่ละ Yard</p>
+      <div style="position:relative;margin-bottom:0.85rem">
+        <input id="addCarSearchInput" type="text" placeholder="ค้นหาหรือพิมพ์รุ่นใหม่ เช่น Sealion 5..."
+          style="width:100%;border:1.5px solid #d1d1d6;border-radius:12px;padding:0.65rem 0.9rem;font-size:0.9rem;font-weight:600;outline:none;color:#1d1d1f;background:#f9f9fb;box-sizing:border-box"
+          oninput="filterCarList()" onkeydown="addCarInputKeydown(event)" />
+        <div id="addCarDropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e5e5ea;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:10;max-height:220px;overflow-y:auto"></div>
+      </div>
+      <div style="margin-bottom:1rem">
+        <div style="font-size:0.72rem;font-weight:600;color:#8e8e93;margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:.05em">รุ่นที่มีในฐานข้อมูล</div>
+        <div id="addCarChips" style="display:flex;flex-wrap:wrap;gap:0.4rem"></div>
+      </div>
+      <div style="display:flex;gap:0.6rem;align-items:center;margin-top:0.5rem">
+        <div style="flex:1;font-size:0.85rem;font-weight:700;color:#1d1d1f;padding:0.55rem 0.8rem;background:#f5f5f7;border-radius:10px;min-height:2.2rem" id="addCarPreviewName">—</div>
+        <button onclick="confirmAddCar()" style="background:linear-gradient(135deg,#0071e3,#0064cc);color:#fff;border:none;border-radius:12px;padding:0.6rem 1.2rem;font-weight:700;font-size:0.9rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,113,227,0.35)">เพิ่ม</button>
+      </div>
+      <div style="margin-top:0.65rem;display:flex;align-items:center;gap:0.5rem">
+        <input type="checkbox" id="addCarSaveDb" checked style="accent-color:#0071e3;width:15px;height:15px">
+        <label for="addCarSaveDb" style="font-size:0.78rem;color:#6e6e73;cursor:pointer">บันทึกรุ่นนี้ไว้ในฐานข้อมูลสำหรับวันต่อไป</label>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUpModal {
+      from { opacity:0; transform:translateY(24px) scale(0.97); }
+      to   { opacity:1; transform:translateY(0)   scale(1); }
+    }
+    .car-chip {
+      display:inline-flex;align-items:center;gap:0.3rem;
+      padding:0.3rem 0.75rem;border-radius:999px;
+      background:#f0f0f5;border:1px solid #e0e0e8;
+      font-size:0.78rem;font-weight:600;color:#3a3a3c;
+      cursor:pointer;transition:all 0.15s;white-space:nowrap;
+    }
+    .car-chip:hover { background:#e0e0eb;border-color:#c7c7d4; }
+    .car-chip.chip-selected { background:#0071e3;color:#fff;border-color:#005ab5; }
+    .add-car-dropdown-item {
+      padding:0.55rem 0.9rem;font-size:0.88rem;font-weight:600;cursor:pointer;border-radius:8px;margin:2px 4px;
+      transition:background 0.1s;
+    }
+    .add-car-dropdown-item:hover { background:#f0f0f5; }
+    .extra-car-remove {
+      background:none;border:none;color:#aeaeb2;font-size:1rem;cursor:pointer;
+      padding:0 4px;transition:color 0.15s;line-height:1;flex-shrink:0;
+      display:none;
+    }
+    .extra-car-remove:hover { color:#ff3b30; }
+    .daily-manage-mode .extra-car-remove { display:inline-block; }
+  </style>
+
+  <script>
+  (() => {
+    const CAR_DB_KEY = 'pmyard_car_database_v1';
+    const EXTRA_CARS_KEY = 'pmyard_extra_cars_v1';
+
+    const DEFAULT_MODELS = [
+      'ATT3 (PRE)','ATT3 (EXT)',
+      'SEA6 (PRE)','SEA6 (DYM)',
+      'DOL (STD)','DOL (EXT)',
+      'SEAL5 (PRE)','Sealion 5','อื่นๆ'
+    ];
+
+    function loadCarDb() {
+      try { return JSON.parse(localStorage.getItem(CAR_DB_KEY)) || []; }
+      catch { return []; }
+    }
+    function saveCarDb(list) {
+      localStorage.setItem(CAR_DB_KEY, JSON.stringify(list));
+      if (window.fbDb) window.fbDb.ref('carDatabase').set(list).catch(()=>{});
+    }
+    function addToCarDb(name) {
+      let db = loadCarDb(); name = name.trim();
+      if (!name) return;
+      if (!db.find(m => m.toLowerCase() === name.toLowerCase())) { db.push(name); saveCarDb(db); }
+    }
+    function getAllModels() {
+      return [...new Set([...DEFAULT_MODELS, ...loadCarDb()])];
+    }
+
+    function loadExtraCars() {
+      try { return JSON.parse(localStorage.getItem(EXTRA_CARS_KEY)) || {}; }
+      catch { return {}; }
+    }
+    function saveExtraCars(obj) {
+      localStorage.setItem(EXTRA_CARS_KEY, JSON.stringify(obj));
+      if (window.fbDb) window.fbDb.ref('extraCarsConfig').set(obj).catch(()=>{});
+    }
+
+    // Firebase sync
+    function syncFromFirebase() {
+      if (!window.fbDb) return;
+      window.fbDb.ref('carDatabase').once('value').then(snap => {
+        const val = snap.val();
+        if (Array.isArray(val) && val.length) {
+          const merged = [...new Set([...loadCarDb(), ...val])];
+          localStorage.setItem(CAR_DB_KEY, JSON.stringify(merged));
+        }
+      }).catch(()=>{});
+      window.fbDb.ref('extraCarsConfig').once('value').then(snap => {
+        const val = snap.val();
+        if (val && typeof val === 'object') {
+          const local = loadExtraCars(); const merged = {...local};
+          Object.keys(val).forEach(yard => {
+            if (!merged[yard]) merged[yard] = [];
+            merged[yard] = [...new Set([...merged[yard], ...val[yard]])];
+          });
+          localStorage.setItem(EXTRA_CARS_KEY, JSON.stringify(merged));
+          Object.keys(merged).forEach(yard => renderExtraCars(yard));
+        }
+      }).catch(()=>{});
+    }
+
+    let _syncDone = false;
+    function trySyncFb() {
+      if (_syncDone) return;
+      if (window.fbDb) { _syncDone = true; syncFromFirebase(); }
+      else setTimeout(trySyncFb, 1200);
+    }
+    setTimeout(trySyncFb, 2000);
+
+    /* Modal state */
+    let _currentYard = null;
+
+    window.openAddCarModal = function(yard) {
+      _currentYard = yard;
+      document.getElementById('addCarSearchInput').value = '';
+      document.getElementById('addCarSearchInput').style.borderColor = '#d1d1d6';
+      document.getElementById('addCarPreviewName').textContent = '—';
+      document.getElementById('addCarDropdown').style.display = 'none';
+      document.getElementById('addCarSaveDb').checked = true;
+      renderChips();
+      document.getElementById('addCarModalOverlay').style.display = 'flex';
+      setTimeout(() => document.getElementById('addCarSearchInput').focus(), 80);
+    };
+
+    window.closeAddCarModal = function() {
+      document.getElementById('addCarModalOverlay').style.display = 'none';
+    };
+
+    document.getElementById('addCarModalOverlay').addEventListener('click', e => {
+      if (e.target.id === 'addCarModalOverlay') closeAddCarModal();
+    });
+
+    function renderChips() {
+      const container = document.getElementById('addCarChips');
+      const models = getAllModels();
+      container.innerHTML = '';
+      if (!models.length) {
+        container.innerHTML = '<span style="font-size:0.78rem;color:#aeaeb2">ยังไม่มีรุ่นในฐานข้อมูล</span>';
+        return;
+      }
+      models.forEach(name => {
+        const chip = document.createElement('button');
+        chip.className = 'car-chip';
+        chip.textContent = name;
+        chip.onclick = () => {
+          document.querySelectorAll('#addCarChips .car-chip').forEach(c => c.classList.remove('chip-selected'));
+          chip.classList.add('chip-selected');
+          document.getElementById('addCarSearchInput').value = name;
+          document.getElementById('addCarPreviewName').textContent = name;
+          document.getElementById('addCarDropdown').style.display = 'none';
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    window.filterCarList = function() {
+      const q = document.getElementById('addCarSearchInput').value.trim().toLowerCase();
+      const preview = document.getElementById('addCarSearchInput').value.trim();
+      document.getElementById('addCarPreviewName').textContent = preview || '—';
+      document.querySelectorAll('#addCarChips .car-chip').forEach(c => c.classList.remove('chip-selected'));
+      const dropdown = document.getElementById('addCarDropdown');
+      if (!q) { dropdown.style.display = 'none'; return; }
+      const matches = getAllModels().filter(m => m.toLowerCase().includes(q));
+      if (!matches.length) { dropdown.style.display = 'none'; return; }
+      dropdown.innerHTML = '';
+      matches.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'add-car-dropdown-item';
+        item.textContent = name;
+        item.onclick = () => {
+          document.getElementById('addCarSearchInput').value = name;
+          document.getElementById('addCarPreviewName').textContent = name;
+          dropdown.style.display = 'none';
+          document.querySelectorAll('#addCarChips .car-chip').forEach(c => c.classList.toggle('chip-selected', c.textContent === name));
+        };
+        dropdown.appendChild(item);
+      });
+      dropdown.style.display = 'block';
+    };
+
+    window.addCarInputKeydown = function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmAddCar(); }
+      if (e.key === 'Escape') closeAddCarModal();
+    };
+
+    // All known yard prefixes
+    const ALL_YARDS = ['ry','ny','s5','r28','mhp','at'];
+
+    // Map yard prefix -> yard name display (for modal header)
+    const YARD_LABELS = {ry:'Rayong',ny:'NYB2',s5:'Soi 5',r28:'28 ไร่',mhp:'MHP 2PS',at:'AUTO TRANSPORT'};
+
+    // Map yard prefix -> InFromParts compute function names (called on window)
+    const YARD_COMPUTE = {
+      ry: () => { if(window.computeRayongInFromParts) { window.computeRayongInFromParts(); window.computeRayongSums && window.computeRayongSums(); } },
+      ny: () => { if(window.computeNYB2InFromParts) { window.computeNYB2InFromParts(); window.computeNYB2Sums && window.computeNYB2Sums(); } },
+      s5: () => { if(window.computeS5InFromParts) { window.computeS5InFromParts(); window.computeS5Sums && window.computeS5Sums(); } },
+      r28:() => { if(window.compute28RaiInFromParts) { window.compute28RaiInFromParts(); window.compute28RaiSums && window.compute28RaiSums(); } },
+      mhp:() => { if(window.computeMHPInFromParts) { window.computeMHPInFromParts(); window.computeMHPSums && window.computeMHPSums(); } },
+      at: () => { if(window.computeAutoTransportInFromParts) { window.computeAutoTransportInFromParts(); window.computeAutoTransportSums && window.computeAutoTransportSums(); } },
+    };
+
+    window.confirmAddCar = function() {
+      const name = document.getElementById('addCarSearchInput').value.trim();
+      if (!name) {
+        document.getElementById('addCarSearchInput').style.borderColor = '#ff3b30';
+        document.getElementById('addCarSearchInput').focus();
+        setTimeout(() => document.getElementById('addCarSearchInput').style.borderColor = '#d1d1d6', 1500);
+        return;
+      }
+      if (document.getElementById('addCarSaveDb').checked) addToCarDb(name);
+
+      // Add to ALL yards (global car model)
+      const extra = loadExtraCars();
+      ALL_YARDS.forEach(yard => {
+        if (!extra[yard]) extra[yard] = [];
+        if (!extra[yard].includes(name)) extra[yard].push(name);
+      });
+      saveExtraCars(extra);
+      ALL_YARDS.forEach(yard => renderExtraCars(yard));
+      closeAddCarModal();
+    };
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Get extra car sum for a yard (sum all extra inputs)
+    function getExtraCarSum(yard) {
+      const extra = loadExtraCars();
+      const list = extra[yard] || [];
+      let sum = 0;
+      list.forEach((name, idx) => {
+        const el = document.getElementById(yard + '_extra_' + idx);
+        if (el && el.value !== '') sum += (parseInt(el.value) || 0);
+      });
+      return sum;
+    }
+
+    // Recompute yard IN = base model sum + extra car sum, then total = IN + hold
+    function recomputeYardInWithExtras(yard) {
+      // Get base model IDs for each yard
+      const baseMap = {
+        ry:  ['ry_att3_pre','ry_att3_ext','ry_sea6_pre','ry_sea6_dym','ry_dol_std','ry_dol_ext','ry_seal5_pre','ry_other'],
+        ny:  ['ny_att3_pre','ny_att3_ext','ny_sea6_pre','ny_sea6_dym','ny_dol_std','ny_dol_ext','ny_seal5_pre','ny_other'],
+        s5:  ['s5_att3_pre','s5_att3_ext','s5_sea6_pre','s5_sea6_dym','s5_dol_std','s5_dol_ext','s5_seal5_pre','s5_other'],
+        r28: ['r28_att3_pre','r28_att3_ext','r28_sea6_pre','r28_sea6_dym','r28_dol_std','r28_dol_ext','r28_seal5_pre','r28_other'],
+        mhp: ['mhp_att3_pre','mhp_att3_ext','mhp_sea6_pre','mhp_sea6_dym','mhp_dol_std','mhp_dol_ext','mhp_seal5_pre','mhp_other'],
+        at:  ['at_att3_pre','at_att3_ext','at_sea6_pre','at_sea6_dym','at_dol_std','at_dol_ext','at_seal5_pre','at_other'],
+      };
+      const ids = baseMap[yard] || [];
+      const getN = id => { const el = document.getElementById(id); return (el && el.value !== '') ? (parseInt(el.value)||0) : 0; };
+      const baseSum = ids.reduce((a,id) => a + getN(id), 0);
+      const anyBase = ids.some(id => { const el = document.getElementById(id); return el && el.value !== ''; });
+      const extraSum = getExtraCarSum(yard);
+      const extraList = (loadExtraCars()[yard] || []);
+      const anyExtra = extraList.some((n,i) => { const el = document.getElementById(yard+'_extra_'+i); return el && el.value !== ''; });
+
+      const inEl = document.getElementById(yard + '_in');
+      const holdEl = document.getElementById(yard + '_hold');
+      const totalEl = document.getElementById(yard + '_total');
+      if (!inEl || !totalEl) return;
+
+      if (anyBase || anyExtra) {
+        inEl.value = baseSum + extraSum;
+        const holdVal = (holdEl && holdEl.value !== '') ? (parseInt(holdEl.value)||0) : 0;
+        totalEl.value = (baseSum + extraSum) + holdVal;
+      } else if (holdEl && holdEl.value !== '') {
+        // Only hold filled
+        totalEl.value = parseInt(holdEl.value)||0;
+      }
+    }
+
+    function renderExtraCars(yard) {
+      const container = document.getElementById(yard + '_extra_cars_container');
+      if (!container) return;
+      const list = (loadExtraCars()[yard] || []);
+      container.innerHTML = '';
+      list.forEach((name, idx) => {
+        const inputId = yard + '_extra_' + idx;
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-3';
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:0.5rem';
+        row.innerHTML =
+          '<label class="text-slate-700" style="font-weight:600;display:flex;align-items:center;gap:0.35rem;flex:1">' +
+            '<button class="extra-car-remove" title="ลบ" onclick="removeExtraCar(\'' + yard + '\',' + idx + ')">&#x2715;</button>' +
+            '<span>' + escHtml(name) + '</span>' +
+          '</label>' +
+          '<div class="cc-unit-wrap inline-flex items-center gap-2">' +
+            '<input id="' + inputId + '" type="number" min="0" ' +
+              'class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" ' +
+              'oninput="recomputeYardInWithExtras(\'' + yard + '\')" />' +
+            '<span class="unit-u text-slate-500 text-sm select-none">U</span>' +
+          '</div>';
+        container.appendChild(row);
+      });
+    }
+
+    // Expose recompute globally so existing compute functions can also call it
+    window.recomputeYardInWithExtras = recomputeYardInWithExtras;
+
+    window.removeExtraCar = function(yard, idx) {
+      const extra = loadExtraCars();
+      // Remove from ALL yards
+      ALL_YARDS.forEach(y => {
+        if (!extra[y]) return;
+        const name = extra[yard] ? extra[yard][idx] : null;
+        if (name) {
+          const i = extra[y].indexOf(name);
+          if (i !== -1) extra[y].splice(i, 1);
+        }
+      });
+      saveExtraCars(extra);
+      ALL_YARDS.forEach(y => { renderExtraCars(y); recomputeYardInWithExtras(y); });
+    };
+
+    // Patch existing computeXxxInFromParts to also include extra cars
+    // We hook into the hold input changes for each yard to recompute totals
+    function hookHoldInputs() {
+      ALL_YARDS.forEach(yard => {
+        const holdEl = document.getElementById(yard + '_hold');
+        if (holdEl && !holdEl._extraHooked) {
+          holdEl._extraHooked = true;
+          holdEl.addEventListener('input', () => recomputeYardInWithExtras(yard));
+        }
+      });
+    }
+
+    // Init on load
+    function initExtraCars() {
+      const extra = loadExtraCars();
+      ALL_YARDS.forEach(yard => {
+        renderExtraCars(yard);
+        recomputeYardInWithExtras(yard);
+      });
+      hookHoldInputs();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initExtraCars);
+    else setTimeout(initExtraCars, 300);
+
+    // Also hook after a short delay to ensure main app is ready
+    setTimeout(() => { hookHoldInputs(); ALL_YARDS.forEach(y => recomputeYardInWithExtras(y)); }, 1200);
   })();
   </script>
 </body>
