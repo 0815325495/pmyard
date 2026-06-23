@@ -1670,6 +1670,7 @@
                 enableEditing();
                 elements.loginModal.classList.add('hidden');
                 elements.loginModal.classList.remove('flex');
+                setTimeout(() => window.pushCustomCardsToFirebase && window.pushCustomCardsToFirebase(), 500);
             } else {
                 elements.loginError.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
                 elements.loginError.classList.remove('hidden');
@@ -2000,6 +2001,7 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
       updateAuthUI();
       if (isLoggedIn) {
         enableEditing();
+        setTimeout(() => window.pushCustomCardsToFirebase && window.pushCustomCardsToFirebase(), 800);
       } else {
         disableEditing();
       }
@@ -2062,16 +2064,84 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
     ];
     const MODEL_FIELDS = ['att3_pre','att3_ext','sea6_pre','sea6_dym','dol_std','dol_ext','seal5_pre','other'];
     const OUT_FIELDS = ['out_nyb2','out_soi5','out_dealer','out_custom'];
+    const wiredCustom = new Set();
 
     function loadCustomCards() {
       try { return JSON.parse(localStorage.getItem(CUSTOM_CARDS_KEY)) || []; }
       catch { return []; }
     }
-    function saveCustomCards(list) {
+    let _pushingCustomCards = false;
+    function saveCustomCards(list, pushFirebase) {
+      if (pushFirebase === undefined) pushFirebase = true;
       try { localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify(list)); } catch(e){}
+      if (!pushFirebase) return;
       try {
-        if (window.fbDb && window.fbConnected) window.fbDb.ref('customCardsConfig').set(list);
-      } catch(e){}
+        if (window.fbDb) {
+          _pushingCustomCards = true;
+          window.fbDb.ref('customCardsConfig').set(list, () => {
+            setTimeout(() => { _pushingCustomCards = false; }, 400);
+          });
+        }
+      } catch(e) { _pushingCustomCards = false; }
+    }
+    function ensureCustomCardsInDom(list) {
+      if (!Array.isArray(list)) return;
+      const remoteIds = new Set(list.map(c => c.id));
+      document.querySelectorAll('.daily-card-item[data-card-prefix]').forEach(card => {
+        if (card.id && !remoteIds.has(card.id)) {
+          if (card.dataset.cardPrefix) wiredCustom.delete(card.dataset.cardPrefix);
+          card.remove();
+        }
+      });
+      const saved = loadCardStates();
+      list.forEach(cfg => {
+        if (!cfg || !cfg.id || !cfg.prefix) return;
+        let card = document.getElementById(cfg.id);
+        if (!card) {
+          mountCustomCard(cfg);
+          card = document.getElementById(cfg.id);
+        }
+        if (card && cfg.name && cfg.name in saved) {
+          card.dataset.cardActive = saved[cfg.name] ? 'true' : 'false';
+          applyCardState(card);
+        }
+      });
+      reorderCards();
+      updateCardCount();
+      if (window.renderExtraCars) getCustomPrefixes().forEach(p => window.renderExtraCars(p));
+      if (window.addCustomUnitSuffixes) window.addCustomUnitSuffixes();
+      setTimeout(() => window.syncAllDisabledYards && window.syncAllDisabledYards(), 100);
+    }
+    function applyCustomCardsFromRemote(remoteList) {
+      const list = Array.isArray(remoteList) ? remoteList : [];
+      const local = loadCustomCards();
+      if (JSON.stringify(local) === JSON.stringify(list)) {
+        ensureCustomCardsInDom(list);
+        return;
+      }
+      saveCustomCards(list, false);
+      ensureCustomCardsInDom(list);
+    }
+    let _customCardsSubscribed = false;
+    function subscribeCustomCards() {
+      try {
+        if (!window.fbDb || _customCardsSubscribed) return;
+        _customCardsSubscribed = true;
+        window.fbDb.ref('customCardsConfig').on('value', snap => {
+          if (_pushingCustomCards) return;
+          const remote = snap.val();
+          if (!remote) {
+            const local = loadCustomCards();
+            if (local.length) saveCustomCards(local);
+            return;
+          }
+          applyCustomCardsFromRemote(remote);
+        });
+      } catch(e) { console.warn('customCardsConfig subscribe failed:', e); }
+    }
+    function pushCustomCardsToFirebase() {
+      const list = loadCustomCards();
+      if (list.length) saveCustomCards(list);
     }
     function getCustomPrefixes() {
       return [...document.querySelectorAll('.daily-card-item[data-card-prefix]')]
@@ -2212,8 +2282,6 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
       getCustomPrefixes().forEach(recomputeCustomYard);
     }
 
-    const wiredCustom = new Set();
-
     function wireCustomCardInputs(prefix) {
       if (wiredCustom.has(prefix)) return;
       wiredCustom.add(prefix);
@@ -2305,6 +2373,7 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
     window.addCustomUnitSuffixes = addCustomUnitSuffixes;
     window.recomputeAllCustomCards = recomputeAllCustomCards;
     window.getAllYardPrefixes = getAllYardPrefixes;
+    window.pushCustomCardsToFirebase = pushCustomCardsToFirebase;
 
     function mountCustomCard(cfg) {
       const container = getContainer();
@@ -2696,11 +2765,18 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
       const trySubscribe = () => {
         if(window.fbDb) {
           subscribeCardStates();
+          subscribeCustomCards();
+          pushCustomCardsToFirebase();
         } else if(retries++ < 20) {
           setTimeout(trySubscribe, 500);
         }
       };
       setTimeout(trySubscribe, 800);
+      window.addEventListener('online', () => {
+        setTimeout(() => {
+          if (window.fbDb) pushCustomCardsToFirebase();
+        }, 600);
+      });
     }
 
     if(document.readyState === 'loading'){
