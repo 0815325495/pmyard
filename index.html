@@ -1916,23 +1916,23 @@
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total",
 "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom","mhp_wait_group","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total",
-"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)})};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)});window.addCustomUnitSuffixes&&window.addCustomUnitSuffixes()};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
 "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom","mhp_wait_group","mhp_out_total","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total","mhp_note",
-"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_out_total","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total","at_note"];clearIds.forEach(id=>{const el=document.getElementById(id);el&&(el.value="")});const data=await getDailyOnce(),setVal=(id,v)=>{const el=document.getElementById(id);el&&(el.value=v??"")};if(data){setVal("ry_in",data.ry_in),setVal("ry_hold",data.ry_hold),setVal("ry_total",data.ry_total),setVal("ry_att3_pre",data.ry_att3_pre),setVal("ry_att3_ext",data.ry_att3_ext),setVal("ry_sea6_pre",data.ry_sea6_pre),setVal("ry_sea6_dym",data.ry_sea6_dym),setVal("ry_dol_std",data.ry_dol_std),setVal("ry_dol_ext",data.ry_dol_ext),setVal("ry_seal5_pre",data.ry_seal5_pre),setVal("ry_other",data.ry_other),setVal("ry_out_nyb2",data.ry_out_nyb2),setVal("ry_out_soi5",data.ry_out_soi5),setVal("ry_out_dealer",data.ry_out_dealer),setVal("ry_out_custom",data.ry_out_custom),setVal("ry_wait_group",data.ry_wait_group),setVal("ry_out_total",data.ry_out_total),setVal("ry_fc_hold",data.ry_fc_hold),setVal("ry_fc_in",data.ry_fc_in),setVal("ry_fc_total",data.ry_fc_total),setVal("ry_pm",data.ry_pm),setVal("ry_pm_early",data.ry_pm_early),setVal("ry_pm_hold",data.ry_pm_hold),setVal("ry_pm_total",data.ry_pm_total),setVal("ry_note",data.ry_note),
+"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_out_total","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total","at_note"];clearIds.forEach(id=>{const el=document.getElementById(id);el&&(el.value="")});window.clearCustomDailyFields&&window.clearCustomDailyFields();const data=await getDailyOnce(),setVal=(id,v)=>{const el=document.getElementById(id);el&&(el.value=v??"")};if(data){setVal("ry_in",data.ry_in),setVal("ry_hold",data.ry_hold),setVal("ry_total",data.ry_total),setVal("ry_att3_pre",data.ry_att3_pre),setVal("ry_att3_ext",data.ry_att3_ext),setVal("ry_sea6_pre",data.ry_sea6_pre),setVal("ry_sea6_dym",data.ry_sea6_dym),setVal("ry_dol_std",data.ry_dol_std),setVal("ry_dol_ext",data.ry_dol_ext),setVal("ry_seal5_pre",data.ry_seal5_pre),setVal("ry_other",data.ry_other),setVal("ry_out_nyb2",data.ry_out_nyb2),setVal("ry_out_soi5",data.ry_out_soi5),setVal("ry_out_dealer",data.ry_out_dealer),setVal("ry_out_custom",data.ry_out_custom),setVal("ry_wait_group",data.ry_wait_group),setVal("ry_out_total",data.ry_out_total),setVal("ry_fc_hold",data.ry_fc_hold),setVal("ry_fc_in",data.ry_fc_in),setVal("ry_fc_total",data.ry_fc_total),setVal("ry_pm",data.ry_pm),setVal("ry_pm_early",data.ry_pm_early),setVal("ry_pm_hold",data.ry_pm_hold),setVal("ry_pm_total",data.ry_pm_total),setVal("ry_note",data.ry_note),
 setVal("ny_in",data.ny_in),setVal("ny_hold",data.ny_hold),setVal("ny_total",data.ny_total),setVal("ny_att3_pre",data.ny_att3_pre),setVal("ny_att3_ext",data.ny_att3_ext),setVal("ny_sea6_pre",data.ny_sea6_pre),setVal("ny_sea6_dym",data.ny_sea6_dym),setVal("ny_dol_std",data.ny_dol_std),setVal("ny_dol_ext",data.ny_dol_ext),setVal("ny_seal5_pre",data.ny_seal5_pre),setVal("ny_other",data.ny_other),setVal("ny_out_rayong",data.ny_out_rayong),setVal("ny_out_soi5",data.ny_out_soi5),setVal("ny_out_dealer",data.ny_out_dealer),setVal("ny_out_custom",data.ny_out_custom),setVal("ny_wait_group",data.ny_wait_group),setVal("ny_out_total",data.ny_out_total),setVal("ny_fc_hold",data.ny_fc_hold),setVal("ny_fc_in",data.ny_fc_in),setVal("ny_fc_total",data.ny_fc_total),setVal("ny_pm",data.ny_pm),setVal("ny_pm_early",data.ny_pm_early),setVal("ny_pm_hold",data.ny_pm_hold),setVal("ny_pm_total",data.ny_pm_total),setVal("ny_note",data.ny_note),
 setVal("s5_in",data.s5_in),setVal("s5_hold",data.s5_hold),setVal("s5_total",data.s5_total),setVal("s5_att3_pre",data.s5_att3_pre),setVal("s5_att3_ext",data.s5_att3_ext),setVal("s5_sea6_pre",data.s5_sea6_pre),setVal("s5_sea6_dym",data.s5_sea6_dym),setVal("s5_dol_std",data.s5_dol_std),setVal("s5_dol_ext",data.s5_dol_ext),setVal("s5_seal5_pre",data.s5_seal5_pre),setVal("s5_other",data.s5_other),setVal("s5_out_rayong",data.s5_out_rayong),setVal("s5_out_nyb2",data.s5_out_nyb2),setVal("s5_out_dealer",data.s5_out_dealer),setVal("s5_out_custom",data.s5_out_custom),setVal("s5_wait_group",data.s5_wait_group),setVal("s5_out_total",data.s5_out_total),setVal("s5_fc_hold",data.s5_fc_hold),setVal("s5_fc_in",data.s5_fc_in),setVal("s5_fc_total",data.s5_fc_total),setVal("s5_pm",data.s5_pm),setVal("s5_pm_early",data.s5_pm_early),setVal("s5_pm_hold",data.s5_pm_hold),setVal("s5_pm_total",data.s5_pm_total),setVal("s5_note",data.s5_note),
 setVal("r28_in",data.r28_in),setVal("r28_hold",data.r28_hold),setVal("r28_total",data.r28_total),setVal("r28_att3_pre",data.r28_att3_pre),setVal("r28_att3_ext",data.r28_att3_ext),setVal("r28_sea6_pre",data.r28_sea6_pre),setVal("r28_sea6_dym",data.r28_sea6_dym),setVal("r28_dol_std",data.r28_dol_std),setVal("r28_dol_ext",data.r28_dol_ext),setVal("r28_seal5_pre",data.r28_seal5_pre),setVal("r28_other",data.r28_other),setVal("r28_out_nyb2",data.r28_out_nyb2),setVal("r28_out_soi5",data.r28_out_soi5),setVal("r28_out_dealer",data.r28_out_dealer),setVal("r28_out_custom",data.r28_out_custom),setVal("r28_wait_group",data.r28_wait_group),setVal("r28_out_total",data.r28_out_total),setVal("r28_fc_hold",data.r28_fc_hold),setVal("r28_fc_in",data.r28_fc_in),setVal("r28_fc_total",data.r28_fc_total),setVal("r28_pm",data.r28_pm),setVal("r28_pm_early",data.r28_pm_early),setVal("r28_pm_hold",data.r28_pm_hold),setVal("r28_pm_total",data.r28_pm_total),setVal("r28_note",data.r28_note),
 setVal("mhp_in",data.mhp_in),setVal("mhp_hold",data.mhp_hold),setVal("mhp_total",data.mhp_total),setVal("mhp_att3_pre",data.mhp_att3_pre),setVal("mhp_att3_ext",data.mhp_att3_ext),setVal("mhp_sea6_pre",data.mhp_sea6_pre),setVal("mhp_sea6_dym",data.mhp_sea6_dym),setVal("mhp_dol_std",data.mhp_dol_std),setVal("mhp_dol_ext",data.mhp_dol_ext),setVal("mhp_seal5_pre",data.mhp_seal5_pre),setVal("mhp_other",data.mhp_other),setVal("mhp_out_nyb2",data.mhp_out_nyb2),setVal("mhp_out_soi5",data.mhp_out_soi5),setVal("mhp_out_dealer",data.mhp_out_dealer),setVal("mhp_out_custom",data.mhp_out_custom),setVal("mhp_wait_group",data.mhp_wait_group),setVal("mhp_out_total",data.mhp_out_total),setVal("mhp_fc_hold",data.mhp_fc_hold),setVal("mhp_fc_in",data.mhp_fc_in),setVal("mhp_fc_total",data.mhp_fc_total),setVal("mhp_pm",data.mhp_pm),setVal("mhp_pm_early",data.mhp_pm_early),setVal("mhp_pm_hold",data.mhp_pm_hold),setVal("mhp_pm_total",data.mhp_pm_total),setVal("mhp_note",data.mhp_note),
-setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data.at_total),setVal("at_att3_pre",data.at_att3_pre),setVal("at_att3_ext",data.at_att3_ext),setVal("at_sea6_pre",data.at_sea6_pre),setVal("at_sea6_dym",data.at_sea6_dym),setVal("at_dol_std",data.at_dol_std),setVal("at_dol_ext",data.at_dol_ext),setVal("at_seal5_pre",data.at_seal5_pre),setVal("at_other",data.at_other),setVal("at_out_nyb2",data.at_out_nyb2),setVal("at_out_soi5",data.at_out_soi5),setVal("at_out_dealer",data.at_out_dealer),setVal("at_out_custom",data.at_out_custom),setVal("at_wait_group",data.at_wait_group),setVal("at_out_total",data.at_out_total),setVal("at_fc_hold",data.at_fc_hold),setVal("at_fc_in",data.at_fc_in),setVal("at_fc_total",data.at_fc_total),setVal("at_pm",data.at_pm),setVal("at_pm_early",data.at_pm_early),setVal("at_pm_hold",data.at_pm_hold),setVal("at_pm_total",data.at_pm_total),setVal("at_note",data.at_note);
-try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(localStorage.getItem('pmyard_extra_cars_v1')||'{}');ALL_YARDS.forEach(yard=>{const list=extra[yard]||[];list.forEach((name,idx)=>{const key=yard+'_extra_'+idx;const el=document.getElementById(key);if(el)el.value=data[key]??'';});});}catch(e){}
-}const dailyBadge=document.getElementById("dailyBadge");dailyBadge&&(dailyBadge.textContent=dateKey(selectedDate)),setTimeout(()=>{computeRayongInFromParts(),computeRayongSums(),computeRayongOutTotal(),computeRayongPMTotal(),computeNYB2InFromParts(),computeNYB2Sums(),computeNYB2OutTotal(),computeNYB2PMTotal(),computeS5InFromParts(),computeS5Sums(),computeS5OutTotal(),computeS5PMTotal(),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal(),compute28RaiPMTotal(),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal(),computeMHPPMTotal(),computeAutoTransportInFromParts(),computeAutoTransportSums(),computeAutoTransportOutTotal(),computeAutoTransportPMTotal();if(window.recomputeYardInWithExtras){['ry','ny','s5','r28','mhp','at'].forEach(y=>window.recomputeYardInWithExtras(y));}},0),addUnitSuffixesDaily();
+setVal("at_in",data.at_in),setVal("at_hold",data.at_hold),setVal("at_total",data.at_total),setVal("at_att3_pre",data.at_att3_pre),setVal("at_att3_ext",data.at_att3_ext),setVal("at_sea6_pre",data.at_sea6_pre),setVal("at_sea6_dym",data.at_sea6_dym),setVal("at_dol_std",data.at_dol_std),setVal("at_dol_ext",data.at_dol_ext),setVal("at_seal5_pre",data.at_seal5_pre),setVal("at_other",data.at_other),setVal("at_out_nyb2",data.at_out_nyb2),setVal("at_out_soi5",data.at_out_soi5),setVal("at_out_dealer",data.at_out_dealer),setVal("at_out_custom",data.at_out_custom),setVal("at_wait_group",data.at_wait_group),setVal("at_out_total",data.at_out_total),setVal("at_fc_hold",data.at_fc_hold),setVal("at_fc_in",data.at_fc_in),setVal("at_fc_total",data.at_fc_total),setVal("at_pm",data.at_pm),setVal("at_pm_early",data.at_pm_early),setVal("at_pm_hold",data.at_pm_hold),setVal("at_pm_total",data.at_pm_total),setVal("at_note",data.at_note);window.restoreCustomDailyData&&window.restoreCustomDailyData(data);
+try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(localStorage.getItem('pmyard_extra_cars_v1')||'{}');ALL_YARDS.forEach(yard=>{const list=extra[yard]||[];list.forEach((name,idx)=>{const key=yard+'_extra_'+idx;const el=document.getElementById(key);if(el)el.value=data[key]??'';});});}catch(e){}
+}const dailyBadge=document.getElementById("dailyBadge");dailyBadge&&(dailyBadge.textContent=dateKey(selectedDate)),setTimeout(()=>{computeRayongInFromParts(),computeRayongSums(),computeRayongOutTotal(),computeRayongPMTotal(),computeNYB2InFromParts(),computeNYB2Sums(),computeNYB2OutTotal(),computeNYB2PMTotal(),computeS5InFromParts(),computeS5Sums(),computeS5OutTotal(),computeS5PMTotal(),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal(),compute28RaiPMTotal(),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal(),computeMHPPMTotal(),computeAutoTransportInFromParts(),computeAutoTransportSums(),computeAutoTransportOutTotal(),computeAutoTransportPMTotal();if(window.recomputeYardInWithExtras){(window.getAllYardPrefixes?window.getAllYardPrefixes():['ry','ny','s5','r28','mhp','at']).forEach(y=>window.recomputeYardInWithExtras(y));}window.recomputeAllCustomCards&&window.recomputeAllCustomCards();},0),addUnitSuffixesDaily();
         if (!isLoggedIn) {
             disableEditing();
         }
-      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){setDaily(collectDaily());const ids=["dailyRayongCard","dailyNYB2Card","dailySoi5Card","daily28RaiCard","dailyMHPCard","dailyAutoTransportCard"],canvases=[];for(const id of ids){const el=document.getElementById(id);if(!el)continue;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio});canvases.push(c)}if(0===canvases.length)return;const gap=24,width=Math.max(...canvases.map(c=>c.width)),height=canvases.reduce((h,c,i)=>h+c.height+(i>0?gap:0),0),combo=document.createElement("canvas");combo.width=width,combo.height=height;const ctx=combo.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height);let y=0;canvases.forEach((c,i)=>{const x=Math.floor((width-c.width)/2);ctx.drawImage(c,x,y),y+=c.height+(i<canvases.length-1?gap:0)});const dataUrl=combo.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูปเดียวรวม 6 การ์ดเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปเดียวรวม 6 การ์ดแล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.viewPDI.onclick=()=>activate("pdi"),elements.viewSkill.onclick=()=>activate("skill"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDaily()}),activate("pm30"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){setDaily(collectDaily());const ids=[...document.querySelectorAll(".daily-card-item:not(.daily-card-disabled)")].map(c=>c.id).filter(Boolean);const canvases=[];for(const id of ids){const el=document.getElementById(id);if(!el)continue;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio});canvases.push(c)}if(0===canvases.length)return;const gap=24,width=Math.max(...canvases.map(c=>c.width)),height=canvases.reduce((h,c,i)=>h+c.height+(i>0?gap:0),0),combo=document.createElement("canvas");combo.width=width,combo.height=height;const ctx=combo.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height);let y=0;canvases.forEach((c,i)=>{const x=Math.floor((width-c.width)/2);ctx.drawImage(c,x,y),y+=c.height+(i<canvases.length-1?gap:0)});const dataUrl=combo.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูปรวม Daily Report เรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปรวม Daily Report แล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.viewPDI.onclick=()=>activate("pdi"),elements.viewSkill.onclick=()=>activate("skill"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDaily()}),activate("pm30"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
     "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
     "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
     "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
@@ -1963,7 +1963,8 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     r28_in:gv("r28_in"),r28_hold:gv("r28_hold"),r28_total:gv("r28_total"),r28_att3_pre:gv("r28_att3_pre"),r28_att3_ext:gv("r28_att3_ext"),r28_sea6_pre:gv("r28_sea6_pre"),r28_sea6_dym:gv("r28_sea6_dym"),r28_dol_std:gv("r28_dol_std"),r28_dol_ext:gv("r28_dol_ext"),r28_seal5_pre:gv("r28_seal5_pre"),r28_other:gv("r28_other"),r28_out_nyb2:gv("r28_out_nyb2"),r28_out_soi5:gv("r28_out_soi5"),r28_out_dealer:gv("r28_out_dealer"),r28_out_custom:gv("r28_out_custom"),r28_wait_group:gv("r28_wait_group"),r28_out_total:gv("r28_out_total"),r28_fc_hold:gv("r28_fc_hold"),r28_fc_in:gv("r28_fc_in"),r28_fc_total:gv("r28_fc_total"),r28_pm:gv("r28_pm"),r28_pm_early:gv("r28_pm_early"),r28_pm_hold:gv("r28_pm_hold"),r28_pm_total:gv("r28_pm_total"),r28_note:gv("r28_note"),
     mhp_in:gv("mhp_in"),mhp_hold:gv("mhp_hold"),mhp_total:gv("mhp_total"),mhp_att3_pre:gv("mhp_att3_pre"),mhp_att3_ext:gv("mhp_att3_ext"),mhp_sea6_pre:gv("mhp_sea6_pre"),mhp_sea6_dym:gv("mhp_sea6_dym"),mhp_dol_std:gv("mhp_dol_std"),mhp_dol_ext:gv("mhp_dol_ext"),mhp_seal5_pre:gv("mhp_seal5_pre"),mhp_other:gv("mhp_other"),mhp_out_nyb2:gv("mhp_out_nyb2"),mhp_out_soi5:gv("mhp_out_soi5"),mhp_out_dealer:gv("mhp_out_dealer"),mhp_out_custom:gv("mhp_out_custom"),mhp_wait_group:gv("mhp_wait_group"),mhp_out_total:gv("mhp_out_total"),mhp_fc_hold:gv("mhp_fc_hold"),mhp_fc_in:gv("mhp_fc_in"),mhp_fc_total:gv("mhp_fc_total"),mhp_pm:gv("mhp_pm"),mhp_pm_early:gv("mhp_pm_early"),mhp_pm_hold:gv("mhp_pm_hold"),mhp_pm_total:gv("mhp_pm_total"),mhp_note:gv("mhp_note"),
     at_in:gv("at_in"),at_hold:gv("at_hold"),at_total:gv("at_total"),at_att3_pre:gv("at_att3_pre"),at_att3_ext:gv("at_att3_ext"),at_sea6_pre:gv("at_sea6_pre"),at_sea6_dym:gv("at_sea6_dym"),at_dol_std:gv("at_dol_std"),at_dol_ext:gv("at_dol_ext"),at_seal5_pre:gv("at_seal5_pre"),at_other:gv("at_other"),at_out_nyb2:gv("at_out_nyb2"),at_out_soi5:gv("at_out_soi5"),at_out_dealer:gv("at_out_dealer"),at_out_custom:gv("at_out_custom"),at_wait_group:gv("at_wait_group"),at_out_total:gv("at_out_total"),at_fc_hold:gv("at_fc_hold"),at_fc_in:gv("at_fc_in"),at_fc_total:gv("at_fc_total"),at_pm:gv("at_pm"),at_pm_early:gv("at_pm_early"),at_pm_hold:gv("at_pm_hold"),at_pm_total:gv("at_pm_total"),at_note:gv("at_note"),
-    ...(()=>{const extraVals={};try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(localStorage.getItem('pmyard_extra_cars_v1')||'{}');ALL_YARDS.forEach(yard=>{const list=extra[yard]||[];list.forEach((name,idx)=>{const el=document.getElementById(yard+'_extra_'+idx);if(el)extraVals[yard+'_extra_'+idx]=el.value;})});}catch(e){}return extraVals;})()
+    ...(()=>{const extraVals={};try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(localStorage.getItem('pmyard_extra_cars_v1')||'{}');ALL_YARDS.forEach(yard=>{const list=extra[yard]||[];list.forEach((name,idx)=>{const el=document.getElementById(yard+'_extra_'+idx);if(el)extraVals[yard+'_extra_'+idx]=el.value;})});}catch(e){}return extraVals;})(),
+    ...(window.collectCustomDailyData?window.collectCustomDailyData():{})
     }};
 
     const boot = async () => {
@@ -2049,6 +2050,299 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     function getContainer(){ return document.getElementById('dailyCardsContainer'); }
 
     const STORAGE_KEY = 'pmyard_card_states';
+    const CUSTOM_CARDS_KEY = 'pmyard_custom_cards_v1';
+    const BUILTIN_PREFIXES = ['ry','ny','s5','r28','mhp','at'];
+    const DAILY_FIELD_SUFFIXES = [
+      'in','hold','total',
+      'att3_pre','att3_ext','sea6_pre','sea6_dym','dol_std','dol_ext','seal5_pre','other',
+      'out_nyb2','out_soi5','out_dealer','out_custom','wait_group','out_total',
+      'fc_hold','fc_in','fc_total',
+      'pm','pm_early','pm_hold','pm_total',
+      'note'
+    ];
+    const MODEL_FIELDS = ['att3_pre','att3_ext','sea6_pre','sea6_dym','dol_std','dol_ext','seal5_pre','other'];
+    const OUT_FIELDS = ['out_nyb2','out_soi5','out_dealer','out_custom'];
+
+    function loadCustomCards() {
+      try { return JSON.parse(localStorage.getItem(CUSTOM_CARDS_KEY)) || []; }
+      catch { return []; }
+    }
+    function saveCustomCards(list) {
+      try { localStorage.setItem(CUSTOM_CARDS_KEY, JSON.stringify(list)); } catch(e){}
+      try {
+        if (window.fbDb && window.fbConnected) window.fbDb.ref('customCardsConfig').set(list);
+      } catch(e){}
+    }
+    function getCustomPrefixes() {
+      return [...document.querySelectorAll('.daily-card-item[data-card-prefix]')]
+        .map(c => c.dataset.cardPrefix)
+        .filter(p => p && !BUILTIN_PREFIXES.includes(p));
+    }
+    function getAllYardPrefixes() {
+      return [...BUILTIN_PREFIXES, ...getCustomPrefixes()];
+    }
+    function getNum(id) {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      const n = Number((el.value || '').toString().replace(/,/g, ''));
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+    function setValSafe(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.value = (val === '' || val == null || val === undefined) ? '' : String(val);
+    }
+    function gv(id) {
+      const el = document.getElementById(id);
+      return el ? el.value : '';
+    }
+    function inputCls(w) {
+      return 'w-' + (w || 28) + ' text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2';
+    }
+    function totalCls(w) {
+      return 'w-' + (w || 28) + ' text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2';
+    }
+
+    function buildDailyCardBody(prefix) {
+      const p = prefix;
+      const mkRow = (label, field, labelKey, editable) => {
+        const lbl = editable
+          ? '<span class="editable-label" contenteditable="true" spellcheck="false" data-key="' + p + '_' + labelKey + '">' + label + '</span>'
+          : label;
+        return '<div class="flex items-center justify-between gap-3"><label class="text-slate-700">' + lbl + '</label>' +
+          '<input id="' + p + '_' + field + '" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>';
+      };
+      const mkOut = (label, field) =>
+        '<div class="flex items-center justify-between gap-3"><label>' + label + '</label>' +
+        '<input id="' + p + '_' + field + '" type="number" min="0" class="' + inputCls(32) + '" placeholder="-" /></div>';
+
+      return '<div class="card-body-wrap p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">' +
+        '<div class="space-y-4">' +
+          '<div class="flex items-end gap-3">' +
+            '<div><div class="text-slate-700 font-semibold">IN</div><div class="text-xs text-slate-500">รายการเข้า</div></div>' +
+            '<input id="' + p + '_in" type="number" min="0" class="' + inputCls() + '" placeholder="-" />' +
+            '<div class="text-slate-500">+</div>' +
+            '<div class="flex flex-col -mb-1"><span class="text-xs text-slate-600 mb-1">รถค้าง</span>' +
+            '<input id="' + p + '_hold" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+            '<div class="ml-auto font-semibold">=</div>' +
+            '<input id="' + p + '_total" type="number" min="0" class="' + totalCls() + '" placeholder="-" />' +
+          '</div>' +
+          '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+            mkRow('ATT3 (PRE)', 'att3_pre', 'att3_pre', true) +
+            mkRow('ATT3 (EXT)', 'att3_ext', 'att3_ext', true) +
+            mkRow('SEA6 (PRE)', 'sea6_pre', 'sea6_pre', true) +
+            mkRow('SEA6 (DYM)', 'sea6_dym', 'sea6_dym', true) +
+            mkRow('DOL (STD)', 'dol_std', 'dol_std', true) +
+            mkRow('DOL (EXT)', 'dol_ext', 'dol_ext', true) +
+            mkRow('SEAL5 (PRE)', 'seal5_pre', 'seal5_pre', true) +
+            mkRow('อื่นๆ', 'other', 'other', true) +
+          '</div>' +
+          '<div id="' + p + '_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>' +
+          '<button type="button" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)" data-yard-prefix="' + p + '">' +
+            '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>' +
+        '</div>' +
+        '<div class="space-y-4">' +
+          '<div class="space-y-2"><div class="font-semibold text-slate-700">OUT</div><div class="grid grid-cols-1 gap-2">' +
+            mkOut('จัดรถไป NYB2', 'out_nyb2') +
+            mkOut('จัดรถไป SOI5', 'out_soi5') +
+            mkOut('จัดรถไป Dealer', 'out_dealer') +
+            '<div class="flex items-center justify-between gap-3"><label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="' + p + '_out_custom_label">ระบุปลายทาง..</span></label>' +
+            '<input id="' + p + '_out_custom" type="number" min="0" class="' + inputCls(32) + '" placeholder="-" /></div>' +
+            mkOut('รอ Grouping', 'wait_group') +
+            '<div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label>' +
+            '<input id="' + p + '_out_total" type="number" min="0" class="' + totalCls(32) + '" placeholder="-" /></div>' +
+          '</div></div>' +
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">' +
+            '<div class="space-y-2"><div class="font-semibold text-slate-700">Final Check</div>' +
+              '<div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="' + p + '_fc_hold" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+              '<div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="' + p + '_fc_in" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+              '<div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="' + p + '_fc_total" type="number" min="0" class="' + totalCls() + '" placeholder="-" /></div>' +
+            '</div>' +
+            '<div class="space-y-2"><div class="font-semibold text-slate-700">PM</div>' +
+              '<div class="flex items-center justify-between gap-3"><label>PM</label><input id="' + p + '_pm" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+              '<div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="' + p + '_pm_early" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+              '<div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="' + p + '_pm_hold" type="number" min="0" class="' + inputCls() + '" placeholder="-" /></div>' +
+              '<div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="' + p + '_pm_total" type="number" min="0" class="' + totalCls() + '" placeholder="-" /></div>' +
+            '</div>' +
+          '</div>' +
+          '<div><label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>' +
+          '<textarea id="' + p + '_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea></div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function computeCustomInFromParts(prefix) {
+      const ids = MODEL_FIELDS.map(f => prefix + '_' + f);
+      const sum = ids.reduce((a, id) => a + getNum(id), 0);
+      const anyFilled = ids.some(id => { const el = document.getElementById(id); return el && el.value !== ''; });
+      setValSafe(prefix + '_in', anyFilled ? sum : '');
+    }
+    function computeCustomSums(prefix) {
+      const inEl = document.getElementById(prefix + '_in');
+      const holdEl = document.getElementById(prefix + '_hold');
+      if (inEl && inEl.value || !holdEl || !holdEl.value) {
+        setValSafe(prefix + '_total', getNum(prefix + '_in') + getNum(prefix + '_hold'));
+      } else {
+        setValSafe(prefix + '_total', '');
+      }
+      setValSafe(prefix + '_fc_total', getNum(prefix + '_fc_hold') + getNum(prefix + '_fc_in'));
+    }
+    function computeCustomOutTotal(prefix) {
+      const ids = OUT_FIELDS.map(f => prefix + '_' + f);
+      const anyFilled = ids.some(id => { const el = document.getElementById(id); return el && el.value !== ''; });
+      const sum = ids.reduce((a, id) => a + getNum(id), 0);
+      setValSafe(prefix + '_out_total', anyFilled ? sum : '');
+    }
+    function computeCustomPMTotal(prefix) {
+      const pmEl = document.getElementById(prefix + '_pm');
+      const earlyEl = document.getElementById(prefix + '_pm_early');
+      const holdEl = document.getElementById(prefix + '_pm_hold');
+      if (!pmEl || !pmEl.value || !earlyEl || !earlyEl.value || !holdEl || !holdEl.value) {
+        setValSafe(prefix + '_pm_total', getNum(prefix + '_pm') + getNum(prefix + '_pm_early') + getNum(prefix + '_pm_hold'));
+      } else {
+        setValSafe(prefix + '_pm_total', '');
+      }
+    }
+    function recomputeCustomYard(prefix) {
+      if (window.recomputeYardInWithExtras) window.recomputeYardInWithExtras(prefix);
+      else { computeCustomInFromParts(prefix); computeCustomSums(prefix); }
+      computeCustomOutTotal(prefix);
+      computeCustomPMTotal(prefix);
+    }
+    function recomputeAllCustomCards() {
+      getCustomPrefixes().forEach(recomputeCustomYard);
+    }
+
+    const wiredCustom = new Set();
+
+    function wireCustomCardInputs(prefix) {
+      if (wiredCustom.has(prefix)) return;
+      wiredCustom.add(prefix);
+      const onInput = () => {
+        recomputeCustomYard(prefix);
+        if (window.collectDaily && window.setDaily) window.setDaily(window.collectDaily());
+      };
+      DAILY_FIELD_SUFFIXES.forEach(suffix => {
+        const el = document.getElementById(prefix + '_' + suffix);
+        if (el) el.addEventListener('input', onInput);
+      });
+      const addBtn = document.querySelector('[data-yard-prefix="' + prefix + '"].add-car-btn');
+      if (addBtn && !addBtn._bound) {
+        addBtn._bound = true;
+        addBtn.addEventListener('click', () => {
+          if (window.openAddCarModal) window.openAddCarModal(prefix);
+        });
+      }
+      recomputeCustomYard(prefix);
+    }
+
+    function addCustomUnitSuffixes() {
+      const dailyView = document.getElementById('dailyView');
+      if (!dailyView) return;
+      getCustomPrefixes().forEach(prefix => {
+        DAILY_FIELD_SUFFIXES.forEach(suffix => {
+          if (suffix === 'note') return;
+          const id = prefix + '_' + suffix;
+          const el = document.getElementById(id);
+          if (!el || el.parentElement?.querySelector('.unit-u')) return;
+          if (!el.parentElement.classList.contains('cc-unit-wrap')) {
+            const box = document.createElement('div');
+            box.className = 'cc-unit-wrap inline-flex items-center gap-2';
+            el.parentElement.replaceChild(box, el);
+            box.appendChild(el);
+          }
+          const u = document.createElement('span');
+          u.className = 'unit-u text-slate-500 text-sm select-none';
+          u.textContent = 'U';
+          el.parentElement.appendChild(u);
+        });
+      });
+    }
+
+    function collectCustomDailyData() {
+      const data = {};
+      getCustomPrefixes().forEach(prefix => {
+        DAILY_FIELD_SUFFIXES.forEach(suffix => {
+          data[prefix + '_' + suffix] = gv(prefix + '_' + suffix);
+        });
+        try {
+          const extra = JSON.parse(localStorage.getItem('pmyard_extra_cars_v1') || '{}');
+          (extra[prefix] || []).forEach((name, idx) => {
+            data[prefix + '_extra_' + idx] = gv(prefix + '_extra_' + idx);
+          });
+        } catch(e){}
+      });
+      return data;
+    }
+
+    function clearCustomDailyFields() {
+      getCustomPrefixes().forEach(prefix => {
+        DAILY_FIELD_SUFFIXES.forEach(suffix => setValSafe(prefix + '_' + suffix, ''));
+      });
+    }
+
+    function restoreCustomDailyData(data) {
+      if (!data) return;
+      getCustomPrefixes().forEach(prefix => {
+        DAILY_FIELD_SUFFIXES.forEach(suffix => {
+          const key = prefix + '_' + suffix;
+          if (key in data) setValSafe(key, data[key]);
+        });
+        try {
+          const extra = JSON.parse(localStorage.getItem('pmyard_extra_cars_v1') || '{}');
+          (extra[prefix] || []).forEach((name, idx) => {
+            const key = prefix + '_extra_' + idx;
+            if (key in data) setValSafe(key, data[key]);
+          });
+        } catch(e){}
+      });
+      recomputeAllCustomCards();
+      addCustomUnitSuffixes();
+    }
+
+    window.collectCustomDailyData = collectCustomDailyData;
+    window.clearCustomDailyFields = clearCustomDailyFields;
+    window.restoreCustomDailyData = restoreCustomDailyData;
+    window.addCustomUnitSuffixes = addCustomUnitSuffixes;
+    window.recomputeAllCustomCards = recomputeAllCustomCards;
+    window.getAllYardPrefixes = getAllYardPrefixes;
+
+    function mountCustomCard(cfg) {
+      const container = getContainer();
+      if (!container || document.getElementById(cfg.id)) return null;
+      const c = COLOR_MAP[cfg.color] || COLOR_MAP.slate;
+      const section = document.createElement('section');
+      section.id = cfg.id;
+      section.draggable = true;
+      section.dataset.cardName = cfg.name;
+      section.dataset.cardColor = cfg.color;
+      section.dataset.cardPrefix = cfg.prefix;
+      section.dataset.cardActive = 'true';
+      section.className = 'card rounded-2xl overflow-hidden mb-6 daily-card-item';
+      section.style.cssText = 'border:1px solid ' + c.border + ';background:' + c.bg + ';position:relative';
+      section.innerHTML =
+        '<div class="px-5 py-4 bg-white/80 flex items-center justify-between">' +
+        '<h3 class="text-lg font-bold card-title">' + cfg.name + '</h3>' +
+        '<div class="card-manage-btns hidden flex items-center gap-2">' +
+        '<button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button>' +
+        '<button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button>' +
+        '</div></div>' +
+        buildDailyCardBody(cfg.prefix) +
+        '<div class="disabled-overlay">ไม่มีรถสินค้าจอดในพื้นที่</div>';
+      container.appendChild(section);
+      applyCardState(section);
+      addDragListeners(section);
+      addCardButtonListeners(section);
+      wireCustomCardInputs(cfg.prefix);
+      if (window.renderExtraCars) window.renderExtraCars(cfg.prefix);
+      addCustomUnitSuffixes();
+      return section;
+    }
+
+    function restoreCustomCards() {
+      loadCustomCards().forEach(cfg => mountCustomCard(cfg));
+      reorderCards();
+      updateCardCount();
+    }
 
     // ── Save to localStorage (instant) + Firebase (when online) ──
     function saveCardStates() {
@@ -2261,6 +2555,11 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
           e.stopPropagation();
           const name = card.dataset.cardName || 'การ์ดนี้';
           if(confirm('ลบการ์ด "' + name + '" ออกจาก Daily Report?')){
+            const cardId = card.id;
+            const prefix = card.dataset.cardPrefix;
+            if (prefix && cardId && !BUILTIN_PREFIXES.includes(prefix)) {
+              saveCustomCards(loadCustomCards().filter(c => c.id !== cardId));
+            }
             card.style.transition = 'all 0.25s ease';
             card.style.opacity = '0';
             card.style.transform = 'scale(0.95)';
@@ -2306,33 +2605,14 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
 
     function createNewCard(name, colorKey){
       const container = getContainer();
-      const id = 'dailyCustomCard_' + Date.now();
-      const c = COLOR_MAP[colorKey] || COLOR_MAP.slate;
-      const section = document.createElement('section');
-      section.id = id;
-      section.draggable = true;
-      section.dataset.cardName = name;
-      section.dataset.cardColor = colorKey;
-      section.dataset.cardActive = 'true';
-      section.className = 'card rounded-2xl overflow-hidden mb-6 daily-card-item';
-      section.style.cssText = 'border:1px solid ' + c.border + ';background:' + c.bg + ';position:relative';
-      section.innerHTML =
-        '<div class="px-5 py-4 flex items-center justify-between" style="background:rgba(248,248,248,0.95);border-bottom:1px solid rgba(0,0,0,0.08)">' +
-        '<h3 class="text-lg font-bold card-title">' + name + '</h3>' +
-        '<div class="card-manage-btns hidden flex items-center gap-2">' +
-        '<button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button>' +
-        '<button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button>' +
-        '</div></div>' +
-        '<div class="card-body-wrap p-8 text-center" style="color:#aeaeb2">' +
-        '<div style="font-size:2.5rem;margin-bottom:0.75rem">📋</div>' +
-        '<div style="font-size:0.9rem;font-weight:600;color:#6e6e73">' + name + '</div>' +
-        '<div style="font-size:0.75rem;margin-top:0.25rem">การ์ดว่าง · เพิ่มเนื้อหาได้ในอนาคต</div>' +
-        '</div>' +
-        '<div class="disabled-overlay">ไม่มีรถสินค้าจอดในพื้นที่</div>';
-      container.appendChild(section);
-      applyCardState(section);
-      addDragListeners(section);
-      addCardButtonListeners(section);
+      const ts = Date.now();
+      const id = 'dailyCustomCard_' + ts;
+      const prefix = 'c' + ts.toString(36);
+      const cfg = { id, prefix, name, color: colorKey };
+      mountCustomCard(cfg);
+      const list = loadCustomCards();
+      list.push(cfg);
+      saveCustomCards(list);
       reorderCards();
       updateCardCount();
       saveCardStates();
@@ -2406,6 +2686,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     };
 
     function init(){
+      restoreCustomCards();
       initCards();
       wireToolbar();
       // Initial sync on page load
@@ -2631,8 +2912,13 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
       if (e.key === 'Escape') closeAddCarModal();
     };
 
-    // All known yard prefixes
-    const ALL_YARDS = ['ry','ny','s5','r28','mhp','at'];
+    // All known yard prefixes (built-in + custom cards)
+    const BUILTIN_YARDS = ['ry','ny','s5','r28','mhp','at'];
+    function getYardPrefixes() {
+      if (window.getAllYardPrefixes) return window.getAllYardPrefixes();
+      return BUILTIN_YARDS;
+    }
+    const ALL_YARDS = BUILTIN_YARDS;
 
     // Map yard prefix -> yard name display (for modal header)
     const YARD_LABELS = {ry:'Rayong',ny:'NYB2',s5:'Soi 5',r28:'28 ไร่',mhp:'MHP 2PS',at:'AUTO TRANSPORT'};
@@ -2659,12 +2945,12 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
 
       // Add to ALL yards (global car model)
       const extra = loadExtraCars();
-      ALL_YARDS.forEach(yard => {
+      getYardPrefixes().forEach(yard => {
         if (!extra[yard]) extra[yard] = [];
         if (!extra[yard].includes(name)) extra[yard].push(name);
       });
       saveExtraCars(extra);
-      ALL_YARDS.forEach(yard => renderExtraCars(yard));
+      getYardPrefixes().forEach(yard => renderExtraCars(yard));
       closeAddCarModal();
     };
 
@@ -2695,7 +2981,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
         mhp: ['mhp_att3_pre','mhp_att3_ext','mhp_sea6_pre','mhp_sea6_dym','mhp_dol_std','mhp_dol_ext','mhp_seal5_pre','mhp_other'],
         at:  ['at_att3_pre','at_att3_ext','at_sea6_pre','at_sea6_dym','at_dol_std','at_dol_ext','at_seal5_pre','at_other'],
       };
-      const ids = baseMap[yard] || [];
+      const ids = baseMap[yard] || ['att3_pre','att3_ext','sea6_pre','sea6_dym','dol_std','dol_ext','seal5_pre','other'].map(f => yard + '_' + f);
       const getN = id => { const el = document.getElementById(id); return (el && el.value !== '') ? (parseInt(el.value)||0) : 0; };
       const baseSum = ids.reduce((a,id) => a + getN(id), 0);
       const anyBase = ids.some(id => { const el = document.getElementById(id); return el && el.value !== ''; });
@@ -2742,6 +3028,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
         container.appendChild(row);
       });
     }
+    window.renderExtraCars = renderExtraCars;
 
     // Expose recompute globally so existing compute functions can also call it
     window.recomputeYardInWithExtras = recomputeYardInWithExtras;
@@ -2749,7 +3036,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     window.removeExtraCar = function(yard, idx) {
       const extra = loadExtraCars();
       // Remove from ALL yards
-      ALL_YARDS.forEach(y => {
+      getYardPrefixes().forEach(y => {
         if (!extra[y]) return;
         const name = extra[yard] ? extra[yard][idx] : null;
         if (name) {
@@ -2758,13 +3045,13 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
         }
       });
       saveExtraCars(extra);
-      ALL_YARDS.forEach(y => { renderExtraCars(y); recomputeYardInWithExtras(y); });
+      getYardPrefixes().forEach(y => { renderExtraCars(y); recomputeYardInWithExtras(y); });
     };
 
     // Patch existing computeXxxInFromParts to also include extra cars
     // We hook into the hold input changes for each yard to recompute totals
     function hookHoldInputs() {
-      ALL_YARDS.forEach(yard => {
+      getYardPrefixes().forEach(yard => {
         const holdEl = document.getElementById(yard + '_hold');
         if (holdEl && !holdEl._extraHooked) {
           holdEl._extraHooked = true;
@@ -2776,7 +3063,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     // Init on load
     function initExtraCars() {
       const extra = loadExtraCars();
-      ALL_YARDS.forEach(yard => {
+      getYardPrefixes().forEach(yard => {
         renderExtraCars(yard);
         recomputeYardInWithExtras(yard);
       });
@@ -2786,7 +3073,7 @@ try{const ALL_YARDS=['ry','ny','s5','r28','mhp','at'];const extra=JSON.parse(loc
     else setTimeout(initExtraCars, 300);
 
     // Also hook after a short delay to ensure main app is ready
-    setTimeout(() => { hookHoldInputs(); ALL_YARDS.forEach(y => recomputeYardInWithExtras(y)); }, 1200);
+    setTimeout(() => { hookHoldInputs(); getYardPrefixes().forEach(y => recomputeYardInWithExtras(y)); }, 1200);
   })();
   </script>
 </body>
