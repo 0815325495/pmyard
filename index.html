@@ -244,16 +244,12 @@
     #viewSummary.tab-active   { background: #30d158 !important; color: #fff !important; border-color: #1fa83f !important; }
     #viewDaily.tab-active     { background: #ff9f0a !important; color: #fff !important; border-color: #cc7d00 !important; }
     #viewPerformance.tab-active { background: #bf5af2 !important; color: #fff !important; border-color: #9b3fd4 !important; }
-    #viewPDI.tab-active       { background: #32ade6 !important; color: #fff !important; border-color: #1e8bbf !important; }
-    #viewSkill.tab-active     { background: #00c7be !important; color: #fff !important; border-color: #009e96 !important; }
 
     #viewPM30.tab-inactive:hover   { background: rgba(255,59,48,0.1) !important; color: #ff3b30 !important; }
     #viewMonthlyPM.tab-inactive:hover { background: rgba(0,122,255,0.1) !important; color: #007aff !important; }
     #viewSummary.tab-inactive:hover   { background: rgba(48,209,88,0.1) !important; color: #1fa83f !important; }
     #viewDaily.tab-inactive:hover     { background: rgba(255,159,10,0.1) !important; color: #cc7d00 !important; }
     #viewPerformance.tab-inactive:hover { background: rgba(191,90,242,0.1) !important; color: #bf5af2 !important; }
-    #viewPDI.tab-inactive:hover       { background: rgba(50,173,230,0.1) !important; color: #32ade6 !important; }
-    #viewSkill.tab-inactive:hover     { background: rgba(0,199,190,0.1) !important; color: #00c7be !important; }
 
     #monthPicker, #dailyDate { color-scheme: light; }
 
@@ -434,15 +430,50 @@
     .rounded-full { border-radius: 9999px !important; }
     .rounded-md { border-radius: 8px !important; }
 
-    /* ── DAILY VIEW ── */
-    #dailyView input[type="number"] { width: clamp(5rem, 20vw, 7.5rem); }
-    #dailyView #ry_out_total, #dailyView #ry_fc_total, #dailyView #ry_total,
-    #dailyView #ny_out_total, #dailyView #ny_fc_total, #dailyView #ny_total,
-    #dailyView #s5_out_total, #dailyView #s5_fc_total, #dailyView #s5_total,
-    #dailyView #r28_out_total, #dailyView #r28_fc_total, #dailyView #r28_total,
-    #dailyView #mhp_out_total, #dailyView #mhp_fc_total, #dailyView #mhp_total,
-    #dailyView #at_out_total, #dailyView #at_fc_total, #dailyView #at_total { width: clamp(6rem, 22vw, 8.5rem); }
-    #dailyView label { white-space: nowrap; }
+    /* ── DAILY VIEW (TABLE) ── */
+    #dailyTable { min-width: 640px; }
+    #dailyTable .dr-th {
+      background: #f8fafc; color: #334155; font-weight: 700; font-size: 0.9rem;
+      border: 1px solid #e2e8f0; padding: 8px 6px; white-space: nowrap;
+    }
+    #dailyTable .dr-grp { background: #eef2ff; color: #4338ca; }
+    #dailyTable .dr-sub { background: #f1f5f9; font-size: 0.8rem; color: #64748b; font-weight: 600; }
+    #dailyTable .dr-yard-col { text-align: left; min-width: 120px; }
+    #dailyTable .dr-act-col { width: 44px; background: #f8fafc; }
+    #dailyTable td { border: 1px solid #e2e8f0; padding: 4px; vertical-align: middle; }
+    #dailyTable tbody tr:nth-child(even) td { background: #fcfcfd; }
+    #dailyTable .dr-name-input {
+      width: 100%; min-width: 110px; border: 1px solid transparent; background: transparent;
+      font-weight: 700; color: #1e293b; padding: 6px 8px; border-radius: 8px; text-align: left;
+    }
+    #dailyTable .dr-name-input:focus { outline: none; border-color: #cbd5e1; background: #fff; }
+    #dailyTable .dr-cell-input {
+      width: 100%; min-width: 56px; text-align: center; font-size: 1.05rem; font-weight: 700;
+      color: #1e293b; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 4px; background: #fff;
+    }
+    #dailyTable .dr-cell-input:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.2); }
+    #dailyTable .dr-cell-input::placeholder { color: #cbd5e1; font-weight: 400; }
+    /* เข้า / ออก / ขาย — ช่องข้อความ ขยายสูงอัตโนมัติเมื่อขึ้นบรรทัดใหม่ */
+    #dailyTable .dr-text-col { min-width: 190px; }
+    #dailyTable textarea.dr-text-input {
+      display: block; text-align: left; font-family: inherit;
+      font-size: 0.95rem; font-weight: 600; min-width: 170px;
+      line-height: 1.35; min-height: 40px; resize: none; overflow: hidden;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    /* ค้าง / วันนี้ (PDI/FC, PM) — ใส่แค่ตัวเลข ช่องเล็ก */
+    #dailyTable .dr-num-col { width: 62px; }
+    #dailyTable .dr-num-input { min-width: 38px; font-size: 0.95rem; padding: 6px 2px; }
+    #dailyTable .dr-grp, #dailyTable .dr-sub { min-width: 62px; }
+    #dailyTable .dr-del-btn {
+      display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
+      border-radius: 8px; background: #fee2e2; color: #dc2626; border: none; cursor: pointer;
+    }
+    #dailyTable .dr-del-btn:hover { background: #fecaca; }
+    #dailyTable input:disabled, #dailyTable textarea:disabled { background: transparent; color: #475569; cursor: default; }
+    /* โหมดแก้ไข Yard */
+    #dailyTable.dr-editing .dr-name-input { border-color: #cbd5e1; background: #fff; }
+    #dailyTable.dr-editing .dr-yard-col { background: #eff6ff; }
 
     thead.sticky { z-index: 20; }
     #mRayongWrap, #mNYB2Wrap, #mSOI5Wrap, #m28RaiWrap, #mMHPWrap, #mAutoTransportWrap { -webkit-overflow-scrolling: touch; }
@@ -602,8 +633,6 @@
       <button id="viewSummary" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุปรวม + แผนพรุ่งนี้</button>
       <button id="viewDaily" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Daily Report</button>
       <button id="viewPerformance" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Yard Performance</button>
-      <button id="viewPDI" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">REPORT PDI</button>
-      <button id="viewSkill" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">SKILL พนักงาน</button>
     </nav>
 
     <!-- App content sections -->
@@ -758,501 +787,56 @@
     </section>
 
     <!-- DAILY REPORT -->
+    <!-- DAILY REPORT (TABLE) -->
     <section id="dailyView" class="hidden">
-      <section class="card rounded-2xl p-5 mb-4">
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 class="text-2xl font-extrabold text-slate-900">Daily Report</h2>
-              <p class="text-slate-500 text-sm">บันทึกงานประจำวัน แยกตาม Yard</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 font-semibold">
-                วันที่: <span id="dailyBadge" class="px-2 py-1 rounded-full bg-amber-100">-</span>
-              </div>
-              <input id="dailyDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
-              <button id="captureDaily" class="rounded-full px-4 py-2 bg-amber-500 text-white font-semibold hover:bg-amber-600">บันทึกหน้าจอ</button>
-              <button id="shareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
-            </div>
+      <section id="dailyTableCard" class="card rounded-2xl p-5 mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Daily Report</h2>
+            <p class="text-slate-500 text-sm">สรุปงานประจำวันแยกตาม Yard</p>
           </div>
-          <!-- Card Management Toolbar -->
-          <div id="dailyCardToolbar" class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide mr-1">จัดการการ์ด</span>
-            <button id="dailyAddCardBtn" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white" style="background:#30d158">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              เพิ่มการ์ด
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-amber-50 text-amber-700 font-semibold">
+              วันที่: <span id="dailyBadge" class="px-2 py-1 rounded-full bg-amber-100">-</span>
+            </div>
+            <input id="dailyDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" />
+            <button id="dailyEditToggleBtn" class="flex items-center gap-1.5 rounded-full px-4 py-2 text-white font-semibold hover:opacity-90" style="background:#0071e3">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 1.5l3 3L5 12l-3.5.5L2 9l7.5-7.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              แก้ไข Yard
             </button>
-            <button id="dailyManageBtn" class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold" style="background:#f0f0f0;color:#3a3a3c;border:1px solid rgba(0,0,0,0.1)">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="5.25" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="1" y="8.5" width="10" height="1.5" rx="0.75" fill="currentColor"/></svg>
-              จัดการ
+            <button id="dailyAddYardBtn" class="flex items-center gap-1.5 rounded-full px-4 py-2 text-white font-semibold hover:opacity-90" style="background:#30d158">
+              <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              เพิ่ม Yard
             </button>
-            <span id="dailyCardCount" class="text-xs text-slate-400 ml-1"></span>
+            <button id="captureDaily" class="rounded-full px-4 py-2 bg-amber-500 text-white font-semibold hover:bg-amber-600">บันทึกหน้าจอ</button>
+            <button id="shareLine" class="rounded-full px-4 py-2 bg-green-500 text-white font-semibold hover:bg-green-600">ส่ง LINE</button>
           </div>
         </div>
+
+        <div class="overflow-x-auto">
+          <table id="dailyTable" class="w-full border-collapse text-center">
+            <thead>
+              <tr>
+                <th rowspan="2" class="dr-th dr-yard-col">Yard</th>
+                <th rowspan="2" class="dr-th">เข้า</th>
+                <th rowspan="2" class="dr-th">ออก</th>
+                <th rowspan="2" class="dr-th">ขาย</th>
+                <th colspan="2" class="dr-th dr-grp">PDI / FC</th>
+                <th colspan="2" class="dr-th dr-grp">PM</th>
+                <th rowspan="2" class="dr-th dr-act-col"></th>
+              </tr>
+              <tr>
+                <th class="dr-th dr-sub">ค้าง</th>
+                <th class="dr-th dr-sub">วันนี้</th>
+                <th class="dr-th dr-sub">ค้าง</th>
+                <th class="dr-th dr-sub">วันนี้</th>
+              </tr>
+            </thead>
+            <tbody id="dailyTableBody"><!-- rows rendered by JS --></tbody>
+          </table>
+        </div>
+        <p id="dailyTableEmpty" class="hidden text-center text-slate-400 py-8">ยังไม่มี Yard — กด “เพิ่ม Yard” เพื่อเริ่มบันทึก</p>
       </section>
-
-      <!-- Add Card Modal -->
-      <div id="addCardModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(0,0,0,0.4);backdrop-filter:blur(10px)">
-        <div class="rounded-2xl p-6 w-full max-w-sm m-4" style="background:linear-gradient(160deg,#fff 0%,#f5f5f7 100%);border:1px solid rgba(0,0,0,0.12);box-shadow:0 20px 60px rgba(0,0,0,0.2)">
-          <h3 class="text-lg font-semibold mb-4" style="color:#1d1d1f">เพิ่มการ์ด Yard ใหม่</h3>
-          <div class="mb-3">
-            <label class="block text-xs font-medium mb-1" style="color:#6e6e73;text-transform:uppercase;letter-spacing:0.04em">ชื่อ Yard</label>
-            <input id="newCardName" type="text" placeholder="เช่น Yard 7" class="w-full px-3 py-2 rounded-lg text-sm" style="border:1px solid rgba(0,0,0,0.15);background:#fff">
-          </div>
-          <div class="mb-4">
-            <label class="block text-xs font-medium mb-1" style="color:#6e6e73;text-transform:uppercase;letter-spacing:0.04em">สีขอบการ์ด</label>
-            <div id="colorPicker" class="flex gap-2 flex-wrap">
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="emerald" style="background:#30d158"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="yellow" style="background:#ffd60a"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="rose" style="background:#ff375f"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="cyan" style="background:#32ade6"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="orange" style="background:#ff9f0a"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="violet" style="background:#bf5af2"></button>
-              <button class="color-opt w-7 h-7 rounded-full border-2 border-transparent" data-color="slate" style="background:#8e8e93"></button>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button id="addCardConfirm" class="flex-1 py-2 rounded-lg text-sm font-semibold text-white" style="background:#0071e3">เพิ่ม</button>
-            <button id="addCardCancel" class="flex-1 py-2 rounded-lg text-sm font-semibold" style="background:#f0f0f0;color:#3a3a3c">ยกเลิก</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Cards Container -->
-      <div id="dailyCardsContainer">
-
-      <!-- Rayong -->
-      <section id="dailyRayongCard" draggable="true" data-card-name="Rayong" data-card-color="emerald" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-emerald-200 bg-emerald-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">Rayong</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="ry_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="ry_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="ry_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_att3_pre">ATT3 (PRE)</span></label><input id="ry_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_att3_ext">ATT3 (EXT)</span></label><input id="ry_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_sea6_pre">SEA6 (PRE)</span></label><input id="ry_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_sea6_dym">SEA6 (DYM)</span></label><input id="ry_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_dol_std">DOL (STD)</span></label><input id="ry_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_dol_ext">DOL (EXT)</span></label><input id="ry_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_seal5_pre">SEAL5 (PRE)</span></label><input id="ry_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ry_other">อื่นๆ</span></label><input id="ry_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for ry -->
-            <div id="ry_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('ry')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="ry_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="ry_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="ry_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <!-- Custom OUT for Rayong -->
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="ry_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="ry_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="ry_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="ry_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="ry_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="ry_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="ry_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="ry_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="ry_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="ry_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="ry_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="ry_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- NYB2 -->
-      <section id="dailyNYB2Card" draggable="true" data-card-name="NYB2" data-card-color="yellow" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-yellow-200 bg-yellow-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">NYB2</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="ny_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="ny_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="ny_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_att3_pre">ATT3 (PRE)</span></label><input id="ny_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_att3_ext">ATT3 (EXT)</span></label><input id="ny_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_sea6_pre">SEA6 (PRE)</span></label><input id="ny_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_sea6_dym">SEA6 (DYM)</span></label><input id="ny_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_dol_std">DOL (STD)</span></label><input id="ny_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_dol_ext">DOL (EXT)</span></label><input id="ny_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_seal5_pre">SEAL5 (PRE)</span></label><input id="ny_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="ny_other">อื่นๆ</span></label><input id="ny_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for ny -->
-            <div id="ny_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('ny')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Rayong</label><input id="ny_out_rayong" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="ny_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="ny_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <!-- Custom OUT for NYB2 -->
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="ny_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="ny_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="ny_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="ny_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="ny_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="ny_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="ny_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="ny_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="ny_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="ny_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="ny_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="ny_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Soi 5 -->
-      <section id="dailySoi5Card" draggable="true" data-card-name="soi5" data-card-color="rose" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-rose-200 bg-rose-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">Soi 5</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="s5_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="s5_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="s5_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_att3_pre">ATT3 (PRE)</span></label><input id="s5_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_att3_ext">ATT3 (EXT)</span></label><input id="s5_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_sea6_pre">SEA6 (PRE)</span></label><input id="s5_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_sea6_dym">SEA6 (DYM)</span></label><input id="s5_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_dol_std">DOL (STD)</span></label><input id="s5_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_dol_ext">DOL (EXT)</span></label><input id="s5_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_seal5_pre">SEAL5 (PRE)</span></label><input id="s5_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="s5_other">อื่นๆ</span></label><input id="s5_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for s5 -->
-            <div id="s5_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('s5')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Rayong</label><input id="s5_out_rayong" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="s5_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="s5_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <!-- Custom OUT for Soi5 -->
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="s5_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="s5_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="s5_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="s5_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="s5_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="s5_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="s5_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="s5_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="s5_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="s5_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="s5_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="s5_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 28 Rai (NEW CARD) -->
-      <section id="daily28RaiCard" draggable="true" data-card-name="28 ไร่" data-card-color="cyan" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-cyan-200 bg-cyan-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">28 ไร่</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="r28_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="r28_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="r28_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_att3_pre">ATT3 (PRE)</span></label><input id="r28_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_att3_ext">ATT3 (EXT)</span></label><input id="r28_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_sea6_pre">SEA6 (PRE)</span></label><input id="r28_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_sea6_dym">SEA6 (DYM)</span></label><input id="r28_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_dol_std">DOL (STD)</span></label><input id="r28_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_dol_ext">DOL (EXT)</span></label><input id="r28_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_seal5_pre">SEAL5 (PRE)</span></label><input id="r28_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="r28_other">อื่นๆ</span></label><input id="r28_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for r28 -->
-            <div id="r28_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('r28')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="r28_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="r28_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="r28_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <!-- Custom OUT for 28 Rai -->
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="r28_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="r28_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="r28_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="r28_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="r28_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="r28_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="r28_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="r28_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="r28_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="r28_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="r28_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="r28_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- MHP 2PS (NEW CARD - Orange) -->
-      <section id="dailyMHPCard" draggable="true" data-card-name="MHP 2PS" data-card-color="orange" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-orange-200 bg-orange-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">MHP 2PS</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="mhp_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="mhp_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="mhp_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_att3_pre">ATT3 (PRE)</span></label><input id="mhp_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_att3_ext">ATT3 (EXT)</span></label><input id="mhp_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_sea6_pre">SEA6 (PRE)</span></label><input id="mhp_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_sea6_dym">SEA6 (DYM)</span></label><input id="mhp_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_dol_std">DOL (STD)</span></label><input id="mhp_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_dol_ext">DOL (EXT)</span></label><input id="mhp_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_seal5_pre">SEAL5 (PRE)</span></label><input id="mhp_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="mhp_other">อื่นๆ</span></label><input id="mhp_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for mhp -->
-            <div id="mhp_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('mhp')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="mhp_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป SOI5</label><input id="mhp_out_soi5" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="mhp_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <!-- Custom OUT for MHP -->
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="mhp_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="mhp_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="mhp_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="mhp_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="mhp_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="mhp_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="mhp_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="mhp_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="mhp_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="mhp_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="mhp_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="mhp_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- AUTO TRANSPORT (NEW CARD - Violet) -->
-      <section id="dailyAutoTransportCard" draggable="true" data-card-name="AUTO TRANSPORT" data-card-color="violet" data-card-active="true" class="card rounded-2xl overflow-hidden mb-6 border border-violet-200 bg-violet-50 daily-card-item">
-        <div class="px-5 py-4 bg-white/80 flex items-center justify-between"><h3 class="text-lg font-bold card-title">AUTO TRANSPORT</h3><div class="card-manage-btns hidden flex items-center gap-2"><button class="card-toggle-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff9f0a;color:#fff">ปิดใช้งาน</button><button class="card-delete-btn rounded-lg px-2.5 py-1 text-xs font-semibold" style="background:#ff3b30;color:#fff">ลบการ์ด</button></div></div>
-        <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="space-y-4">
-            <div class="flex items-end gap-3">
-              <div>
-                <div class="text-slate-700 font-semibold">IN</div>
-                <div class="text-xs text-slate-500">รายการเข้า</div>
-              </div>
-              <input id="at_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              <div class="text-slate-500">+</div>
-              <div class="flex flex-col -mb-1">
-                <span class="text-xs text-slate-600 mb-1">รถค้าง</span>
-                <input id="at_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-              </div>
-              <div class="ml-auto font-semibold">=</div>
-              <input id="at_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" />
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_att3_pre">ATT3 (PRE)</span></label><input id="at_att3_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_att3_ext">ATT3 (EXT)</span></label><input id="at_att3_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_sea6_pre">SEA6 (PRE)</span></label><input id="at_sea6_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_sea6_dym">SEA6 (DYM)</span></label><input id="at_sea6_dym" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_dol_std">DOL (STD)</span></label><input id="at_dol_std" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_dol_ext">DOL (EXT)</span></label><input id="at_dol_ext" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_seal5_pre">SEAL5 (PRE)</span></label><input id="at_seal5_pre" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-              <div class="flex items-center justify-between gap-3"><label class="text-slate-700"><span class="editable-label" contenteditable="true" spellcheck="false" data-key="at_other">อื่นๆ</span></label><input id="at_other" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-            </div>
-            <!-- Dynamic extra car rows for at -->
-            <div id="at_extra_cars_container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1"></div>
-            <button onclick="openAddCarModal('at')" class="add-car-btn flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white mt-2" style="background:linear-gradient(135deg,#0071e3,#0064cc);box-shadow:0 2px 8px rgba(0,113,227,0.3)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> เพิ่มรถ</button>
-          </div>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <div class="font-semibold text-slate-700">OUT</div>
-              <div class="grid grid-cols-1 gap-2">
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Rayong</label><input id="at_out_rayong" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป NYB2</label><input id="at_out_nyb2" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>จัดรถไป Dealer</label><input id="at_out_dealer" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3">
-                   <label class="text-slate-700 flex-1"><span class="editable-label w-full block" contenteditable="true" spellcheck="false" data-key="at_out_custom_label">ระบุปลายทาง..</span></label>
-                   <input id="at_out_custom" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" />
-                </div>
-                <div class="flex items-center justify-between gap-3"><label>รอ Grouping</label><input id="at_wait_group" type="number" min="0" class="w-32 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-semibold text-red-700"><label>ยอดรวมOUT</label><input id="at_out_total" type="number" min="0" class="w-32 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">Final Check</div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่ค้าง</label><input id="at_fc_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ทำ FC รถที่เข้า</label><input id="at_fc_in" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>ยอดรวม</label><input id="at_fc_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-              <div class="space-y-2">
-                <div class="font-semibold text-slate-700">PM</div>
-                <div class="flex items-center justify-between gap-3"><label>PM</label><input id="at_pm" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ดึง PM มาทำก่อน</label><input id="at_pm_early" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3"><label>ค้าง PM</label><input id="at_pm_hold" type="number" min="0" class="w-28 text-right text-xl font-bold rounded-lg border border-slate-200 px-3 py-2" placeholder="-" /></div>
-                <div class="flex items-center justify-between gap-3 font-bold text-red-700"><label>รวม PM</label><input id="at_pm_total" type="number" min="0" class="w-28 text-right text-2xl font-extrabold text-red-600 bg-red-50 border-red-300 rounded-lg border px-3 py-2" placeholder="-" /></div>
-              </div>
-            </div>
-            <div>
-              <label class="block text-slate-700 font-semibold mb-2">หมายเหตุ</label>
-              <textarea id="at_note" class="w-full rounded-lg border border-slate-200 px-3 py-2" rows="3" placeholder="ใส่หมายเหตุ..."></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div><!-- end dailyCardsContainer -->
     </section>
 
     <!-- YARD PERFORMANCE -->
@@ -1464,19 +1048,6 @@
       </section>
     </section>
 
-    <!-- REPORT PDI -->
-    <section id="pdiView" class="hidden -mx-4 sm:-mx-6 lg:-mx-8">
-      <div class="rounded-2xl overflow-hidden">
-        <iframe src="https://0815325495.github.io/REPORTPDI/" class="w-full h-[80vh] border-0" title="รายงาน PDI"></iframe>
-      </div>
-    </section>
-
-    <!-- SKILL VIEW -->
-    <section id="skillView" class="hidden -mx-4 sm:-mx-6 lg:-mx-8">
-        <div class="rounded-2xl overflow-hidden">
-            <iframe src="https://0815325495.github.io/SKILLEMPLOYEE/" class="w-full h-[80vh] border-0" title="SKILL พนักงาน"></iframe>
-        </div>
-    </section>
   </div>
 
   <script>
@@ -1493,15 +1064,11 @@
         summaryView: document.getElementById('summaryView'),
         dailyView: document.getElementById('dailyView'),
         performanceView: document.getElementById('performanceView'),
-        pdiView: document.getElementById('pdiView'),
-        skillView: document.getElementById('skillView'),
         viewPM30: document.getElementById('viewPM30'),
         viewMonthlyPM: document.getElementById('viewMonthlyPM'),
         viewSummary: document.getElementById('viewSummary'),
         viewDaily: document.getElementById('viewDaily'),
         viewPerformance: document.getElementById('viewPerformance'),
-        viewPDI: document.getElementById('viewPDI'),
-        viewSkill: document.getElementById('viewSkill'),
         dailyDate: document.getElementById('dailyDate'),
         // Auth elements
         loginModal: document.getElementById('loginModal'),
@@ -1601,6 +1168,7 @@
                 el.setAttribute('contenteditable', 'false');
             }
         });
+        if (window.drApplyLock) window.drApplyLock();
     };
 
     const enableEditing = () => {
@@ -1610,6 +1178,7 @@
                 el.setAttribute('contenteditable', 'true');
             }
         });
+        if (window.drApplyLock) window.drApplyLock();
     };
 
     const updateAuthUI = () => {
@@ -1735,6 +1304,220 @@
         const snap = await fbDb.ref(dailyPath()).get(); return snap.val();
       } catch (error) { console.error("Error getting daily data:", error); return null; }
     };
+
+    // ==================== DAILY REPORT TABLE (standalone) ====================
+    const DR_FIELDS = ['in','out','sold','pdi_hold','pdi_today','pm_hold','pm_today'];
+    const DR_TEXT_FIELDS = ['in','out','sold']; // เข้า/ออก/ขาย = พิมพ์ข้อความได้
+    const DR_DEFAULT_YARDS = [
+      { id:'y_rayong', name:'ระยอง' },
+      { id:'y_soi5',   name:'soi 5' },
+      { id:'y_38rai',  name:'38 ไร่' },
+      { id:'y_20rai',  name:'20 ไร่' },
+      { id:'y_nyb',    name:'NYB' },
+    ];
+    const DR_YARDS_PATH = '/dailyReportV2/_yards';
+    const drValuesPath = () => `/dailyReportV2/${dateKey(selectedDate)}`;
+    const DR_LS_YARDS = 'dailyV2_yards';
+    const drLsVals = () => 'dailyV2_vals_' + dateKey(selectedDate);
+
+    let drYards = [];
+    let drValues = {};
+    let drSaveTimer = null;
+    let drValuesSub = null;   // { ref, cb }
+    let drYardsSubDone = false;
+    let drEditMode = false;   // โหมดแก้ไข Yard (เพิ่ม/ลบ/แก้ชื่อ)
+
+    const drGenId = () => 'y_' + Date.now().toString(36) + Math.floor(Math.random()*1000);
+    const drEscape = (s) => (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const drCanWrite = () => (fbDb && fbConnected && authReady && isLoggedIn);
+
+    const drLoadYardsLocal = () => { try { const v = JSON.parse(localStorage.getItem(DR_LS_YARDS)||'null'); if (Array.isArray(v) && v.length) return v; } catch(e){} return null; };
+    const drSaveYardsLocal = () => { try { localStorage.setItem(DR_LS_YARDS, JSON.stringify(drYards)); } catch(e){} };
+    const drLoadValuesLocal = () => { try { return JSON.parse(localStorage.getItem(drLsVals())||'{}') || {}; } catch(e){ return {}; } };
+    const drSaveValuesLocal = () => { try { localStorage.setItem(drLsVals(), JSON.stringify(drValues)); } catch(e){} };
+
+    const drWriteYards = () => { drSaveYardsLocal(); if (drCanWrite()) fbDb.ref(DR_YARDS_PATH).set(drYards, markLastSync); };
+    const drScheduleValueSave = () => {
+      drSaveValuesLocal();
+      clearTimeout(drSaveTimer);
+      drSaveTimer = setTimeout(() => { if (drCanWrite()) fbDb.ref(drValuesPath()).set(drValues, markLastSync); }, 400);
+    };
+
+    function drApplyLock(){
+      const loggedIn = isLoggedIn;
+      if (!loggedIn) drEditMode = false;
+      const editing = loggedIn && drEditMode;
+      // ช่องกรอกข้อมูล (เข้า/ออก/ขาย/ตัวเลข) — แก้ได้เมื่อ login
+      document.querySelectorAll('#dailyTable .dr-cell-input').forEach(el => {
+        if (loggedIn) el.removeAttribute('disabled'); else el.setAttribute('disabled','true');
+      });
+      // ชื่อ Yard — แก้ได้เฉพาะในโหมดแก้ไข
+      document.querySelectorAll('#dailyTable .dr-name-input').forEach(el => {
+        if (editing) el.removeAttribute('disabled'); else el.setAttribute('disabled','true');
+      });
+      // ปุ่มลบ — โชว์เฉพาะโหมดแก้ไข
+      document.querySelectorAll('#dailyTable .dr-del-btn').forEach(b => { b.style.display = editing ? '' : 'none'; });
+      const editBtn = document.getElementById('dailyEditToggleBtn');
+      if (editBtn) {
+        editBtn.style.display = loggedIn ? '' : 'none';
+        editBtn.style.background = editing ? '#1d1d1f' : '#0071e3';
+        editBtn.lastChild.textContent = editing ? ' เสร็จสิ้น' : ' แก้ไข Yard';
+      }
+      const addBtn = document.getElementById('dailyAddYardBtn');
+      if (addBtn) addBtn.style.display = editing ? '' : 'none';
+      const actCol = document.querySelector('#dailyTable .dr-act-col');
+      const tbl = document.getElementById('dailyTable');
+      if (tbl) tbl.classList.toggle('dr-editing', editing);
+    }
+    window.drApplyLock = drApplyLock;
+
+    function drAutoGrow(el){
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.max(el.scrollHeight, 38) + 'px';
+    }
+
+    function drRenderTable(){
+      const body = document.getElementById('dailyTableBody');
+      const empty = document.getElementById('dailyTableEmpty');
+      if (!body) return;
+      body.innerHTML = '';
+      if (!drYards.length) { if (empty) empty.classList.remove('hidden'); drApplyLock(); return; }
+      if (empty) empty.classList.add('hidden');
+      const cell = (v,f) => {
+        const isText = DR_TEXT_FIELDS.includes(f);
+        return isText
+          ? `<td class="dr-text-col"><textarea rows="1" class="dr-cell-input dr-text-input" data-field="${f}" placeholder="-">${drEscape(v[f]??'')}</textarea></td>`
+          : `<td class="dr-num-col"><input type="number" min="0" inputmode="numeric" class="dr-cell-input dr-num-input" data-field="${f}" value="${drEscape(v[f]??'')}" placeholder="-"></td>`;
+      };
+      drYards.forEach(y => {
+        const v = drValues[y.id] || {};
+        const tr = document.createElement('tr');
+        tr.dataset.yardId = y.id;
+        tr.innerHTML =
+          `<td class="dr-yard-col"><input type="text" class="dr-name-input" data-field="__name" value="${drEscape(y.name)}" placeholder="ชื่อ Yard"></td>` +
+          DR_FIELDS.map(f => cell(v,f)).join('') +
+          `<td class="dr-act-col"><button type="button" class="dr-del-btn" title="ลบ Yard นี้"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></td>`;
+        body.appendChild(tr);
+      });
+      body.querySelectorAll('textarea.dr-text-input').forEach(drAutoGrow);
+      drApplyLock();
+    }
+
+    function drBindEvents(){
+      const body = document.getElementById('dailyTableBody');
+      if (body && !body.dataset.bound) {
+        body.dataset.bound = '1';
+        body.addEventListener('input', (e) => {
+          const inp = e.target.closest('input, textarea'); if (!inp) return;
+          if (inp.tagName === 'TEXTAREA') drAutoGrow(inp);
+          const tr = inp.closest('tr'); const id = tr && tr.dataset.yardId; if (!id) return;
+          const field = inp.dataset.field;
+          if (field === '__name') {
+            const y = drYards.find(x => x.id === id); if (y) { y.name = inp.value; drWriteYards(); }
+            return;
+          }
+          if (!drValues[id]) drValues[id] = {};
+          drValues[id][field] = inp.value;
+          drScheduleValueSave();
+        });
+        body.addEventListener('click', (e) => {
+          const del = e.target.closest('.dr-del-btn'); if (!del) return;
+          if (!isLoggedIn) { toast('กรุณาเข้าสู่ระบบก่อนแก้ไข'); return; }
+          const tr = del.closest('tr'); const id = tr && tr.dataset.yardId; if (!id) return;
+          const y = drYards.find(x => x.id === id);
+          if (!confirm('ลบ Yard "' + ((y && y.name) || '') + '" ออกจากตาราง?')) return;
+          drYards = drYards.filter(x => x.id !== id);
+          delete drValues[id];
+          drWriteYards(); drScheduleValueSave(); drRenderTable();
+        });
+      }
+      const editBtn = document.getElementById('dailyEditToggleBtn');
+      if (editBtn && !editBtn.dataset.bound) {
+        editBtn.dataset.bound = '1';
+        editBtn.addEventListener('click', () => {
+          if (!isLoggedIn) { toast('กรุณาเข้าสู่ระบบก่อนแก้ไข'); return; }
+          drEditMode = !drEditMode;
+          drApplyLock();
+        });
+      }
+      const addBtn = document.getElementById('dailyAddYardBtn');
+      if (addBtn && !addBtn.dataset.bound) {
+        addBtn.dataset.bound = '1';
+        addBtn.addEventListener('click', () => {
+          if (!isLoggedIn) { toast('กรุณาเข้าสู่ระบบก่อนแก้ไข'); return; }
+          const name = (prompt('ชื่อ Yard ใหม่:', '') || '').trim(); if (!name) return;
+          drYards.push({ id: drGenId(), name });
+          drWriteYards(); drRenderTable();
+          const rows = document.querySelectorAll('#dailyTableBody tr');
+          const last = rows[rows.length - 1];
+          if (last) { const ni = last.querySelector('.dr-name-input'); if (ni) ni.focus(); }
+        });
+      }
+    }
+
+    function drSubscribeValues(){
+      if (!fbDb || !authReady) return;
+      if (drValuesSub) { try { drValuesSub.ref.off('value', drValuesSub.cb); } catch(e){} drValuesSub = null; }
+      const ref = fbDb.ref(drValuesPath());
+      const cb = (snap) => {
+        const active = document.querySelector('.main-tab.tab-active');
+        if (!active || active.id !== 'viewDaily') return;
+        const ae = document.activeElement;
+        if (ae && ae.closest && ae.closest('#dailyTable')) return; // don't disrupt typing
+        const remote = snap.val();
+        const next = (remote && typeof remote === 'object') ? remote : {};
+        if (JSON.stringify(next) === JSON.stringify(drValues)) return;
+        drValues = next; drSaveValuesLocal(); drRenderTable();
+      };
+      ref.on('value', cb);
+      drValuesSub = { ref, cb };
+    }
+
+    function drSubscribeYards(){
+      if (drYardsSubDone || !fbDb || !authReady) return;
+      drYardsSubDone = true;
+      fbDb.ref(DR_YARDS_PATH).on('value', (snap) => {
+        const active = document.querySelector('.main-tab.tab-active');
+        if (!active || active.id !== 'viewDaily') return;
+        const ae = document.activeElement;
+        if (ae && ae.closest && ae.closest('#dailyTable')) return;
+        const remote = snap.val();
+        if (!Array.isArray(remote) || !remote.length) return;
+        if (JSON.stringify(remote) === JSON.stringify(drYards)) return;
+        drYards = remote; drSaveYardsLocal(); drRenderTable();
+      });
+    }
+
+    async function renderDailyTable(){
+      if (!drYards.length) {
+        const local = drLoadYardsLocal();
+        drYards = local ? local : DR_DEFAULT_YARDS.map(y => ({ ...y }));
+      }
+      drValues = drLoadValuesLocal();
+      drBindEvents();
+      drRenderTable();
+      const badge = document.getElementById('dailyBadge');
+      if (badge) badge.textContent = dateKey(selectedDate);
+
+      if (fbDb && authReady) {
+        try {
+          const [ySnap, vSnap] = await Promise.all([ fbDb.ref(DR_YARDS_PATH).get(), fbDb.ref(drValuesPath()).get() ]);
+          const yRemote = ySnap.val();
+          if (Array.isArray(yRemote) && yRemote.length) { drYards = yRemote; drSaveYardsLocal(); }
+          else if (!drLoadYardsLocal() && drCanWrite()) { drWriteYards(); } // seed defaults to cloud once
+          const vRemote = vSnap.val();
+          drValues = (vRemote && typeof vRemote === 'object') ? vRemote : {};
+          drSaveValuesLocal();
+          drRenderTable();
+          if (badge) badge.textContent = dateKey(selectedDate);
+        } catch(e) { /* keep local copy */ }
+      }
+      drSubscribeYards();
+      drSubscribeValues();
+    }
+    window.renderDailyTable = renderDailyTable;
+    // ==================== END DAILY REPORT TABLE ====================
 
     // -------- Data model & propagation --------
     const ensureMonthYardData = (yyyyMM, yard) => {
@@ -1912,12 +1695,12 @@
           <td class="px-5 py-3 font-semibold">${item.yard}</td>
           <td class="px-5 py-3 text-right">${(item.est||0).toLocaleString()}</td>
           <td class="px-5 py-3 text-slate-600">${(item.action||"-").toString()}</td>
-        `,tbody.appendChild(tr)})};const setActive=(btn,active)=>{btn.classList.toggle("tab-active",active),btn.classList.toggle("tab-inactive",!active)},showView=id=>{elements.pm30View.classList.add("hidden"),elements.monthlyPMView.classList.add("hidden"),elements.summaryView.classList.add("hidden"),elements.dailyView.classList.add("hidden"),elements.performanceView.classList.add("hidden"),elements.pdiView&&elements.pdiView.classList.add("hidden"),elements.skillView&&elements.skillView.classList.add("hidden"),document.getElementById(id).classList.remove("hidden")};function fitMonthlyTables(){const fit=(containerId,scalerId)=>{const cont=document.getElementById(containerId),scaler=document.getElementById(scalerId);if(!cont||!scaler)return;scaler.style.transform="scale(1)",requestAnimationFrame(()=>{const cw=cont.clientWidth-12,sw=scaler.scrollWidth;if(!sw||!cw)return;const scale=Math.min(1,cw/sw);scaler.style.transformOrigin="top left",scaler.style.transform=`scale(${scale})`})};fit("mpmContainer","mpmScaler"),fit("mpmActContainer","mpmActScaler")}window.addEventListener("resize",()=>{const monthlyVisible=!elements.monthlyPMView?.classList.contains("hidden");monthlyVisible&&setTimeout(fitMonthlyTables,0)});const setupTabs=()=>{window.addUnitSuffixesDaily=()=>{if(!elements.dailyView)return;elements.dailyView.querySelectorAll(".unit-u").forEach(x=>x.remove());const ids=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total",
+        `,tbody.appendChild(tr)})};const setActive=(btn,active)=>{btn.classList.toggle("tab-active",active),btn.classList.toggle("tab-inactive",!active)},showView=id=>{elements.pm30View.classList.add("hidden"),elements.monthlyPMView.classList.add("hidden"),elements.summaryView.classList.add("hidden"),elements.dailyView.classList.add("hidden"),elements.performanceView.classList.add("hidden"),document.getElementById(id).classList.remove("hidden")};function fitMonthlyTables(){const fit=(containerId,scalerId)=>{const cont=document.getElementById(containerId),scaler=document.getElementById(scalerId);if(!cont||!scaler)return;scaler.style.transform="scale(1)",requestAnimationFrame(()=>{const cw=cont.clientWidth-12,sw=scaler.scrollWidth;if(!sw||!cw)return;const scale=Math.min(1,cw/sw);scaler.style.transformOrigin="top left",scaler.style.transform=`scale(${scale})`})};fit("mpmContainer","mpmScaler"),fit("mpmActContainer","mpmActScaler")}window.addEventListener("resize",()=>{const monthlyVisible=!elements.monthlyPMView?.classList.contains("hidden");monthlyVisible&&setTimeout(fitMonthlyTables,0)});const setupTabs=()=>{window.addUnitSuffixesDaily=()=>{if(!elements.dailyView)return;elements.dailyView.querySelectorAll(".unit-u").forEach(x=>x.remove());const ids=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total",
 "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom","mhp_wait_group","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total",
-"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)});window.addCustomUnitSuffixes&&window.addCustomUnitSuffixes()};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPDI,view==="pdi"),setActive(elements.viewSkill,view==="skill"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDaily(),addUnitSuffixesDaily()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="pdi"&&showView("pdiView"),view==="skill"&&showView("skillView")};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)});window.addCustomUnitSuffixes&&window.addCustomUnitSuffixes()};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDailyTable()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100))};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
@@ -1933,7 +1716,7 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
         if (!isLoggedIn) {
             disableEditing();
         }
-      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){setDaily(collectDaily());const ids=[...document.querySelectorAll(".daily-card-item:not(.daily-card-disabled)")].map(c=>c.id).filter(Boolean);const canvases=[];for(const id of ids){const el=document.getElementById(id);if(!el)continue;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio});canvases.push(c)}if(0===canvases.length)return;const gap=24,width=Math.max(...canvases.map(c=>c.width)),height=canvases.reduce((h,c,i)=>h+c.height+(i>0?gap:0),0),combo=document.createElement("canvas");combo.width=width,combo.height=height;const ctx=combo.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height);let y=0;canvases.forEach((c,i)=>{const x=Math.floor((width-c.width)/2);ctx.drawImage(c,x,y),y+=c.height+(i<canvases.length-1?gap:0)});const dataUrl=combo.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูปรวม Daily Report เรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปรวม Daily Report แล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.viewPDI.onclick=()=>activate("pdi"),elements.viewSkill.onclick=()=>activate("skill"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDaily()}),activate("pm30"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){const el=document.getElementById("dailyTableCard");if(!el)return;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),dataUrl=c.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-${dateKey(selectedDate)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูป Daily Report เรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูป Daily Report แล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDailyTable()}),activate("pm30"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
     "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
     "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
     "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
