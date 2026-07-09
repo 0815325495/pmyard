@@ -1178,6 +1178,16 @@
         if (window.drApplyLock) window.drApplyLock();
     };
 
+    // เมื่อยังไม่ล็อกอิน: เห็นแค่แท็บ Daily Report / เมื่อล็อกอิน: เห็นครบทุกแท็บ
+    const applyTabVisibility = () => {
+        const gated = [elements.viewPM30, elements.viewMonthlyPM, elements.viewSummary, elements.viewPerformance];
+        gated.forEach(btn => { if (btn) btn.style.display = isLoggedIn ? '' : 'none'; });
+        if (!isLoggedIn) {
+            const active = document.querySelector('.main-tab.tab-active');
+            if (active && active.id !== 'viewDaily' && elements.viewDaily) elements.viewDaily.click();
+        }
+    };
+
     const updateAuthUI = () => {
         if (isLoggedIn) {
             elements.userStatus.innerHTML = `
@@ -1196,6 +1206,7 @@
                 elements.loginModal.classList.add('flex');
             });
         }
+        applyTabVisibility();
     };
 
     const handleLogout = () => {
