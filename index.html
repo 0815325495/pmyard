@@ -830,6 +830,11 @@
           </table>
         </div>
         <p id="dailyTableEmpty" class="hidden text-center text-slate-400 py-8">ยังไม่มี Yard — กด “เพิ่ม Yard” เพื่อเริ่มบันทึก</p>
+
+        <div class="mt-5">
+          <label class="block text-slate-700 font-semibold mb-2">Remark / หมายเหตุ</label>
+          <textarea id="dailyRemark" rows="3" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" style="resize:vertical" placeholder="ใส่หมายเหตุ..."></textarea>
+        </div>
       </section>
     </section>
 
@@ -1359,6 +1364,9 @@
       document.querySelectorAll('#dailyTable .dr-cell-input').forEach(el => {
         if (loggedIn) el.removeAttribute('disabled'); else el.setAttribute('disabled','true');
       });
+      // Remark — แก้ได้เมื่อ login
+      const remarkEl = document.getElementById('dailyRemark');
+      if (remarkEl) { if (loggedIn) remarkEl.removeAttribute('disabled'); else remarkEl.setAttribute('disabled','true'); }
       // ชื่อ Yard — แก้ได้เฉพาะในโหมดแก้ไข
       document.querySelectorAll('#dailyTable .dr-name-input').forEach(el => {
         if (editing) el.removeAttribute('disabled'); else el.setAttribute('disabled','true');
@@ -1409,7 +1417,14 @@
         body.appendChild(tr);
       });
       body.querySelectorAll('textarea.dr-text-input').forEach(drAutoGrow);
+      drRenderRemark();
       drApplyLock();
+    }
+
+    function drRenderRemark(){
+      const ta = document.getElementById('dailyRemark');
+      if (!ta) return;
+      if (document.activeElement !== ta) ta.value = (drValues && drValues.__remark) || '';
     }
 
     function drBindEvents(){
@@ -1438,6 +1453,15 @@
           drYards = drYards.filter(x => x.id !== id);
           delete drValues[id];
           drWriteYards(); drScheduleValueSave(); drRenderTable();
+        });
+      }
+      const remark = document.getElementById('dailyRemark');
+      if (remark && !remark.dataset.bound) {
+        remark.dataset.bound = '1';
+        remark.addEventListener('input', () => {
+          if (!drValues || typeof drValues !== 'object') drValues = {};
+          drValues.__remark = remark.value;
+          drScheduleValueSave();
         });
       }
       const editBtn = document.getElementById('dailyEditToggleBtn');
@@ -1472,7 +1496,7 @@
         const active = document.querySelector('.main-tab.tab-active');
         if (!active || active.id !== 'viewDaily') return;
         const ae = document.activeElement;
-        if (ae && ae.closest && ae.closest('#dailyTable')) return; // don't disrupt typing
+        if (ae && ae.closest && ae.closest('#dailyTableCard')) return; // don't disrupt typing
         const remote = snap.val();
         const next = (remote && typeof remote === 'object') ? remote : {};
         if (JSON.stringify(next) === JSON.stringify(drValues)) return;
@@ -1489,7 +1513,7 @@
         const active = document.querySelector('.main-tab.tab-active');
         if (!active || active.id !== 'viewDaily') return;
         const ae = document.activeElement;
-        if (ae && ae.closest && ae.closest('#dailyTable')) return;
+        if (ae && ae.closest && ae.closest('#dailyTableCard')) return;
         const remote = snap.val();
         if (!Array.isArray(remote) || !remote.length) return;
         if (JSON.stringify(remote) === JSON.stringify(drYards)) return;
