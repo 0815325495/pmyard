@@ -305,12 +305,14 @@
     .sumx tr.r-act td { background: #FCEBDD; }
     .sumx tr.r-hold td { background: #EDE7F6; }
     .sumx tr.r-pm td { background: #E7F3E7; }
+    .sumx tr.r-rep td { background: #EDE7F6; }
     .sumx tr.r-sum td { background: #CFECF7; }
     .sumx tr.grand td { font-weight: 800; }
     .sumx tr.grand td.yard { background: #1F3864 !important; color: #fff; }
     .sumx tr.grand.r-act td { background: #ED7D31; color: #fff; }
     .sumx tr.grand.r-pm td { background: #2E7D32; color: #fff; }
     .sumx tr.grand.r-hold td { background: #7E57C2; color: #fff; }
+    .sumx tr.grand.r-rep td { background: #7E57C2; color: #fff; }
     .sumx tr.grand.r-sum td { background: #2E75B6; color: #fff; }
     .sumx tr.grand td.tot { background: #1F3864 !important; color: #fff; }
 
@@ -1184,7 +1186,7 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 class="text-2xl font-extrabold text-slate-900">สรุป Operation</h2>
-            <p class="text-slate-500 text-sm">Actual PDI + Actual PM ต่อวัน + ยอดรวม แยก Yard (ดึงจาก Daily Report)</p>
+            <p class="text-slate-500 text-sm">Actual PDI + Actual PM + Actual Repair ต่อวัน + ยอดรวม แยก Yard (ดึงจาก Daily Report)</p>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
             <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full font-semibold" style="background:#E4EEF8;color:#1F4E79">เดือน: <span id="opSumMonth" class="px-2 py-1 rounded-full" style="background:#CFE0F3">-</span></div>
@@ -1794,9 +1796,10 @@
         { label: 'ค้าง',   cls: 'r-hold', get: f => SUM_NUM(f.pm_hold),  sum: false },
       ]},
       op: { grid: 'opSumGrid', mon: 'opSumMonth', rows: [
-        { label: 'Actual PDI', cls: 'r-act', get: f => SUM_NUM(f.pdi_today), sum: true },
-        { label: 'Actual PM',  cls: 'r-pm',  get: f => SUM_NUM(f.pm_today),  sum: true },
-        { label: 'รวม Actual', cls: 'r-sum', get: f => SUM_NUM(f.pdi_today) + SUM_NUM(f.pm_today), sum: true },
+        { label: 'Actual PDI',    cls: 'r-act', get: f => SUM_NUM(f.pdi_today),    sum: true },
+        { label: 'Actual PM',     cls: 'r-pm',  get: f => SUM_NUM(f.pm_today),     sum: true },
+        { label: 'Actual Repair', cls: 'r-rep', get: f => SUM_NUM(f.repair_today), sum: true },
+        { label: 'รวม Actual', cls: 'r-sum', get: f => SUM_NUM(f.pdi_today) + SUM_NUM(f.pm_today) + SUM_NUM(f.repair_today), sum: true },
       ]},
     };
 
@@ -2053,10 +2056,11 @@
       { name:'Plan PM-รายวัน', title:'สรุป PM — Actual PM ต่อวัน แยก Yard · ใช้เฉพาะข้อมูล Actual', subs:[
         { label:'Actual PM', get:f=>xlNum(f.pm_today), fill:'E7F3E7', color:'1E5A1E' },
       ]},
-      { name:'สรุป operation', title:'สรุป Operation — ยอด Actual PDI + PM ต่อวัน แยกรายยาร์ด + ยอดรวม · ใช้เฉพาะข้อมูล Actual', subs:[
-        { label:'Actual PDI', get:f=>xlNum(f.pdi_today), fill:'FDF0E3', color:'B35A00' },
-        { label:'Actual PM',  get:f=>xlNum(f.pm_today),  fill:'FDF0E3', color:'B35A00' },
-        { label:'รวม Actual', get:f=>xlNum(f.pdi_today)+xlNum(f.pm_today), fill:'FBEAE8', color:'7A1F15', sum:true },
+      { name:'สรุป operation', title:'สรุป Operation — ยอด Actual PDI + PM + Repair ต่อวัน แยกรายยาร์ด + ยอดรวม · ใช้เฉพาะข้อมูล Actual', subs:[
+        { label:'Actual PDI',    get:f=>xlNum(f.pdi_today),    fill:'FDF0E3', color:'B35A00' },
+        { label:'Actual PM',     get:f=>xlNum(f.pm_today),     fill:'FDF0E3', color:'B35A00' },
+        { label:'Actual Repair', get:f=>xlNum(f.repair_today), fill:'E7F3E7', color:'1E5A1E' },
+        { label:'รวม Actual', get:f=>xlNum(f.pdi_today)+xlNum(f.pm_today)+xlNum(f.repair_today), fill:'FBEAE8', color:'7A1F15', sum:true },
       ]},
     ];
 
@@ -2118,7 +2122,7 @@
             const writeBlock = (yardName, yardId, isGrand) => {
               const startRow = r;
               cfg.subs.forEach((sub, si) => {
-                const lbl = (cfg.name === 'สรุป operation' && isGrand && si === nSub - 1) ? 'รวม Actual (PDI+PM)' : sub.label;
+                const lbl = (cfg.name === 'สรุป operation' && isGrand && si === nSub - 1) ? 'รวม Actual (PDI+PM+Repair)' : sub.label;
                 const lc = ws.getCell(r, 3); lc.value = lbl; lc.fill = fill(sub.fill); lc.font = { bold:true, color:{argb:'FF'+sub.color}, size:8 }; lc.alignment = { horizontal:'left', vertical:'middle' }; lc.border = border;
                 let rowSum = 0;
                 for (let d = 1; d <= 31; d++) {
