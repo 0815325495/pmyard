@@ -244,12 +244,75 @@
     #viewSummary.tab-active   { background: #30d158 !important; color: #fff !important; border-color: #1fa83f !important; }
     #viewDaily.tab-active     { background: #ff9f0a !important; color: #fff !important; border-color: #cc7d00 !important; }
     #viewPerformance.tab-active { background: #bf5af2 !important; color: #fff !important; border-color: #9b3fd4 !important; }
+    #viewPdiSum.tab-active, #viewRepairSum.tab-active, #viewPMSum.tab-active, #viewOpSum.tab-active, #viewOpPlan.tab-active { background: #1F3864 !important; color: #fff !important; border-color: #15264a !important; }
 
     #viewPM30.tab-inactive:hover   { background: rgba(255,59,48,0.1) !important; color: #ff3b30 !important; }
     #viewMonthlyPM.tab-inactive:hover { background: rgba(0,122,255,0.1) !important; color: #007aff !important; }
     #viewSummary.tab-inactive:hover   { background: rgba(48,209,88,0.1) !important; color: #1fa83f !important; }
     #viewDaily.tab-inactive:hover     { background: rgba(255,159,10,0.1) !important; color: #cc7d00 !important; }
     #viewPerformance.tab-inactive:hover { background: rgba(191,90,242,0.1) !important; color: #bf5af2 !important; }
+    #viewPdiSum.tab-inactive:hover, #viewRepairSum.tab-inactive:hover, #viewPMSum.tab-inactive:hover, #viewOpSum.tab-inactive:hover, #viewOpPlan.tab-inactive:hover { background: rgba(31,56,100,0.08) !important; color: #1F3864 !important; }
+
+    /* ===== Operation Plan (แผนล่วงหน้า) — 7-day plan ===== */
+    .opx { overflow-x: auto; border: 1px solid #7F8A9A; background: #fff; -webkit-overflow-scrolling: touch; }
+    #opPlanTable { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 11px; }
+    #opPlanTable th, #opPlanTable td { border-right: 1px solid #9aa3b2; border-bottom: 1px solid #9aa3b2; padding: 1px 1px; text-align: center; white-space: nowrap; }
+    /* หัวคอลัมน์ย่อย GATE IN/Gate Out/Operation ให้ตัดบรรทัดได้ จะได้แคบ */
+    #opPlanTable thead th.op-h-op, #opPlanTable thead th.op-h-in, #opPlanTable thead th.op-h-out { white-space: normal; word-break: break-word; font-size: 8.5px; line-height: 1.05; padding: 2px 1px; }
+    #opPlanTable thead th { font-weight: 700; color: #111; }
+    #opPlanTable thead th.op-title { background: #fff !important; font-weight: 800; color: #111; }
+    #opPlanTable thead th.op-date { background: #fff !important; font-weight: 800; font-size: 13px; color: #111; }
+    #opPlanTable thead th.op-h-no { background: #FFFF00 !important; color: #111; font-weight: 800; }
+    #opPlanTable thead th.op-h-op { background: #BDE0FB !important; color: #0b3d66; }
+    #opPlanTable thead th.op-h-in { background: #BBE3BB !important; color: #14532d; }
+    #opPlanTable thead th.op-h-out { background: #F3CDE8 !important; color: #7a1f5e; }
+    #opPlanTable td.op-no { width: 24px; color: #334155; font-weight: 700; background: #fff; }
+    #opPlanTable td.op-yard { text-align: left; font-weight: 800; color: #111; background: #fff; width: 84px; max-width: 84px; position: sticky; left: 0; z-index: 2; box-shadow: 1px 0 0 #9aa3b2; overflow: hidden; text-overflow: ellipsis; font-size: 10.5px; }
+    #opPlanTable td.op-c-op  { background: #E3F2FD; width: 22px; }
+    #opPlanTable td.op-c-in  { background: #DCEFDC; width: 34px; }
+    #opPlanTable td.op-c-out { background: #FADCF0; width: 34px; }
+    #opPlanTable td.op-chk { cursor: pointer; font-weight: 900; color: #16a34a; font-size: 15px; user-select: none; line-height: 1; }
+    #opPlanTable td.op-chk:hover { background: #cde8fb; }
+    #opPlanTable td.op-chk.locked { cursor: default; }
+    #opPlanTable input { width: 100%; min-width: 0; border: 1px solid transparent; background: transparent; text-align: center; font-weight: 700; color: #1e293b; padding: 3px 0; border-radius: 3px; font-size: 11px; -moz-appearance: textfield; }
+    #opPlanTable input::-webkit-outer-spin-button, #opPlanTable input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    #opPlanTable td.op-chk { padding: 1px; }
+    #opPlanTable input:focus { outline: none; border-color: #2E75B6; background: #fff; box-shadow: 0 0 0 2px rgba(46,117,182,.2); }
+    #opPlanTable input::placeholder { color: #c9ced6; font-weight: 400; }
+    #opPlanTable input:disabled { background: transparent; color: #334155; }
+    #opPlanTable tr.op-total-row td { background: #fff; color: #111; font-weight: 800; }
+    #opPlanTable tr.op-total-row td.op-tsum-in { background: #DCEFDC; }
+    #opPlanTable tr.op-total-row td.op-tsum-out { background: #FADCF0; }
+    /* summary box */
+    #opPlanSummary .ops-grid { display: inline-grid; grid-template-columns: auto auto auto; gap: 1px; background: #9aa3b2; border: 1px solid #9aa3b2; }
+    #opPlanSummary .ops-grid > div { background: #fff; padding: 7px 16px; font-weight: 700; }
+    #opPlanSummary .ops-in { background: #BBE3BB !important; font-weight: 800; }
+    #opPlanSummary .ops-out { background: #F3CDE8 !important; font-weight: 800; }
+    #opPlanSummary .ops-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ===== Excel-style monthly summary grids (สรุปรายวัน / ซ่อม / PM / Operation) ===== */
+    .sumx { overflow-x: auto; border: 1px solid #7F8A9A; background: #fff; -webkit-overflow-scrolling: touch; }
+    .sumx table { border-collapse: separate; border-spacing: 0; font-size: 12.5px; width: max-content; min-width: 100%; font-weight: 700; }
+    .sumx th, .sumx td { border-right: 1px solid #C9CED6; border-bottom: 1px solid #C9CED6; padding: 3px 6px; text-align: center; white-space: nowrap; height: 26px; background: #fff; color: #111; }
+    .sumx thead th { position: sticky; top: 0; z-index: 3; background: #1F3864; color: #fff; font-size: 11.5px; }
+    .sumx thead tr:nth-child(2) th { top: 27px; background: #DCE6F1; color: #1F4E79; }
+    .sumx thead th.sun { color: #FFC9C9; }
+    .sumx td.yard { font-weight: 800; text-align: left; position: sticky; left: 0; z-index: 2; min-width: 150px; background: #fff !important; box-shadow: 1px 0 0 #C9CED6; }
+    .sumx thead th.yard { left: 0; z-index: 4; }
+    .sumx td.rlabel { font-weight: 700; text-align: left; min-width: 96px; color: #333; }
+    .sumx td.dot { color: #B9C0CA; font-weight: 400; }
+    .sumx td.tot { background: #E7F3E7 !important; color: #2E7D32; font-weight: 800; min-width: 74px; }
+    .sumx tr.r-act td { background: #FCEBDD; }
+    .sumx tr.r-hold td { background: #EDE7F6; }
+    .sumx tr.r-pm td { background: #E7F3E7; }
+    .sumx tr.r-sum td { background: #CFECF7; }
+    .sumx tr.grand td { font-weight: 800; }
+    .sumx tr.grand td.yard { background: #1F3864 !important; color: #fff; }
+    .sumx tr.grand.r-act td { background: #ED7D31; color: #fff; }
+    .sumx tr.grand.r-pm td { background: #2E7D32; color: #fff; }
+    .sumx tr.grand.r-hold td { background: #7E57C2; color: #fff; }
+    .sumx tr.grand.r-sum td { background: #2E75B6; color: #fff; }
+    .sumx tr.grand td.tot { background: #1F3864 !important; color: #fff; }
 
     #monthPicker, #dailyDate { color-scheme: light; }
 
@@ -434,13 +497,13 @@
     #dailyTable { min-width: 640px; }
     #dailyTable .dr-th {
       background: #f8fafc; color: #334155; font-weight: 700; font-size: 0.9rem;
-      border: 1px solid #e2e8f0; padding: 8px 6px; white-space: nowrap;
+      border: 1px solid #94a3b8; padding: 8px 6px; white-space: nowrap;
     }
     #dailyTable .dr-grp { background: #eef2ff; color: #4338ca; }
     #dailyTable .dr-sub { background: #f1f5f9; font-size: 0.8rem; color: #64748b; font-weight: 600; }
     #dailyTable .dr-yard-col { text-align: left; min-width: 120px; }
     #dailyTable .dr-act-col { width: 44px; background: #f8fafc; }
-    #dailyTable td { border: 1px solid #e2e8f0; padding: 4px; vertical-align: middle; }
+    #dailyTable td { border: 1px solid #94a3b8; padding: 4px; vertical-align: middle; }
     #dailyTable tbody tr:nth-child(even) td { background: #fcfcfd; }
     #dailyTable .dr-name-input {
       width: 100%; min-width: 110px; border: 1px solid transparent; background: transparent;
@@ -454,10 +517,10 @@
     #dailyTable .dr-cell-input:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245,158,11,0.2); }
     #dailyTable .dr-cell-input::placeholder { color: #cbd5e1; font-weight: 400; }
     /* เข้า / ออก / ขาย — ช่องข้อความ ขยายสูงอัตโนมัติเมื่อขึ้นบรรทัดใหม่ */
-    #dailyTable .dr-text-col { min-width: 190px; }
+    #dailyTable .dr-text-col { min-width: 120px; width: 120px; }
     #dailyTable textarea.dr-text-input {
       display: block; text-align: left; font-family: inherit;
-      font-size: 0.95rem; font-weight: 600; min-width: 170px;
+      font-size: 0.95rem; font-weight: 600; min-width: 0;
       line-height: 1.35; min-height: 40px; resize: none; overflow: hidden;
       white-space: pre-wrap; word-break: break-word;
     }
@@ -471,6 +534,21 @@
     }
     #dailyTable .dr-del-btn:hover { background: #fecaca; }
     #dailyTable input:disabled, #dailyTable textarea:disabled { background: transparent; color: #475569; cursor: default; }
+    /* เข้า = เขียวอ่อน, ออก = แดงอ่อน */
+    #dailyTable [data-field="in"]  { background: #e7f8ee !important; border-color: #bfe8cf !important; }
+    #dailyTable [data-field="out"] { background: #fdeaea !important; border-color: #f4c6c6 !important; }
+    #dailyTable td.dr-sum-cell { font-weight: 700; color: #334155; background: #f8fafc; min-width: 58px; font-size: 1rem; }
+    /* สีประจำกลุ่ม: PDI/FC ม่วงอ่อน · PM ฟ้าอ่อน · ซ่อม ส้มอ่อน */
+    #dailyTable [data-field="pdi_hold"], #dailyTable [data-field="pdi_today"]       { background: #f1e9fc !important; border-color: #d7c7f0 !important; }
+    #dailyTable [data-field="pm_hold"], #dailyTable [data-field="pm_today"]         { background: #e2f1fd !important; border-color: #bcdcf5 !important; }
+    #dailyTable [data-field="repair_hold"], #dailyTable [data-field="repair_today"] { background: #ffeed9 !important; border-color: #f7d4ab !important; }
+    #dailyTable .dr-grp-pdi { background: #efe3fb !important; color: #6b21a8 !important; }
+    #dailyTable .dr-grp-pm  { background: #d8ecfc !important; color: #075985 !important; }
+    #dailyTable .dr-grp-rep { background: #ffe3c4 !important; color: #9a3412 !important; }
+    /* คงเหลือ ทุกกลุ่ม = เขียวเข้ม */
+    #dailyTable .dr-sub.dr-sumsub { background: #bbf7d0 !important; color: #166534 !important; }
+    #dailyTable td.dr-sum-left { background: #dcfce7 !important; color: #15803d; font-weight: 800; }
+    #dailyTable td.dr-sum-cell.dr-neg { color: #dc2626 !important; }
     /* โหมดแก้ไข Yard */
     #dailyTable.dr-editing .dr-name-input { border-color: #cbd5e1; background: #fff; }
     #dailyTable.dr-editing .dr-yard-col { background: #eff6ff; }
@@ -599,7 +677,7 @@
     </div>
   </div>
 
-  <div id="app-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div id="app-container" class="w-full max-w-none px-3 sm:px-5 lg:px-6 py-6">
     <div id="connectionStatus" class="hidden fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-full shadow-lg z-50">
         ไม่สามารถเชื่อมต่อฐานข้อมูลได้
     </div>
@@ -632,6 +710,11 @@
       <button id="viewMonthlyPM" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">แผน PM ประจำเดือน</button>
       <button id="viewSummary" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุปรวม + แผนพรุ่งนี้</button>
       <button id="viewDaily" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Daily Report</button>
+      <button id="viewPdiSum" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุปรายวัน</button>
+      <button id="viewRepairSum" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุปยอดซ่อม</button>
+      <button id="viewPMSum" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุป PM</button>
+      <button id="viewOpSum" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">สรุป Operation</button>
+      <button id="viewOpPlan" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">แผนล่วงหน้า</button>
       <button id="viewPerformance" class="main-tab tab-inactive rounded-lg px-4 py-2 font-medium">Yard Performance</button>
     </nav>
 
@@ -815,15 +898,21 @@
                 <th rowspan="2" class="dr-th">เข้า</th>
                 <th rowspan="2" class="dr-th">ออก</th>
                 <th rowspan="2" class="dr-th">ขาย</th>
-                <th colspan="2" class="dr-th dr-grp">PDI / FC</th>
-                <th colspan="2" class="dr-th dr-grp">PM</th>
+                <th colspan="3" class="dr-th dr-grp dr-grp-pdi">PDI / FC</th>
+                <th colspan="3" class="dr-th dr-grp dr-grp-pm">PM</th>
+                <th colspan="3" class="dr-th dr-grp dr-grp-rep">ซ่อม</th>
                 <th rowspan="2" class="dr-th dr-act-col"></th>
               </tr>
               <tr>
                 <th class="dr-th dr-sub">ค้าง</th>
-                <th class="dr-th dr-sub">วันนี้</th>
+                <th class="dr-th dr-sub">ทำได้</th>
+                <th class="dr-th dr-sub dr-sumsub">คงเหลือ</th>
                 <th class="dr-th dr-sub">ค้าง</th>
-                <th class="dr-th dr-sub">วันนี้</th>
+                <th class="dr-th dr-sub">ทำได้</th>
+                <th class="dr-th dr-sub dr-sumsub">คงเหลือ</th>
+                <th class="dr-th dr-sub">ค้าง</th>
+                <th class="dr-th dr-sub">ทำได้</th>
+                <th class="dr-th dr-sub dr-sumsub">คงเหลือ</th>
               </tr>
             </thead>
             <tbody id="dailyTableBody"><!-- rows rendered by JS --></tbody>
@@ -833,7 +922,7 @@
 
         <div class="mt-5">
           <label class="block text-slate-700 font-semibold mb-2">Remark / หมายเหตุ</label>
-          <textarea id="dailyRemark" rows="3" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" style="resize:vertical" placeholder="ใส่หมายเหตุ..."></textarea>
+          <textarea id="dailyRemark" rows="3" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400" style="resize:none;overflow:hidden;min-height:76px" placeholder="ใส่หมายเหตุ..."></textarea>
         </div>
       </section>
     </section>
@@ -1047,6 +1136,86 @@
       </section>
     </section>
 
+    <!-- ===== สรุปรายวัน (PDI) ===== -->
+    <section id="pdiSumView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุปรายวัน PDI</h2>
+            <p class="text-slate-500 text-sm">ยอด PDI ที่ทำต่อวัน + คงค้าง แยก Yard (ดึงจาก Daily Report)</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full font-semibold" style="background:#E4EEF8;color:#1F4E79">เดือน: <span id="pdiSumMonth" class="px-2 py-1 rounded-full" style="background:#CFE0F3">-</span></div>
+        </div>
+      </section>
+      <section class="card rounded-2xl p-3"><div class="sumx" id="pdiSumGrid"></div></section>
+    </section>
+
+    <!-- ===== สรุปยอดซ่อม ===== -->
+    <section id="repairSumView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุปยอดซ่อม</h2>
+            <p class="text-slate-500 text-sm">ยอดซ่อมที่ทำต่อวัน + คงค้างรอซ่อม แยก Yard (ดึงจาก Daily Report)</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full font-semibold" style="background:#E4EEF8;color:#1F4E79">เดือน: <span id="repairSumMonth" class="px-2 py-1 rounded-full" style="background:#CFE0F3">-</span></div>
+        </div>
+      </section>
+      <section class="card rounded-2xl p-3"><div class="sumx" id="repairSumGrid"></div></section>
+    </section>
+
+    <!-- ===== สรุป PM ===== -->
+    <section id="pmSumView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุป PM</h2>
+            <p class="text-slate-500 text-sm">ยอด PM ที่ทำต่อวัน + คงค้าง แยก Yard (ดึงจาก Daily Report)</p>
+          </div>
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full font-semibold" style="background:#E4EEF8;color:#1F4E79">เดือน: <span id="pmSumMonth" class="px-2 py-1 rounded-full" style="background:#CFE0F3">-</span></div>
+        </div>
+      </section>
+      <section class="card rounded-2xl p-3"><div class="sumx" id="pmSumGrid"></div></section>
+    </section>
+
+    <!-- ===== สรุป Operation ===== -->
+    <section id="opSumView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">สรุป Operation</h2>
+            <p class="text-slate-500 text-sm">Actual PDI + Actual PM ต่อวัน + ยอดรวม แยก Yard (ดึงจาก Daily Report)</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full font-semibold" style="background:#E4EEF8;color:#1F4E79">เดือน: <span id="opSumMonth" class="px-2 py-1 rounded-full" style="background:#CFE0F3">-</span></div>
+            <button id="opSumExportBtn" onclick="exportOperationExcel()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-white font-semibold hover:opacity-90" style="background:#1D6F42">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1v8m0 0 3-3m-3 3L5 6M2 11v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Export Excel
+            </button>
+          </div>
+        </div>
+      </section>
+      <section class="card rounded-2xl p-3"><div class="sumx" id="opSumGrid"></div></section>
+    </section>
+
+    <!-- ===== แผนล่วงหน้า (Operation Plan) ===== -->
+    <section id="opPlanView" class="hidden">
+      <section class="card rounded-2xl p-5 mb-4">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-900">แผนล่วงหน้า (Operation Plan)</h2>
+            <p class="text-slate-500 text-sm">แผน 7 วัน (รวมเสาร์-อาทิตย์) · PDI/PM/Repair = ติ๊กเครื่องหมายถูก · GATE IN / Gate Out = ใส่ตัวเลข · กรอกต้องเข้าสู่ระบบ</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-slate-600">เริ่มวันที่:</span>
+            <input id="opPlanDate" type="date" class="rounded-xl px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+          </div>
+        </div>
+      </section>
+      <section class="card rounded-2xl p-3"><div class="opx"><table id="opPlanTable"><thead id="opPlanHead"></thead><tbody id="opPlanBody"></tbody></table></div></section>
+      <section class="card rounded-2xl p-4 mt-3" id="opPlanSummary"></section>
+    </section>
+
   </div>
 
   <script>
@@ -1063,11 +1232,22 @@
         summaryView: document.getElementById('summaryView'),
         dailyView: document.getElementById('dailyView'),
         performanceView: document.getElementById('performanceView'),
+        pdiSumView: document.getElementById('pdiSumView'),
+        repairSumView: document.getElementById('repairSumView'),
+        pmSumView: document.getElementById('pmSumView'),
+        opSumView: document.getElementById('opSumView'),
+        opPlanView: document.getElementById('opPlanView'),
         viewPM30: document.getElementById('viewPM30'),
         viewMonthlyPM: document.getElementById('viewMonthlyPM'),
         viewSummary: document.getElementById('viewSummary'),
         viewDaily: document.getElementById('viewDaily'),
         viewPerformance: document.getElementById('viewPerformance'),
+        viewPdiSum: document.getElementById('viewPdiSum'),
+        viewRepairSum: document.getElementById('viewRepairSum'),
+        viewPMSum: document.getElementById('viewPMSum'),
+        viewOpSum: document.getElementById('viewOpSum'),
+        viewOpPlan: document.getElementById('viewOpPlan'),
+        opPlanDate: document.getElementById('opPlanDate'),
         dailyDate: document.getElementById('dailyDate'),
         // Auth elements
         loginModal: document.getElementById('loginModal'),
@@ -1171,6 +1351,7 @@
             }
         });
         if (window.drApplyLock) window.drApplyLock();
+        if (window.opPlanApplyLock) window.opPlanApplyLock();
     };
 
     const enableEditing = () => {
@@ -1181,6 +1362,7 @@
             }
         });
         if (window.drApplyLock) window.drApplyLock();
+        if (window.opPlanApplyLock) window.opPlanApplyLock();
     };
 
     // เมื่อยังไม่ล็อกอิน: เห็นแค่แท็บ Daily Report / เมื่อล็อกอิน: เห็นครบทุกแท็บ
@@ -1319,8 +1501,43 @@
     };
 
     // ==================== DAILY REPORT TABLE (standalone) ====================
-    const DR_FIELDS = ['in','out','sold','pdi_hold','pdi_today','pm_hold','pm_today'];
+    const DR_FIELDS = ['in','out','sold','pdi_hold','pdi_today','pm_hold','pm_today','repair_hold','repair_today'];
     const DR_TEXT_FIELDS = ['in','out','sold']; // เข้า/ออก/ขาย = พิมพ์ข้อความได้
+    // กลุ่มสรุป (ค้าง · ทำได้วันนี้ · คงเหลือ) — คำนวณจากช่องกรอก ไม่ต้องเก็บเพิ่ม
+    const DR_SUM_GROUPS = [
+      { hold:'pdi_hold',    today:'pdi_today'    },
+      { hold:'pm_hold',     today:'pm_today'     },
+      { hold:'repair_hold', today:'repair_today' },
+    ];
+    const drNumVal = (x) => { const n = Number(x); return Number.isFinite(n) ? n : 0; };
+    const drSumDisp = (x) => {
+      const s = (x == null ? '' : String(x)).trim();
+      if (s === '') return '-';
+      const n = Number(s); return Number.isFinite(n) ? n.toLocaleString() : s;
+    };
+    const drLeftDisp = (hold, today) => {
+      const hs = (hold == null ? '' : String(hold)).trim(), ts = (today == null ? '' : String(today)).trim();
+      if (hs === '' && ts === '') return '-';
+      return (drNumVal(hold) - drNumVal(today)).toLocaleString();
+    };
+    function drSummaryCells(v){
+      return DR_SUM_GROUPS.map(g => {
+        const neg = (v[g.hold] != null || v[g.today] != null) && (drNumVal(v[g.hold]) - drNumVal(v[g.today])) < 0;
+        return `<td class="dr-sum-cell" data-sf="${g.hold}">${drSumDisp(v[g.hold])}</td>` +
+               `<td class="dr-sum-cell" data-sf="${g.today}">${drSumDisp(v[g.today])}</td>` +
+               `<td class="dr-sum-cell dr-sum-left${neg ? ' dr-neg' : ''}" data-left="${g.hold}:${g.today}">${drLeftDisp(v[g.hold], v[g.today])}</td>`;
+      }).join('');
+    }
+    function drUpdateRowSummary(tr, v){
+      v = v || {};
+      tr.querySelectorAll('.dr-sum-cell[data-sf]').forEach(td => { td.textContent = drSumDisp(v[td.dataset.sf]); });
+      tr.querySelectorAll('.dr-sum-cell[data-left]').forEach(td => {
+        const p = td.dataset.left.split(':');
+        td.textContent = drLeftDisp(v[p[0]], v[p[1]]);
+        const neg = (v[p[0]] != null || v[p[1]] != null) && (drNumVal(v[p[0]]) - drNumVal(v[p[1]])) < 0;
+        td.classList.toggle('dr-neg', neg);
+      });
+    }
     const DR_DEFAULT_YARDS = [
       { id:'y_rayong', name:'ระยอง' },
       { id:'y_soi5',   name:'soi 5' },
@@ -1412,7 +1629,12 @@
         tr.dataset.yardId = y.id;
         tr.innerHTML =
           `<td class="dr-yard-col"><input type="text" class="dr-name-input" data-field="__name" value="${drEscape(y.name)}" placeholder="ชื่อ Yard"></td>` +
-          DR_FIELDS.map(f => cell(v,f)).join('') +
+          cell(v,'in') + cell(v,'out') + cell(v,'sold') +
+          ['pdi','pm','repair'].map(cat => {
+            const neg = (v[cat+'_hold'] != null || v[cat+'_today'] != null) && (drNumVal(v[cat+'_hold']) - drNumVal(v[cat+'_today'])) < 0;
+            return cell(v, cat+'_hold') + cell(v, cat+'_today') +
+              `<td class="dr-sum-cell dr-sum-left${neg ? ' dr-neg' : ''}" data-left="${cat}_hold:${cat}_today">${drLeftDisp(v[cat+'_hold'], v[cat+'_today'])}</td>`;
+          }).join('') +
           `<td class="dr-act-col"><button type="button" class="dr-del-btn" title="ลบ Yard นี้"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></td>`;
         body.appendChild(tr);
       });
@@ -1425,6 +1647,7 @@
       const ta = document.getElementById('dailyRemark');
       if (!ta) return;
       if (document.activeElement !== ta) ta.value = (drValues && drValues.__remark) || '';
+      drAutoGrow(ta);
     }
 
     function drBindEvents(){
@@ -1442,6 +1665,7 @@
           }
           if (!drValues[id]) drValues[id] = {};
           drValues[id][field] = inp.value;
+          drUpdateRowSummary(tr, drValues[id]);
           drScheduleValueSave();
         });
         body.addEventListener('click', (e) => {
@@ -1459,6 +1683,7 @@
       if (remark && !remark.dataset.bound) {
         remark.dataset.bound = '1';
         remark.addEventListener('input', () => {
+          drAutoGrow(remark);
           if (!drValues || typeof drValues !== 'object') drValues = {};
           drValues.__remark = remark.value;
           drScheduleValueSave();
@@ -1550,6 +1775,393 @@
     }
     window.renderDailyTable = renderDailyTable;
     // ==================== END DAILY REPORT TABLE ====================
+
+    // ==================== MONTHLY SUMMARY TABS (สรุปรายวัน/ซ่อม/PM/Operation) ====================
+    // ดึงข้อมูลจาก Daily Report (/dailyReportV2) มาสรุปเป็นตารางรายเดือน Yard × วันที่
+    const SUM_NUM = (v) => { const n = Number(v); return (Number.isFinite(n) && n > 0) ? n : 0; };
+    const SUM_ESC = (s) => (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const SUM_CFG = {
+      pdi: { grid: 'pdiSumGrid', mon: 'pdiSumMonth', rows: [
+        { label: 'วันนี้', cls: 'r-act',  get: f => SUM_NUM(f.pdi_today), sum: true  },
+        { label: 'ค้าง',   cls: 'r-hold', get: f => SUM_NUM(f.pdi_hold),  sum: false },
+      ]},
+      rep: { grid: 'repairSumGrid', mon: 'repairSumMonth', rows: [
+        { label: 'วันนี้', cls: 'r-act',  get: f => SUM_NUM(f.repair_today), sum: true  },
+        { label: 'ค้าง',   cls: 'r-hold', get: f => SUM_NUM(f.repair_hold),  sum: false },
+      ]},
+      pm: { grid: 'pmSumGrid', mon: 'pmSumMonth', rows: [
+        { label: 'วันนี้', cls: 'r-act',  get: f => SUM_NUM(f.pm_today), sum: true  },
+        { label: 'ค้าง',   cls: 'r-hold', get: f => SUM_NUM(f.pm_hold),  sum: false },
+      ]},
+      op: { grid: 'opSumGrid', mon: 'opSumMonth', rows: [
+        { label: 'Actual PDI', cls: 'r-act', get: f => SUM_NUM(f.pdi_today), sum: true },
+        { label: 'Actual PM',  cls: 'r-pm',  get: f => SUM_NUM(f.pm_today),  sum: true },
+        { label: 'รวม Actual', cls: 'r-sum', get: f => SUM_NUM(f.pdi_today) + SUM_NUM(f.pm_today), sum: true },
+      ]},
+    };
+
+    let _sumNode = null, _sumNodeTime = 0;
+    async function getSummaryNode(){
+      if (_sumNode && (Date.now() - _sumNodeTime) < 2500) return _sumNode;
+      if (fbDb && authReady) {
+        try {
+          const snap = await fbDb.ref('/dailyReportV2').get();
+          _sumNode = snap.val() || {}; _sumNodeTime = Date.now();
+          return _sumNode;
+        } catch(e) { /* fall through */ }
+      }
+      // fallback: อ่านจาก localStorage
+      const node = {};
+      try { const y = JSON.parse(localStorage.getItem('dailyV2_yards') || 'null'); if (y) node._yards = y; } catch(e){}
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i); const m = k && k.match(/^dailyV2_vals_(\d{4}-\d{2}-\d{2})$/);
+          if (m) { try { node[m[1]] = JSON.parse(localStorage.getItem(k)) || {}; } catch(e){} }
+        }
+      } catch(e){}
+      _sumNode = node; _sumNodeTime = Date.now();
+      return node;
+    }
+    function getSummaryYards(node){
+      if (node && Array.isArray(node._yards) && node._yards.length) return node._yards;
+      const local = (typeof drLoadYardsLocal === 'function') ? drLoadYardsLocal() : null;
+      if (local) return local;
+      return (typeof DR_DEFAULT_YARDS !== 'undefined') ? DR_DEFAULT_YARDS.map(y => ({...y})) : [];
+    }
+
+    async function renderMonthSummary(key){
+      const cfg = SUM_CFG[key]; if (!cfg) return;
+      const grid = document.getElementById(cfg.grid); if (!grid) return;
+      const ym = (elements.monthPicker && elements.monthPicker.value) || toMonthKey(new Date());
+      const monEl = document.getElementById(cfg.mon); if (monEl) monEl.textContent = ym;
+      grid.innerHTML = '<div style="padding:22px;text-align:center;color:#5F6B7A">กำลังโหลด...</div>';
+
+      const node = await getSummaryNode();
+      const yards = getSummaryYards(node);
+      const nDays = daysInMonth(ym);
+      const [yy, mm] = ym.split('-').map(Number);
+      const today = new Date();
+      const isCur = (today.getFullYear() === yy && (today.getMonth() + 1) === mm);
+      const todayD = today.getDate();
+      const fieldsFor = (yid, d) => { const day = node[`${ym}-${String(d).padStart(2,'0')}`]; return (day && day[yid]) || {}; };
+
+      if (!yards.length) { grid.innerHTML = '<div style="padding:22px;text-align:center;color:#5F6B7A">ยังไม่มี Yard</div>'; return; }
+
+      const nR = cfg.rows.length;
+      let h = '<table><thead><tr>';
+      h += '<th rowspan="2" class="yard">Yard</th><th rowspan="2" class="rlabel">รายการ</th>';
+      h += `<th colspan="${nDays}">${ym}</th>`;
+      h += '<th rowspan="2" class="tot">รวมในเดือน</th></tr><tr>';
+      for (let d = 1; d <= nDays; d++) {
+        const wd = new Date(yy, mm - 1, d).getDay();
+        const cls = 'day' + (wd === 0 ? ' sun' : '');
+        const todayStyle = (isCur && d === todayD) ? ' style="background:#FFF3A3;color:#111"' : '';
+        h += `<th class="${cls}"${todayStyle}>${d}</th>`;
+      }
+      h += '</tr></thead><tbody>';
+
+      const gPerDay = cfg.rows.map(() => new Array(nDays + 1).fill(0));
+      const gTotal = cfg.rows.map(() => 0);
+
+      yards.forEach(y => {
+        cfg.rows.forEach((row, ri) => {
+          h += `<tr class="${row.cls}">`;
+          if (ri === 0) h += `<td class="yard" rowspan="${nR}">${SUM_ESC(y.name)}</td>`;
+          h += `<td class="rlabel">${row.label}</td>`;
+          let rowSum = 0, lastVal = 0;
+          for (let d = 1; d <= nDays; d++) {
+            const v = row.get(fieldsFor(y.id, d));
+            if (v > 0) { rowSum += v; lastVal = v; gPerDay[ri][d] += v; }
+            const todayStyle = (isCur && d === todayD) ? ' style="box-shadow:inset 0 0 0 2px #ED7D31"' : '';
+            h += `<td class="${v > 0 ? '' : 'dot'}"${todayStyle}>${v > 0 ? v.toLocaleString() : '·'}</td>`;
+          }
+          const totVal = row.sum ? rowSum : lastVal;
+          gTotal[ri] += totVal;
+          h += `<td class="tot">${totVal > 0 ? totVal.toLocaleString() : '·'}</td>`;
+          h += '</tr>';
+        });
+      });
+
+      cfg.rows.forEach((row, ri) => {
+        h += `<tr class="grand ${row.cls}">`;
+        if (ri === 0) h += `<td class="yard" rowspan="${nR}">รวมทุก Yard</td>`;
+        h += `<td class="rlabel">${row.label}</td>`;
+        for (let d = 1; d <= nDays; d++) { const v = gPerDay[ri][d]; h += `<td class="${v > 0 ? '' : 'dot'}">${v > 0 ? v.toLocaleString() : '·'}</td>`; }
+        h += `<td class="tot">${gTotal[ri] > 0 ? gTotal[ri].toLocaleString() : '·'}</td>`;
+        h += '</tr>';
+      });
+      h += '</tbody></table>';
+      grid.innerHTML = h;
+    }
+    window.renderMonthSummary = renderMonthSummary;
+    // ==================== END MONTHLY SUMMARY TABS ====================
+
+    // ==================== OPERATION PLAN (แผนล่วงหน้า — 7 วัน) ====================
+    let opwData = {};          // { 'YYYY-MM-DD': { yardId: {pdi,pm,repair,factory,ytyIn,dealer,ytyOut} } }
+    let opwYards = [], opwDays = [];
+    const opwSaveTimers = {};
+    let opwBound = false;
+    const opwNum = (x) => { const n = Number(x); return Number.isFinite(n) ? n : 0; };
+    const opEscAttr = (s) => (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const opwAddDays = (ymd, n) => { const d = new Date(ymd + 'T00:00:00'); d.setDate(d.getDate() + n); return dateKey(d); };
+    const OPW_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const opwFmtDate = (ymd) => { const d = new Date(ymd + 'T00:00:00'); return `${String(d.getDate()).padStart(2,'0')}-${OPW_MON[d.getMonth()]}-${String(d.getFullYear()).slice(2)}`; };
+    const opwCanWrite = () => (fbDb && fbConnected && authReady && isLoggedIn);
+    const opwLsKey = (date) => 'opPlanV2_' + date;
+    const opwLoadLocal = (date) => { try { return JSON.parse(localStorage.getItem(opwLsKey(date)) || '{}') || {}; } catch(e){ return {}; } };
+    const opwCell = (date, yid, f) => ((opwData[date] || {})[yid] || {})[f];
+    const opwSaveDate = (date) => {
+      try { localStorage.setItem(opwLsKey(date), JSON.stringify(opwData[date] || {})); } catch(e){}
+      clearTimeout(opwSaveTimers[date]);
+      opwSaveTimers[date] = setTimeout(() => { if (opwCanWrite()) fbDb.ref('/operationPlanV2/' + date).set(opwData[date] || {}, markLastSync); }, 450);
+    };
+
+    function opPlanApplyLock(){
+      const locked = !isLoggedIn;
+      document.querySelectorAll('#opPlanTable input').forEach(el => { if (locked) el.setAttribute('disabled','true'); else el.removeAttribute('disabled'); });
+      document.querySelectorAll('#opPlanTable .op-chk').forEach(el => el.classList.toggle('locked', locked));
+    }
+    window.opPlanApplyLock = opPlanApplyLock;
+
+    function opwColTotals(){
+      return opwDays.map(date => {
+        const t = { factory:0, ytyIn:0, dealer:0, ytyOut:0 };
+        opwYards.forEach(y => { const v = (opwData[date] || {})[y.id] || {}; t.factory += opwNum(v.factory); t.ytyIn += opwNum(v.ytyIn); t.dealer += opwNum(v.dealer); t.ytyOut += opwNum(v.ytyOut); });
+        return t;
+      });
+    }
+    function opwRenderTotalsAndSummary(){
+      const totals = opwColTotals();
+      const tr = document.querySelector('#opPlanBody tr.op-total-row');
+      if (tr) {
+        opwDays.forEach((date, di) => {
+          const t = totals[di];
+          ['factory','ytyIn','dealer','ytyOut'].forEach(f => { const el = tr.querySelector(`[data-tot="${di}:${f}"]`); if (el) el.textContent = t[f].toLocaleString(); });
+        });
+      }
+      let fac=0, yin=0, deal=0, yout=0;
+      totals.forEach(t => { fac+=t.factory; yin+=t.ytyIn; deal+=t.dealer; yout+=t.ytyOut; });
+      const sm = document.getElementById('opPlanSummary');
+      if (sm) sm.innerHTML =
+        '<div class="ops-grid">' +
+        `<div class="ops-in" style="grid-row:span 2">GATE IN</div><div>Factory</div><div class="ops-num">${fac.toLocaleString()}</div>` +
+        `<div>Yard to Yard</div><div class="ops-num">${yin.toLocaleString()}</div>` +
+        `<div class="ops-out" style="grid-row:span 2">Gate Out</div><div>Dealer</div><div class="ops-num">${deal.toLocaleString()}</div>` +
+        `<div>Yard to Yard</div><div class="ops-num">${yout.toLocaleString()}</div>` +
+        '</div>';
+    }
+
+    function opwBind(){
+      if (opwBound) return;
+      const body = document.getElementById('opPlanBody'); if (!body) return;
+      opwBound = true;
+      body.addEventListener('input', (e) => {
+        const inp = e.target.closest('input'); if (!inp) return;
+        const date = inp.dataset.date, yard = inp.dataset.yard, field = inp.dataset.field;
+        if (!opwData[date]) opwData[date] = {};
+        if (!opwData[date][yard]) opwData[date][yard] = {};
+        opwData[date][yard][field] = inp.value;
+        opwRenderTotalsAndSummary();
+        opwSaveDate(date);
+      });
+      body.addEventListener('click', (e) => {
+        const cell = e.target.closest('.op-chk'); if (!cell) return;
+        if (!isLoggedIn) { toast('กรุณาเข้าสู่ระบบก่อนแก้ไข'); return; }
+        const date = cell.dataset.date, yard = cell.dataset.yard, field = cell.dataset.field;
+        if (!opwData[date]) opwData[date] = {};
+        if (!opwData[date][yard]) opwData[date][yard] = {};
+        const nv = opwData[date][yard][field] ? 0 : 1;
+        opwData[date][yard][field] = nv;
+        cell.textContent = nv ? '✓' : '';
+        cell.classList.toggle('on', !!nv);
+        opwSaveDate(date);
+      });
+    }
+
+    async function renderOpPlan(){
+      const head = document.getElementById('opPlanHead');
+      const body = document.getElementById('opPlanBody');
+      if (!head || !body) return;
+      if (elements.opPlanDate && !elements.opPlanDate.value) elements.opPlanDate.value = todayKey();
+      const start = (elements.opPlanDate && elements.opPlanDate.value) || todayKey();
+      opwDays = []; for (let i = 0; i < 7; i++) opwDays.push(opwAddDays(start, i));
+
+      body.innerHTML = '<tr><td style="padding:18px;color:#5F6B7A">กำลังโหลด...</td></tr>';
+      const node = await getSummaryNode();
+      opwYards = getSummaryYards(node);
+      opwData = {};
+      opwDays.forEach(d => { opwData[d] = opwLoadLocal(d); });
+      if (fbDb && authReady) {
+        try {
+          const snaps = await Promise.all(opwDays.map(d => fbDb.ref('/operationPlanV2/' + d).get()));
+          snaps.forEach((snap, i) => { const r = snap.val(); opwData[opwDays[i]] = (r && typeof r === 'object') ? r : {}; });
+        } catch(e){}
+      }
+
+      // ---- thead ----
+      let hh = '<tr><th rowspan="2" colspan="2" class="op-title">Operation Plan</th>';
+      opwDays.forEach(d => { hh += `<th colspan="7" class="op-date">${opwFmtDate(d)}</th>`; });
+      hh += '</tr><tr>';
+      opwDays.forEach(() => { hh += '<th colspan="3" class="op-h-op">Opeartion</th><th colspan="2" class="op-h-in">GATE IN</th><th colspan="2" class="op-h-out">Gate Out</th>'; });
+      hh += '</tr><tr><th class="op-h-no">No.</th><th class="op-h-no">Yard</th>';
+      opwDays.forEach(() => { hh += '<th class="op-h-op">PDI</th><th class="op-h-op">PM</th><th class="op-h-op">Repair</th><th class="op-h-in">Factory</th><th class="op-h-in">Yard to Yard</th><th class="op-h-out">Dealer</th><th class="op-h-out">Yard to Yard</th>'; });
+      hh += '</tr>';
+      head.innerHTML = hh;
+
+      // ---- tbody ----
+      const chkCell = (date, yid, f) => { const on = opwCell(date, yid, f); return `<td class="op-c-op op-chk${on?' on':''}" data-date="${date}" data-yard="${yid}" data-field="${f}">${on ? '✓' : ''}</td>`; };
+      const numCell = (date, yid, f, cls) => { const v = opwCell(date, yid, f); return `<td class="${cls}"><input type="number" min="0" inputmode="numeric" data-date="${date}" data-yard="${yid}" data-field="${f}" value="${opEscAttr(v==null?'':v)}" placeholder=""></td>`; };
+      let bh = '';
+      opwYards.forEach((y, i) => {
+        bh += `<tr data-yard-id="${y.id}"><td class="op-no">${i+1}</td><td class="op-yard">${opEscAttr(y.name)}</td>`;
+        opwDays.forEach(date => {
+          bh += chkCell(date, y.id, 'pdi') + chkCell(date, y.id, 'pm') + chkCell(date, y.id, 'repair') +
+                numCell(date, y.id, 'factory', 'op-c-in') + numCell(date, y.id, 'ytyIn', 'op-c-in') +
+                numCell(date, y.id, 'dealer', 'op-c-out') + numCell(date, y.id, 'ytyOut', 'op-c-out');
+        });
+        bh += '</tr>';
+      });
+      bh += '<tr class="op-total-row"><td colspan="2" style="text-align:right;padding-right:10px">Total</td>';
+      opwDays.forEach((date, di) => {
+        bh += '<td></td><td></td><td></td>' +
+          `<td class="op-tsum-in" data-tot="${di}:factory">0</td><td class="op-tsum-in" data-tot="${di}:ytyIn">0</td>` +
+          `<td class="op-tsum-out" data-tot="${di}:dealer">0</td><td class="op-tsum-out" data-tot="${di}:ytyOut">0</td>`;
+      });
+      bh += '</tr>';
+      body.innerHTML = bh;
+
+      opwBind();
+      opwRenderTotalsAndSummary();
+      opPlanApplyLock();
+    }
+    window.renderOpPlan = renderOpPlan;
+    // ==================== END OPERATION PLAN ====================
+
+    // ==================== EXPORT EXCEL (สรุป Operation → 4 sheets, Actual only) ====================
+    const XL_EN_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const XL_TH_MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const xlMonthLabel = (ym) => { const [yy, mm] = ym.split('-').map(Number); return `${XL_EN_MON[mm-1]}-${String(yy).slice(2)}   (${XL_TH_MON[mm-1]} ${yy+543})`; };
+    const xlNum = (x) => { const n = Number(x); return (Number.isFinite(n) && n > 0) ? n : 0; };
+    const XL_SHEETS = [
+      { name:'สรุปรายวัน-4Yard', title:'สรุปรายวัน PDI — Actual PDI + คงค้าง (ผ้าคลุม) ต่อวัน แยก Yard · ใช้เฉพาะข้อมูล Actual', subs:[
+        { label:'Actual PDI',            get:f=>xlNum(f.pdi_today), fill:'FCEBDD', color:'A9500F' },
+        { label:'Waiting PDI (ผ้าคลุม)', get:f=>xlNum(f.pdi_hold),  fill:'EDE7F6', color:'5E35B1' },
+      ]},
+      { name:'สรุปยอดซ่อม', title:'สรุปยอดซ่อม — Actual Repair ต่อวัน แยก Yard · ใช้เฉพาะข้อมูล Actual', subs:[
+        { label:'Actual Repair', get:f=>xlNum(f.repair_today), fill:'E7F3E7', color:'1E5A1E' },
+      ]},
+      { name:'Plan PM-รายวัน', title:'สรุป PM — Actual PM ต่อวัน แยก Yard · ใช้เฉพาะข้อมูล Actual', subs:[
+        { label:'Actual PM', get:f=>xlNum(f.pm_today), fill:'E7F3E7', color:'1E5A1E' },
+      ]},
+      { name:'สรุป operation', title:'สรุป Operation — ยอด Actual PDI + PM ต่อวัน แยกรายยาร์ด + ยอดรวม · ใช้เฉพาะข้อมูล Actual', subs:[
+        { label:'Actual PDI', get:f=>xlNum(f.pdi_today), fill:'FDF0E3', color:'B35A00' },
+        { label:'Actual PM',  get:f=>xlNum(f.pm_today),  fill:'FDF0E3', color:'B35A00' },
+        { label:'รวม Actual', get:f=>xlNum(f.pdi_today)+xlNum(f.pm_today), fill:'FBEAE8', color:'7A1F15', sum:true },
+      ]},
+    ];
+
+    function loadExcelJS(){
+      return new Promise((resolve, reject) => {
+        if (window.ExcelJS) return resolve();
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+        s.onload = () => resolve(); s.onerror = () => reject(new Error('โหลด ExcelJS ไม่สำเร็จ'));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function exportOperationExcel(){
+      try {
+        const btn = document.getElementById('opSumExportBtn');
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+        toast('กำลังสร้างไฟล์ Excel...');
+        await loadExcelJS();
+        const node = await getSummaryNode();
+        const yards = getSummaryYards(node);
+        const months = [...new Set(Object.keys(node).map(k => { const m = k.match(/^(\d{4}-\d{2})-\d{2}$/); return m ? m[1] : null; }).filter(Boolean))].sort();
+        if (!months.length) { toast('ยังไม่มีข้อมูลให้ export'); if (btn) { btn.disabled = false; btn.style.opacity = '1'; } return; }
+
+        const THIN = { style:'thin', color:{ argb:'FFC9CED6' } };
+        const border = { top:THIN, left:THIN, right:THIN, bottom:THIN };
+        const fill = (argb) => ({ type:'pattern', pattern:'solid', fgColor:{ argb:'FF'+argb } });
+        const fieldsFor = (ym, yid, d) => { const day = node[`${ym}-${String(d).padStart(2,'0')}`]; return (day && day[yid]) || {}; };
+
+        const wb = new ExcelJS.Workbook();
+        XL_SHEETS.forEach(cfg => {
+          const ws = wb.addWorksheet(cfg.name, { views:[{ showGridLines:false }] });
+          ws.getColumn(1).width = 2.4; ws.getColumn(2).width = 16; ws.getColumn(3).width = 15;
+          for (let c = 4; c <= 34; c++) ws.getColumn(c).width = 4.4;
+          ws.getColumn(35).width = 9;
+          const nSub = cfg.subs.length;
+          let r = 2;
+          // main title
+          ws.mergeCells(r, 2, r, 35);
+          let tc = ws.getCell(r, 2); tc.value = cfg.title; tc.fill = fill('1F3864'); tc.font = { bold:true, color:{argb:'FFFFFFFF'}, size:11 }; tc.alignment = { horizontal:'left', vertical:'middle' };
+          ws.getRow(r).height = 19.5; r += 2;
+
+          months.forEach(ym => {
+            // month title
+            ws.mergeCells(r, 2, r, 35);
+            let mc = ws.getCell(r, 2); mc.value = xlMonthLabel(ym); mc.fill = fill('1F3864'); mc.font = { bold:true, color:{argb:'FFFFFFFF'}, size:11 }; mc.alignment = { horizontal:'left', vertical:'middle' };
+            ws.getRow(r).height = 18; r++;
+            // header row
+            const hr = r;
+            const setH = (col, val, fillC, colorC) => { const c = ws.getCell(hr, col); c.value = val; if (fillC) c.fill = fill(fillC); c.font = { bold:true, color:{argb:'FF'+colorC}, size: col <= 3 || col === 35 ? 9 : 8 }; c.alignment = { horizontal:'center', vertical:'middle' }; c.border = border; };
+            setH(2, 'Yard', 'DCE6F1', '1F3864'); setH(3, 'รายการ', 'DCE6F1', '1F3864');
+            for (let d = 1; d <= 31; d++) setH(3 + d, d, 'FFFFFF', '000000');
+            setH(35, 'รวม', '1F3864', 'FFFFFF');
+            ws.getRow(hr).height = 15.75; r++;
+
+            const gPerDay = cfg.subs.map(() => new Array(32).fill(0));
+            const gTotal = cfg.subs.map(() => 0);
+
+            const writeBlock = (yardName, yardId, isGrand) => {
+              const startRow = r;
+              cfg.subs.forEach((sub, si) => {
+                const lbl = (cfg.name === 'สรุป operation' && isGrand && si === nSub - 1) ? 'รวม Actual (PDI+PM)' : sub.label;
+                const lc = ws.getCell(r, 3); lc.value = lbl; lc.fill = fill(sub.fill); lc.font = { bold:true, color:{argb:'FF'+sub.color}, size:8 }; lc.alignment = { horizontal:'left', vertical:'middle' }; lc.border = border;
+                let rowSum = 0;
+                for (let d = 1; d <= 31; d++) {
+                  let v;
+                  if (isGrand) v = gPerDay[si][d];
+                  else { v = sub.get(fieldsFor(ym, yardId, d)); if (v > 0) gPerDay[si][d] += v; }
+                  if (v > 0) rowSum += v;
+                  const c = ws.getCell(r, 3 + d); c.value = v > 0 ? v : (isGrand ? 0 : null);
+                  c.fill = fill(sub.fill); c.font = { bold:isGrand, color:{argb:'FF'+sub.color}, size:8 }; c.alignment = { horizontal:'center' }; c.border = border;
+                }
+                const tot = isGrand ? gTotal[si] : rowSum;
+                if (!isGrand) gTotal[si] += rowSum;
+                const ai = ws.getCell(r, 35); ai.value = tot; ai.fill = fill(sub.sum ? 'C0392B' : '2E5C8A'); ai.font = { bold:true, color:{argb:'FFFFFFFF'}, size: isGrand ? 10 : 9 }; ai.alignment = { horizontal:'center' }; ai.border = border;
+                ws.getRow(r).height = 13.5; r++;
+              });
+              ws.mergeCells(startRow, 2, r - 1, 2);
+              const yc = ws.getCell(startRow, 2); yc.value = yardName;
+              if (isGrand) { yc.fill = fill('1F3864'); yc.font = { bold:true, size:9, color:{argb:'FFFFFFFF'} }; yc.alignment = { horizontal:'center', vertical:'middle' }; }
+              else { yc.font = { bold:true, size:9, color:{argb:'FF000000'} }; yc.alignment = { horizontal:'left', vertical:'middle' }; }
+              yc.border = border;
+              for (let rr = startRow; rr <= r - 1; rr++) ws.getCell(rr, 2).border = border;
+            };
+
+            yards.forEach(y => writeBlock(y.name, y.id, false));
+            writeBlock('รวมทุก Yard', null, true);
+            r += 1; // blank row between months
+          });
+        });
+
+        const buf = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const fn = 'สรุป Operation PM_' + todayKey() + '.xlsx';
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fn;
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+        toast('Export Excel สำเร็จ ✓');
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+      } catch (e) {
+        console.error('Export error', e); toast('Export ไม่สำเร็จ: ' + (e && e.message || e));
+        const btn = document.getElementById('opSumExportBtn'); if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+      }
+    }
+    window.exportOperationExcel = exportOperationExcel;
+    // ==================== END EXPORT EXCEL ====================
 
     // -------- Data model & propagation --------
     const ensureMonthYardData = (yyyyMM, yard) => {
@@ -1726,12 +2338,12 @@
           <td class="px-5 py-3 font-semibold">${yardLabel(item.yard)}</td>
           <td class="px-5 py-3 text-right">${(item.est||0).toLocaleString()}</td>
           <td class="px-5 py-3 text-slate-600">${(item.action||"-").toString()}</td>
-        `,tbody.appendChild(tr)})};const setActive=(btn,active)=>{btn.classList.toggle("tab-active",active),btn.classList.toggle("tab-inactive",!active)},showView=id=>{elements.pm30View.classList.add("hidden"),elements.monthlyPMView.classList.add("hidden"),elements.summaryView.classList.add("hidden"),elements.dailyView.classList.add("hidden"),elements.performanceView.classList.add("hidden"),document.getElementById(id).classList.remove("hidden")};function fitMonthlyTables(){const fit=(containerId,scalerId)=>{const cont=document.getElementById(containerId),scaler=document.getElementById(scalerId);if(!cont||!scaler)return;scaler.style.transform="scale(1)",requestAnimationFrame(()=>{const cw=cont.clientWidth-12,sw=scaler.scrollWidth;if(!sw||!cw)return;const scale=Math.min(1,cw/sw);scaler.style.transformOrigin="top left",scaler.style.transform=`scale(${scale})`})};fit("mpmContainer","mpmScaler"),fit("mpmActContainer","mpmActScaler")}window.addEventListener("resize",()=>{const monthlyVisible=!elements.monthlyPMView?.classList.contains("hidden");monthlyVisible&&setTimeout(fitMonthlyTables,0)});const setupTabs=()=>{window.addUnitSuffixesDaily=()=>{if(!elements.dailyView)return;elements.dailyView.querySelectorAll(".unit-u").forEach(x=>x.remove());const ids=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total",
+        `,tbody.appendChild(tr)})};const setActive=(btn,active)=>{btn.classList.toggle("tab-active",active),btn.classList.toggle("tab-inactive",!active)},showView=id=>{elements.pm30View.classList.add("hidden"),elements.monthlyPMView.classList.add("hidden"),elements.summaryView.classList.add("hidden"),elements.dailyView.classList.add("hidden"),elements.performanceView.classList.add("hidden"),elements.pdiSumView&&elements.pdiSumView.classList.add("hidden"),elements.repairSumView&&elements.repairSumView.classList.add("hidden"),elements.pmSumView&&elements.pmSumView.classList.add("hidden"),elements.opSumView&&elements.opSumView.classList.add("hidden"),elements.opPlanView&&elements.opPlanView.classList.add("hidden"),document.getElementById(id).classList.remove("hidden")};function fitMonthlyTables(){const fit=(containerId,scalerId)=>{const cont=document.getElementById(containerId),scaler=document.getElementById(scalerId);if(!cont||!scaler)return;scaler.style.transform="scale(1)",requestAnimationFrame(()=>{const cw=cont.clientWidth-12,sw=scaler.scrollWidth;if(!sw||!cw)return;const scale=Math.min(1,cw/sw);scaler.style.transformOrigin="top left",scaler.style.transform=`scale(${scale})`})};fit("mpmContainer","mpmScaler"),fit("mpmActContainer","mpmActScaler")}window.addEventListener("resize",()=>{const monthlyVisible=!elements.monthlyPMView?.classList.contains("hidden");monthlyVisible&&setTimeout(fitMonthlyTables,0)});const setupTabs=()=>{window.addUnitSuffixesDaily=()=>{if(!elements.dailyView)return;elements.dailyView.querySelectorAll(".unit-u").forEach(x=>x.remove());const ids=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total",
 "mhp_in","mhp_hold","mhp_total","mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other","mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom","mhp_wait_group","mhp_fc_hold","mhp_fc_in","mhp_fc_total","mhp_pm","mhp_pm_early","mhp_pm_hold","mhp_pm_total",
-"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)});window.addCustomUnitSuffixes&&window.addCustomUnitSuffixes()};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDailyTable()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100))};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+"at_in","at_hold","at_total","at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other","at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom","at_wait_group","at_fc_hold","at_fc_in","at_fc_total","at_pm","at_pm_early","at_pm_hold","at_pm_total"];ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.parentElement.classList.contains("cc-unit-wrap")?el.parentElement.className="cc-unit-wrap inline-flex items-center gap-2":(()=>{const box=document.createElement("div");box.className="cc-unit-wrap inline-flex items-center gap-2",el.parentElement.replaceChild(box,el),box.appendChild(el)})(),el.classList.remove("pr-6");const u=document.createElement("span");u.className="unit-u text-slate-500 text-sm select-none",u.textContent="U",el.parentElement.appendChild(u)});window.addCustomUnitSuffixes&&window.addCustomUnitSuffixes()};const activate=view=>{setActive(elements.viewPM30,view==="pm30"),setActive(elements.viewMonthlyPM,view==="monthly"),setActive(elements.viewSummary,view==="summary"),setActive(elements.viewDaily,view==="daily"),setActive(elements.viewPerformance,view==="performance"),setActive(elements.viewPdiSum,view==="pdisum"),setActive(elements.viewRepairSum,view==="repsum"),setActive(elements.viewPMSum,view==="pmsum"),setActive(elements.viewOpSum,view==="opsum"),setActive(elements.viewOpPlan,view==="opplan"),view==="pm30"&&(showView("pm30View"),renderPM30()),view==="monthly"&&(showView("monthlyPMView"),renderMonthlyPM(),longPressSetup(),setTimeout(fitMonthlyTables,0),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="summary"&&(showView("summaryView"),renderSummary(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="daily"&&(showView("dailyView"),renderDailyTable()),view==="performance"&&(showView("performanceView"),renderPerformance(),setTimeout(()=>window.syncAllDisabledYards&&window.syncAllDisabledYards(),100)),view==="pdisum"&&(showView("pdiSumView"),renderMonthSummary("pdi")),view==="repsum"&&(showView("repairSumView"),renderMonthSummary("rep")),view==="pmsum"&&(showView("pmSumView"),renderMonthSummary("pm")),view==="opsum"&&(showView("opSumView"),renderMonthSummary("op")),view==="opplan"&&(showView("opPlanView"),renderOpPlan())};async function renderDaily(){setTimeout(addUnitSuffixesDaily,0);const clearIds=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
 "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
 "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
 "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
@@ -1747,7 +2359,7 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
         if (!isLoggedIn) {
             disableEditing();
         }
-      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){const el=document.getElementById("dailyTableCard");if(!el)return;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),dataUrl=c.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-${dateKey(selectedDate)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูป Daily Report เรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูป Daily Report แล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDailyTable()}),activate("daily"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
+      }document.addEventListener("click",async e=>{if(e.target&&"captureDaily"===e.target.id){const el=document.documentElement;html2canvas(el,{useCORS:!0,backgroundColor:null}).then(canvas=>{const link=document.createElement("a");link.download=`Daily-Report-${(new Date).toISOString().slice(0,10)}.png`,link.href=canvas.toDataURL("image/png"),link.click()})}if(e.target&&"shareLine"===e.target.id){const el=document.getElementById("dailyTableCard");if(!el)return;const c=await html2canvas(el,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),dataUrl=c.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`Daily-Report-${dateKey(selectedDate)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"Daily Report"}),void toast("ส่งรูป Daily Report เรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูป Daily Report แล้ว")}if(e.target&&"mpmShareLine"===e.target.id){const estEl=document.getElementById("mpmEstCard"),actEl=document.getElementById("mpmActCard");if(!estEl||!actEl)return;const c1=await html2canvas(estEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),c2=await html2canvas(actEl,{backgroundColor:"#ffffff",scale:window.devicePixelRatio}),gap=24,width=Math.max(c1.width,c2.width),height=c1.height+gap+c2.height,comboCanvas=document.createElement("canvas");comboCanvas.width=width,comboCanvas.height=height;const ctx=comboCanvas.getContext("2d");ctx.fillStyle="#ffffff",ctx.fillRect(0,0,width,height),ctx.drawImage(c1,Math.floor((width-c1.width)/2),0),ctx.drawImage(c2,Math.floor((width-c2.width)/2),c1.height+gap);const dataUrl=comboCanvas.toDataURL("image/jpeg",.92),res=await fetch(dataUrl),blob=await res.blob(),file=new File([blob],`PM-Monthly-Plan-Combined-${(new Date).toISOString().slice(0,10)}.jpg`,{type:"image/jpeg"});try{if(navigator.canShare&&navigator.canShare({files:[file]}))return await navigator.share({files:[file],title:"แผน PM ประจำเดือน"}),void toast("ส่งรูปแผน PM รวมเรียบร้อย")}catch(err){}const a=document.createElement("a");a.href=URL.createObjectURL(file),a.download=file.name,document.body.appendChild(a),a.click(),a.remove(),setTimeout(()=>URL.revokeObjectURL(a.href),1e3),toast("บันทึกรูปแผน PM รวม 1 ไฟล์แล้ว")}}),elements.viewPM30.onclick=()=>activate("pm30"),elements.viewMonthlyPM.onclick=()=>activate("monthly"),elements.viewSummary.onclick=()=>activate("summary"),elements.viewDaily.onclick=()=>activate("daily"),elements.viewPerformance.onclick=()=>activate("performance"),elements.viewPdiSum.onclick=()=>activate("pdisum"),elements.viewRepairSum.onclick=()=>activate("repsum"),elements.viewPMSum.onclick=()=>activate("pmsum"),elements.viewOpSum.onclick=()=>activate("opsum"),elements.viewOpPlan.onclick=()=>activate("opplan"),elements.opPlanDate&&elements.opPlanDate.addEventListener("change",()=>renderOpPlan()),elements.dailyDate&&elements.dailyDate.addEventListener("change",async()=>{selectedDate=new Date(elements.dailyDate.value);const newKey=dateKey(selectedDate);newKey===tomorrowKey()&&setDaily({});const active=document.querySelector(".main-tab.tab-active")?.id;"viewDaily"===active&&await renderDailyTable()}),activate("daily"),elements.dailyDate&&(elements.dailyDate.value=todayKey(),selectedDate=new Date(elements.dailyDate.value)),setupRayongAutoSum(),setupNYB2AutoSum(),setupS5AutoSum(),setup28RaiAutoSum(),setupMHPAutoSum(),setupAutoTransportAutoSum();const dailyInputs=["ry_in","ry_hold","ry_total","ry_att3_pre","ry_att3_ext","ry_sea6_pre","ry_sea6_dym","ry_dol_std","ry_dol_ext","ry_seal5_pre","ry_other","ry_out_nyb2","ry_out_soi5","ry_out_dealer","ry_out_custom","ry_wait_group","ry_out_total","ry_fc_hold","ry_fc_in","ry_fc_total","ry_pm","ry_pm_early","ry_pm_hold","ry_pm_total","ry_note",
     "ny_in","ny_hold","ny_total","ny_att3_pre","ny_att3_ext","ny_sea6_pre","ny_sea6_dym","ny_dol_std","ny_dol_ext","ny_seal5_pre","ny_other","ny_out_rayong","ny_out_soi5","ny_out_dealer","ny_out_custom","ny_wait_group","ny_out_total","ny_fc_hold","ny_fc_in","ny_fc_total","ny_pm","ny_pm_early","ny_pm_hold","ny_pm_total","ny_note",
     "s5_in","s5_hold","s5_total","s5_att3_pre","s5_att3_ext","s5_sea6_pre","s5_sea6_dym","s5_dol_std","s5_dol_ext","s5_seal5_pre","s5_other","s5_out_rayong","s5_out_nyb2","s5_out_dealer","s5_out_custom","s5_wait_group","s5_out_total","s5_fc_hold","s5_fc_in","s5_fc_total","s5_pm","s5_pm_early","s5_pm_hold","s5_pm_total","s5_note",
     "r28_in","r28_hold","r28_total","r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other","r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom","r28_wait_group","r28_out_total","r28_fc_hold","r28_fc_in","r28_fc_total","r28_pm","r28_pm_early","r28_pm_hold","r28_pm_total","r28_note",
@@ -1772,7 +2384,7 @@ try{const ALL_YARDS=window.getAllYardPrefixes?window.getAllYardPrefixes():['ry',
     setup28RaiAutoSum=()=>{["r28_att3_pre","r28_att3_ext","r28_sea6_pre","r28_sea6_dym","r28_dol_std","r28_dol_ext","r28_seal5_pre","r28_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiInFromParts(),compute28RaiSums()})}),["r28_in","r28_hold","r28_fc_hold","r28_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiSums()})}),["r28_out_nyb2","r28_out_soi5","r28_out_dealer","r28_out_custom"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{compute28RaiOutTotal()})}),compute28RaiInFromParts(),compute28RaiSums(),compute28RaiOutTotal()},
     setupMHPAutoSum=()=>{["mhp_att3_pre","mhp_att3_ext","mhp_sea6_pre","mhp_sea6_dym","mhp_dol_std","mhp_dol_ext","mhp_seal5_pre","mhp_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPInFromParts(),computeMHPSums()})}),["mhp_in","mhp_hold","mhp_fc_hold","mhp_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPSums()})}),["mhp_out_nyb2","mhp_out_soi5","mhp_out_dealer","mhp_out_custom"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeMHPOutTotal()})}),computeMHPInFromParts(),computeMHPSums(),computeMHPOutTotal()},
     setupAutoTransportAutoSum=()=>{["at_att3_pre","at_att3_ext","at_sea6_pre","at_sea6_dym","at_dol_std","at_dol_ext","at_seal5_pre","at_other"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeAutoTransportInFromParts(),computeAutoTransportSums()})}),["at_in","at_hold","at_fc_hold","at_fc_in"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeAutoTransportSums()})}),["at_out_nyb2","at_out_soi5","at_out_dealer","at_out_custom"].forEach(id=>{const el=document.getElementById(id);el&&el.addEventListener("input",()=>{computeAutoTransportOutTotal()})}),computeAutoTransportInFromParts(),computeAutoTransportSums(),computeAutoTransportOutTotal()},
-    setupMonthPicker=()=>{elements.monthPicker.value=toMonthKey(new Date),elements.monthPicker.addEventListener("change",()=>{const active=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===active&&renderPM30(),"viewMonthlyPM"===active&&renderMonthlyPM(),"viewSummary"===active&&renderSummary(),"viewPerformance"===active&&renderPerformance(),subscribeMonth(elements.monthPicker.value)})},updatePM30FromDaily=()=>{const currentDate=selectedDate,monthKey=toMonthKey(currentDate),dayIndex=currentDate.getDate()-1,ryPMTotal=getNum("ry_pm_total"),nyPMTotal=getNum("ny_pm_total"),s5PMTotal=getNum("s5_pm_total"),r28PMTotal=getNum("r28_pm_total"),mhpPMTotal=getNum("mhp_pm_total"),atPMTotal=getNum("at_pm_total");ensureMonthYardData(monthKey,"Rayong"),ensureMonthYardData(monthKey,"NYB2"),ensureMonthYardData(monthKey,"soi5"),ensureMonthYardData(monthKey,"28 Rai"),ensureMonthYardData(monthKey,"MHP 2PS"),ensureMonthYardData(monthKey,"Auto Transport"),appState.pmData[monthKey]&&appState.pmData[monthKey].Rayong&&appState.pmData[monthKey].Rayong[dayIndex]&&(appState.pmData[monthKey].Rayong[dayIndex].act=ryPMTotal>0?String(ryPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].NYB2&&appState.pmData[monthKey].NYB2[dayIndex]&&(appState.pmData[monthKey].NYB2[dayIndex].act=nyPMTotal>0?String(nyPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].soi5&&appState.pmData[monthKey].soi5[dayIndex]&&(appState.pmData[monthKey].soi5[dayIndex].act=s5PMTotal>0?String(s5PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["28 Rai"]&&appState.pmData[monthKey]["28 Rai"][dayIndex]&&(appState.pmData[monthKey]["28 Rai"][dayIndex].act=r28PMTotal>0?String(r28PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["MHP 2PS"]&&appState.pmData[monthKey]["MHP 2PS"][dayIndex]&&(appState.pmData[monthKey]["MHP 2PS"][dayIndex].act=mhpPMTotal>0?String(mhpPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["Auto Transport"]&&appState.pmData[monthKey]["Auto Transport"][dayIndex]&&(appState.pmData[monthKey]["Auto Transport"][dayIndex].act=atPMTotal>0?String(atPMTotal):""),updateTomorrowPendingPM().catch(err=>{console.error("Failed to update tomorrow's pending PM data:",err)}),saveData({propagate:!1});const activeTab=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===activeTab&&!editingPM30&&renderPM30()},updateTomorrowPendingPM=async()=>{const today=new Date,tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);const tomorrowKeyStr=dateKey(tomorrow),todayMonthKey=toMonthKey(today),tomorrowMonthKey=toMonthKey(tomorrow);ensureMonthYardData(todayMonthKey,"Rayong"),ensureMonthYardData(todayMonthKey,"NYB2"),ensureMonthYardData(todayMonthKey,"soi5"),ensureMonthYardData(todayMonthKey,"28 Rai"),ensureMonthYardData(todayMonthKey,"MHP 2PS"),ensureMonthYardData(todayMonthKey,"Auto Transport"),ensureMonthYardData(tomorrowMonthKey,"Rayong"),ensureMonthYardData(tomorrowMonthKey,"NYB2"),ensureMonthYardData(tomorrowMonthKey,"soi5"),ensureMonthYardData(tomorrowMonthKey,"28 Rai"),ensureMonthYardData(tomorrowMonthKey,"MHP 2PS"),ensureMonthYardData(tomorrowMonthKey,"Auto Transport");const todayDayIndex=today.getDate()-1,yardConfigs=[{name:"Rayong",holdField:"ry_pm_hold"},{name:"NYB2",holdField:"ny_pm_hold"},{name:"soi5",holdField:"s5_pm_hold"},{name:"28 Rai",holdField:"r28_pm_hold"},{name:"MHP 2PS",holdField:"mhp_pm_hold"},{name:"Auto Transport",holdField:"at_pm_hold"}];let tomorrowDailyData={};try{if(fbDb&&fbConnected){const snap=await fbDb.ref(`/daily/${tomorrowKeyStr}`).get();tomorrowDailyData=snap.val()||{}}}catch(err){console.warn("Could not fetch tomorrow's daily data, starting fresh.",err),tomorrowDailyData={}}yardConfigs.forEach(yard=>{const todayData=appState.pmData[todayMonthKey]?.[yard.name]?.[todayDayIndex];if(!todayData)return;const todayEstimation=Number(todayData.est||0),todayActual=Number(todayData.act||0),pendingPM=Math.max(0,todayEstimation-todayActual);pendingPM>0?tomorrowDailyData[yard.holdField]=String(pendingPM):tomorrowDailyData[yard.holdField]=""});const calculatePMTotal=(pmField,holdField)=>{const pm=Number(tomorrowDailyData[pmField]||0),hold=Number(tomorrowDailyData[holdField]||0);return pm>0||hold>0?String(pm+hold):""};if(tomorrowDailyData.ry_pm_total=calculatePMTotal("ry_pm","ry_pm_hold"),tomorrowDailyData.ny_pm_total=calculatePMTotal("ny_pm","ny_pm_hold"),tomorrowDailyData.s5_pm_total=calculatePMTotal("s5_pm","s5_pm_hold"),tomorrowDailyData.r28_pm_total=calculatePMTotal("r28_pm","r28_pm_hold"),tomorrowDailyData.mhp_pm_total=calculatePMTotal("mhp_pm","mhp_pm_hold"),tomorrowDailyData.at_pm_total=calculatePMTotal("at_pm","at_pm_hold"),fbDb&&fbConnected)try{await fbDb.ref(`/daily/${tomorrowKeyStr}`).set(tomorrowDailyData),markLastSync()}catch(err){console.warn("Failed to update tomorrow pending PM:",err)}},collectDaily=()=>{const gv=id=>{const el=document.getElementById(id);return el?el.value:""};return{ry_in:gv("ry_in"),ry_hold:gv("ry_hold"),ry_total:gv("ry_total"),ry_att3_pre:gv("ry_att3_pre"),ry_att3_ext:gv("ry_att3_ext"),ry_sea6_pre:gv("ry_sea6_pre"),ry_sea6_dym:gv("ry_sea6_dym"),ry_dol_std:gv("ry_dol_std"),ry_dol_ext:gv("ry_dol_ext"),ry_seal5_pre:gv("ry_seal5_pre"),ry_other:gv("ry_other"),ry_out_nyb2:gv("ry_out_nyb2"),ry_out_soi5:gv("ry_out_soi5"),ry_out_dealer:gv("ry_out_dealer"),ry_out_custom:gv("ry_out_custom"),ry_wait_group:gv("ry_wait_group"),ry_out_total:gv("ry_out_total"),ry_fc_hold:gv("ry_fc_hold"),ry_fc_in:gv("ry_fc_in"),ry_fc_total:gv("ry_fc_total"),ry_pm:gv("ry_pm"),ry_pm_early:gv("ry_pm_early"),ry_pm_hold:gv("ry_pm_hold"),ry_pm_total:gv("ry_pm_total"),ry_note:gv("ry_note"),
+    setupMonthPicker=()=>{elements.monthPicker.value=toMonthKey(new Date),elements.monthPicker.addEventListener("change",()=>{const active=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===active&&renderPM30(),"viewMonthlyPM"===active&&renderMonthlyPM(),"viewSummary"===active&&renderSummary(),"viewPerformance"===active&&renderPerformance(),"viewPdiSum"===active&&renderMonthSummary("pdi"),"viewRepairSum"===active&&renderMonthSummary("rep"),"viewPMSum"===active&&renderMonthSummary("pm"),"viewOpSum"===active&&renderMonthSummary("op"),subscribeMonth(elements.monthPicker.value)})},updatePM30FromDaily=()=>{const currentDate=selectedDate,monthKey=toMonthKey(currentDate),dayIndex=currentDate.getDate()-1,ryPMTotal=getNum("ry_pm_total"),nyPMTotal=getNum("ny_pm_total"),s5PMTotal=getNum("s5_pm_total"),r28PMTotal=getNum("r28_pm_total"),mhpPMTotal=getNum("mhp_pm_total"),atPMTotal=getNum("at_pm_total");ensureMonthYardData(monthKey,"Rayong"),ensureMonthYardData(monthKey,"NYB2"),ensureMonthYardData(monthKey,"soi5"),ensureMonthYardData(monthKey,"28 Rai"),ensureMonthYardData(monthKey,"MHP 2PS"),ensureMonthYardData(monthKey,"Auto Transport"),appState.pmData[monthKey]&&appState.pmData[monthKey].Rayong&&appState.pmData[monthKey].Rayong[dayIndex]&&(appState.pmData[monthKey].Rayong[dayIndex].act=ryPMTotal>0?String(ryPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].NYB2&&appState.pmData[monthKey].NYB2[dayIndex]&&(appState.pmData[monthKey].NYB2[dayIndex].act=nyPMTotal>0?String(nyPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey].soi5&&appState.pmData[monthKey].soi5[dayIndex]&&(appState.pmData[monthKey].soi5[dayIndex].act=s5PMTotal>0?String(s5PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["28 Rai"]&&appState.pmData[monthKey]["28 Rai"][dayIndex]&&(appState.pmData[monthKey]["28 Rai"][dayIndex].act=r28PMTotal>0?String(r28PMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["MHP 2PS"]&&appState.pmData[monthKey]["MHP 2PS"][dayIndex]&&(appState.pmData[monthKey]["MHP 2PS"][dayIndex].act=mhpPMTotal>0?String(mhpPMTotal):""),appState.pmData[monthKey]&&appState.pmData[monthKey]["Auto Transport"]&&appState.pmData[monthKey]["Auto Transport"][dayIndex]&&(appState.pmData[monthKey]["Auto Transport"][dayIndex].act=atPMTotal>0?String(atPMTotal):""),updateTomorrowPendingPM().catch(err=>{console.error("Failed to update tomorrow's pending PM data:",err)}),saveData({propagate:!1});const activeTab=document.querySelector(".main-tab.tab-active")?.id;"viewPM30"===activeTab&&!editingPM30&&renderPM30()},updateTomorrowPendingPM=async()=>{const today=new Date,tomorrow=new Date(today);tomorrow.setDate(tomorrow.getDate()+1);const tomorrowKeyStr=dateKey(tomorrow),todayMonthKey=toMonthKey(today),tomorrowMonthKey=toMonthKey(tomorrow);ensureMonthYardData(todayMonthKey,"Rayong"),ensureMonthYardData(todayMonthKey,"NYB2"),ensureMonthYardData(todayMonthKey,"soi5"),ensureMonthYardData(todayMonthKey,"28 Rai"),ensureMonthYardData(todayMonthKey,"MHP 2PS"),ensureMonthYardData(todayMonthKey,"Auto Transport"),ensureMonthYardData(tomorrowMonthKey,"Rayong"),ensureMonthYardData(tomorrowMonthKey,"NYB2"),ensureMonthYardData(tomorrowMonthKey,"soi5"),ensureMonthYardData(tomorrowMonthKey,"28 Rai"),ensureMonthYardData(tomorrowMonthKey,"MHP 2PS"),ensureMonthYardData(tomorrowMonthKey,"Auto Transport");const todayDayIndex=today.getDate()-1,yardConfigs=[{name:"Rayong",holdField:"ry_pm_hold"},{name:"NYB2",holdField:"ny_pm_hold"},{name:"soi5",holdField:"s5_pm_hold"},{name:"28 Rai",holdField:"r28_pm_hold"},{name:"MHP 2PS",holdField:"mhp_pm_hold"},{name:"Auto Transport",holdField:"at_pm_hold"}];let tomorrowDailyData={};try{if(fbDb&&fbConnected){const snap=await fbDb.ref(`/daily/${tomorrowKeyStr}`).get();tomorrowDailyData=snap.val()||{}}}catch(err){console.warn("Could not fetch tomorrow's daily data, starting fresh.",err),tomorrowDailyData={}}yardConfigs.forEach(yard=>{const todayData=appState.pmData[todayMonthKey]?.[yard.name]?.[todayDayIndex];if(!todayData)return;const todayEstimation=Number(todayData.est||0),todayActual=Number(todayData.act||0),pendingPM=Math.max(0,todayEstimation-todayActual);pendingPM>0?tomorrowDailyData[yard.holdField]=String(pendingPM):tomorrowDailyData[yard.holdField]=""});const calculatePMTotal=(pmField,holdField)=>{const pm=Number(tomorrowDailyData[pmField]||0),hold=Number(tomorrowDailyData[holdField]||0);return pm>0||hold>0?String(pm+hold):""};if(tomorrowDailyData.ry_pm_total=calculatePMTotal("ry_pm","ry_pm_hold"),tomorrowDailyData.ny_pm_total=calculatePMTotal("ny_pm","ny_pm_hold"),tomorrowDailyData.s5_pm_total=calculatePMTotal("s5_pm","s5_pm_hold"),tomorrowDailyData.r28_pm_total=calculatePMTotal("r28_pm","r28_pm_hold"),tomorrowDailyData.mhp_pm_total=calculatePMTotal("mhp_pm","mhp_pm_hold"),tomorrowDailyData.at_pm_total=calculatePMTotal("at_pm","at_pm_hold"),fbDb&&fbConnected)try{await fbDb.ref(`/daily/${tomorrowKeyStr}`).set(tomorrowDailyData),markLastSync()}catch(err){console.warn("Failed to update tomorrow pending PM:",err)}},collectDaily=()=>{const gv=id=>{const el=document.getElementById(id);return el?el.value:""};return{ry_in:gv("ry_in"),ry_hold:gv("ry_hold"),ry_total:gv("ry_total"),ry_att3_pre:gv("ry_att3_pre"),ry_att3_ext:gv("ry_att3_ext"),ry_sea6_pre:gv("ry_sea6_pre"),ry_sea6_dym:gv("ry_sea6_dym"),ry_dol_std:gv("ry_dol_std"),ry_dol_ext:gv("ry_dol_ext"),ry_seal5_pre:gv("ry_seal5_pre"),ry_other:gv("ry_other"),ry_out_nyb2:gv("ry_out_nyb2"),ry_out_soi5:gv("ry_out_soi5"),ry_out_dealer:gv("ry_out_dealer"),ry_out_custom:gv("ry_out_custom"),ry_wait_group:gv("ry_wait_group"),ry_out_total:gv("ry_out_total"),ry_fc_hold:gv("ry_fc_hold"),ry_fc_in:gv("ry_fc_in"),ry_fc_total:gv("ry_fc_total"),ry_pm:gv("ry_pm"),ry_pm_early:gv("ry_pm_early"),ry_pm_hold:gv("ry_pm_hold"),ry_pm_total:gv("ry_pm_total"),ry_note:gv("ry_note"),
     ny_in:gv("ny_in"),ny_hold:gv("ny_hold"),ny_total:gv("ny_total"),ny_att3_pre:gv("ny_att3_pre"),ny_att3_ext:gv("ny_att3_ext"),ny_sea6_pre:gv("ny_sea6_pre"),ny_sea6_dym:gv("ny_sea6_dym"),ny_dol_std:gv("ny_dol_std"),ny_dol_ext:gv("ny_dol_ext"),ny_seal5_pre:gv("ny_seal5_pre"),ny_other:gv("ny_other"),ny_out_rayong:gv("ny_out_rayong"),ny_out_soi5:gv("ny_out_soi5"),ny_out_dealer:gv("ny_out_dealer"),ny_out_custom:gv("ny_out_custom"),ny_wait_group:gv("ny_wait_group"),ny_out_total:gv("ny_out_total"),ny_fc_hold:gv("ny_fc_hold"),ny_fc_in:gv("ny_fc_in"),ny_fc_total:gv("ny_fc_total"),ny_pm:gv("ny_pm"),ny_pm_early:gv("ny_pm_early"),ny_pm_hold:gv("ny_pm_hold"),ny_pm_total:gv("ny_pm_total"),ny_note:gv("ny_note"),
     s5_in:gv("s5_in"),s5_hold:gv("s5_hold"),s5_total:gv("s5_total"),s5_att3_pre:gv("s5_att3_pre"),s5_att3_ext:gv("s5_att3_ext"),s5_sea6_pre:gv("s5_sea6_pre"),s5_sea6_dym:gv("s5_sea6_dym"),s5_dol_std:gv("s5_dol_std"),s5_dol_ext:gv("s5_dol_ext"),s5_seal5_pre:gv("s5_seal5_pre"),s5_other:gv("s5_other"),s5_out_rayong:gv("s5_out_rayong"),s5_out_nyb2:gv("s5_out_nyb2"),s5_out_dealer:gv("s5_out_dealer"),s5_out_custom:gv("s5_out_custom"),s5_wait_group:gv("s5_wait_group"),s5_out_total:gv("s5_out_total"),s5_fc_hold:gv("s5_fc_hold"),s5_fc_in:gv("s5_fc_in"),s5_fc_total:gv("s5_fc_total"),s5_pm:gv("s5_pm"),s5_pm_early:gv("s5_pm_early"),s5_pm_hold:gv("s5_pm_hold"),s5_pm_total:gv("s5_pm_total"),s5_note:gv("s5_note"),
     r28_in:gv("r28_in"),r28_hold:gv("r28_hold"),r28_total:gv("r28_total"),r28_att3_pre:gv("r28_att3_pre"),r28_att3_ext:gv("r28_att3_ext"),r28_sea6_pre:gv("r28_sea6_pre"),r28_sea6_dym:gv("r28_sea6_dym"),r28_dol_std:gv("r28_dol_std"),r28_dol_ext:gv("r28_dol_ext"),r28_seal5_pre:gv("r28_seal5_pre"),r28_other:gv("r28_other"),r28_out_nyb2:gv("r28_out_nyb2"),r28_out_soi5:gv("r28_out_soi5"),r28_out_dealer:gv("r28_out_dealer"),r28_out_custom:gv("r28_out_custom"),r28_wait_group:gv("r28_wait_group"),r28_out_total:gv("r28_out_total"),r28_fc_hold:gv("r28_fc_hold"),r28_fc_in:gv("r28_fc_in"),r28_fc_total:gv("r28_fc_total"),r28_pm:gv("r28_pm"),r28_pm_early:gv("r28_pm_early"),r28_pm_hold:gv("r28_pm_hold"),r28_pm_total:gv("r28_pm_total"),r28_note:gv("r28_note"),
